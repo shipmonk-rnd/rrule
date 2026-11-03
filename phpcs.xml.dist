@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<ruleset
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd"
+>
+    <arg name="basepath" value="."/>
+    <arg name="cache" value="cache/phpcs.cache"/>
+    <arg name="extensions" value="php"/>
+
+    <file>coverage-guard.php</file>
+    <file>composer-dependency-analyser.php</file>
+    <file>src/</file>
+    <file>tests/</file>
+
+    <exclude-pattern>tests/Type/data/*</exclude-pattern>
+
+    <rule ref="ShipMonkCodingStandard"/>
+
+    <!-- align @param annotations to columns; severity must be restored explicitly because ShipMonkCodingStandard excludes these codes -->
+    <rule ref="Squiz.Commenting.FunctionComment.SpacingAfterParamType">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.SpacingAfterParamName">
+        <severity>5</severity>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Whitespaces.DuplicateSpaces">
+        <properties>
+            <property name="ignoreSpacesInAnnotation" value="true"/>
+        </properties>
+    </rule>
+</ruleset>

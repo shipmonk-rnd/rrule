@@ -1,0 +1,19 @@
+{
+    "$schema": "tools/infection/vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": ["src"]
+    },
+    "phpUnit": {
+        "customPath": "vendor/bin/phpunit"
+    },
+    "testFrameworkOptions": "--testsuite=default",
+    "logs": {
+        "text": "cache/infection.log"
+    },
+    "tmpDir": "cache/infection",
+    "minMsi": 98,
+    "minCoveredMsi": 98,
+    "mutators": {
+        "@default": true
+    }
+}
