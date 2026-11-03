@@ -54,6 +54,34 @@ function parsed(string $text): void
 {
     $recurrence = Recurrence::fromString($text);
     assertType('ShipMonk\RRule\Recurrence<DateTimeImmutable>|ShipMonk\RRule\Recurrence<ShipMonk\RRule\CalendarDate>|ShipMonk\RRule\Recurrence<ShipMonk\RRule\FloatingDateTime>', $recurrence);
+
+    if ($recurrence->isInstant()) {
+        assertType('ShipMonk\RRule\Recurrence<DateTimeImmutable>', $recurrence);
+        assertType('DateTimeImmutable|null', $recurrence->firstAfter(new DateTimeImmutable()));
+    } elseif ($recurrence->isFloating()) {
+        assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\FloatingDateTime>', $recurrence);
+    } else {
+        assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\CalendarDate>', $recurrence);
+    }
+
+    if ($recurrence->isAllDay()) {
+        assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\CalendarDate>', $recurrence);
+    }
+
+    assertType('ShipMonk\RRule\FloatingDateTime', $recurrence->getStartLocalTime());
+}
+
+function zoned(\ShipMonk\RRule\FloatingDateTime $start, \DateTimeZone $zone): void
+{
+    assertType('ShipMonk\RRule\Recurrence<DateTimeImmutable>', Recurrence::inTimeZone($start, $zone));
+}
+
+/**
+ * @param Recurrence<*> $any
+ */
+function anyKind(Recurrence $any): void
+{
+    assertType('int<1, max>', $any->getSearchLimit());
 }
 
 function rule(): void

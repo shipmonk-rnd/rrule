@@ -16,5 +16,5 @@ docker run --rm --user "$(id -u):$(id -g)" --volume "$root:/src:ro" --env DIFFER
     tar -C /src --exclude=./.git --exclude=./vendor --exclude=./cache --exclude=./tools --exclude=./composer.lock -cf - . | tar -C /tmp/rrule -xf -
     cd /tmp/rrule
     composer install --no-progress --no-interaction --quiet
-    vendor/bin/phpunit --testsuite differential "$@"
+    vendor/bin/phpunit --testsuite differential --fail-on-skipped "$@"
 ' sh "$@"

@@ -25,8 +25,6 @@ interface ValueConverter
      * Checks that a value has the type of this recurrence and normalizes it (instants move to the start zone).
      *
      * @return T
-     *
-     * @throws InvalidRecurrenceException
      */
     public function accept(
         CalendarDate|FloatingDateTime|DateTimeImmutable $value,
@@ -34,11 +32,17 @@ interface ValueConverter
     ): CalendarDate|FloatingDateTime|DateTimeImmutable;
 
     /**
-     * The date as a value of this recurrence, or null when dates are not its values.
+     * Like {@see self::accept()}, for a value that the recurrence stores (the start, RDATE, EXDATE): it must also
+     * have an RFC 5545 text form, so its year is from 1 to 9999.
      *
-     * @return T|null
+     * @return T
+     *
+     * @throws InvalidRecurrenceException
      */
-    public function dateAsValue(CalendarDate $date): CalendarDate|FloatingDateTime|DateTimeImmutable|null;
+    public function acceptStored(
+        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        string $name,
+    ): CalendarDate|FloatingDateTime|DateTimeImmutable;
 
     /**
      * @param T $value

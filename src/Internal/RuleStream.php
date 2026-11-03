@@ -3,9 +3,11 @@
 namespace ShipMonk\RRule\Internal;
 
 use Generator;
-use function array_shift;
+use LogicException;
+use RuntimeException;
+use SplMinHeap;
 use function min;
-use function sort;
+use const PHP_INT_MAX;
 
 /**
  * The occurrences of one rule as positions: Unix seconds for UTC and zoned starts, local seconds otherwise.
@@ -32,7 +34,7 @@ final class RuleStream
     {
     }
 
-    private function canSkipAhead(): bool
+    public function canSkipAhead(): bool
     {
         return $this->count === null;
     }
@@ -104,20 +106,38 @@ final class RuleStream
             return;
         }
 
-        $buffer = [];
+        $buffer = new SplMinHeap();
 
         foreach ($locals as $local) {
             $position = $this->resolver->localToUnix($local);
-            $buffer[] = $position;
-            sort($buffer);
-            $ready = $position - $this->resolver->getMaxGapNear($local);
+            $buffer->insert($position);
 
-            while ($buffer !== [] && $buffer[0] <= $ready) {
-                yield array_shift($buffer);
-            }
+            yield from self::takeUpTo($buffer, $position - $this->resolver->getGapAround($local));
         }
 
-        yield from $buffer;
+        yield from self::takeUpTo($buffer, PHP_INT_MAX);
+    }
+
+    /**
+     * @param SplMinHeap<int> $buffer
+     * @return Generator<int, int>
+     */
+    private static function takeUpTo(
+        SplMinHeap $buffer,
+        int $ready,
+    ): Generator
+    {
+        while (!$buffer->isEmpty()) {
+            try {
+                if ($buffer->top() > $ready) {
+                    return;
+                }
+
+                yield $buffer->extract();
+            } catch (RuntimeException $e) {
+                throw new LogicException('A heap that is not empty has a top', previous: $e);
+            }
+        }
     }
 
     private function toLocalLowerBound(int $position): int

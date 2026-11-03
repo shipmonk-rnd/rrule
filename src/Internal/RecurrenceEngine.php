@@ -16,8 +16,11 @@ use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Until;
 use function array_flip;
 use function array_map;
+use function intdiv;
 use function max;
+use function min;
 use function sort;
+use const PHP_INT_MAX;
 
 /**
  * Evaluates a recurrence set (RFC 5545 section 3.8.5.3): the start, the rules and the added dates, minus the
@@ -29,6 +32,13 @@ use function sort;
  */
 final class RecurrenceEngine
 {
+
+    /**
+     * After the local time 9999-12-31T23:59:59 plus the largest UTC offset, nothing can occur.
+     */
+    private const MAX_POSITION = 253_402_300_799 + 2 * Civil::SECONDS_PER_DAY;
+
+    private const EXCLUSION_STEPS_BEFORE_SKIP = 64;
 
     private readonly ?DateTimeZone $timeZone;
 
@@ -101,6 +111,8 @@ final class RecurrenceEngine
      */
     public function findLastBefore(int $end): CalendarDate|FloatingDateTime|DateTimeImmutable|null
     {
+        // no occurrence is after the supported range, so the search windows need not start beyond it
+        $end = min($end, self::MAX_POSITION);
         $window = $this->getInitialWindow();
 
         while (true) {
@@ -152,7 +164,8 @@ final class RecurrenceEngine
         $exclusionStreams = [];
 
         foreach ($this->exclusionRules as $rule) {
-            $exclusionStreams[] = $this->createRuleStream($rule, $startLocal, $resolver, $budget, false)->generate($from, $to);
+            $ruleStream = $this->createRuleStream($rule, $startLocal, $resolver, $budget, false);
+            $exclusionStreams[] = [$ruleStream, $ruleStream->generate($from, $to)];
         }
 
         $excludedPositions = array_flip($this->toSortedPositions($this->excludedDates));
@@ -174,7 +187,7 @@ final class RecurrenceEngine
             $included = ($from === null || $next >= $from)
                 && !isset($excludedPositions[$next])
                 && !($excludedDays !== [] && $this->isExcludedDay($next, $resolver, $excludedDays))
-                && !self::isProducedByAny($exclusionStreams, $next);
+                && !self::isProducedByAny($exclusionStreams, $next, $to);
 
             if ($included) {
                 yield $next;
@@ -204,15 +217,25 @@ final class RecurrenceEngine
     }
 
     /**
-     * @param list<Generator<int, int>> $streams
+     * An exclusion stream far behind the position starts again at the position, so a dense exclusion rule does
+     * not step through every candidate between two occurrences.
+     *
+     * @param list<array{RuleStream, Generator<int, int>}> $streams
      */
     private static function isProducedByAny(
-        array $streams,
+        array &$streams,
         int $position,
+        ?int $to,
     ): bool
     {
-        foreach ($streams as $stream) {
-            while ($stream->valid() && $stream->current() < $position) {
+        foreach ($streams as $index => [$ruleStream, $stream]) {
+            for ($steps = 0; $stream->valid() && $stream->current() < $position; $steps++) {
+                if ($steps === self::EXCLUSION_STEPS_BEFORE_SKIP && $ruleStream->canSkipAhead()) {
+                    $stream = $ruleStream->generate($position, $to);
+                    $streams[$index] = [$ruleStream, $stream];
+                    continue;
+                }
+
                 $stream->next();
             }
 
@@ -290,6 +313,10 @@ final class RecurrenceEngine
                 Frequency::Minutely => 60,
                 Frequency::Secondly => 1,
             };
+
+            if ($rule->interval > intdiv(PHP_INT_MAX, 2 * $periodSeconds)) {
+                return null;
+            }
 
             $window = max($window, 2 * $periodSeconds * $rule->interval);
         }

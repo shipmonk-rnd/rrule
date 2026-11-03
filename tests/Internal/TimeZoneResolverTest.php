@@ -92,7 +92,7 @@ final class TimeZoneResolverTest extends TestCase
 
             self::assertSame($time - $offset, $resolver->localToUnix($time), $name);
             self::assertSame($time + $offset, $resolver->unixToLocal($time), $name);
-            self::assertSame(0, $resolver->getMaxGapNear($time));
+            self::assertSame(0, $resolver->getGapAround($time));
             self::assertSame(0, $resolver->getOffsetSpreadNear($time));
         }
     }
@@ -105,21 +105,28 @@ final class TimeZoneResolverTest extends TestCase
         $utc = new TimeZoneResolver(new DateTimeZone('UTC'));
         $time = self::local('2026-06-01 00:00:00');
 
-        self::assertSame(3600, $prague->getMaxGapNear($time));
         self::assertSame(3600, $prague->getOffsetSpreadNear($time));
-        self::assertSame(0, $kolkata->getMaxGapNear($time));
         self::assertSame(0, $kolkata->getOffsetSpreadNear($time));
-        self::assertSame(1800, $lordHowe->getMaxGapNear($time));
         self::assertSame(1800, $lordHowe->getOffsetSpreadNear($time));
-        self::assertSame(0, $utc->getMaxGapNear($time));
         self::assertSame(0, $utc->getOffsetSpreadNear($time));
 
+        // the gap from 02:00 to 03:00 and the hour after it, as far as instants can come out of order
+        self::assertSame(0, $prague->getGapAround(self::local('2026-03-29 01:59:59')));
+        self::assertSame(3600, $prague->getGapAround(self::local('2026-03-29 02:00:00')));
+        self::assertSame(3600, $prague->getGapAround(self::local('2026-03-29 03:59:59')));
+        self::assertSame(0, $prague->getGapAround(self::local('2026-03-29 04:00:00')));
+        self::assertSame(0, $prague->getGapAround($time));
+        self::assertSame(0, $prague->getGapAround(self::local('2026-10-25 02:30:00')), 'an overlap keeps instants in order');
+        self::assertSame(1800, $lordHowe->getGapAround(self::local('2026-10-04 02:15:00')));
+        self::assertSame(0, $kolkata->getGapAround($time));
+        self::assertSame(0, $utc->getGapAround($time));
+
         $apia = new TimeZoneResolver(new DateTimeZone('Pacific/Apia'));
-        self::assertSame(86_400, $apia->getMaxGapNear(self::local('2011-12-30 00:00:00'))); // -10:00 to +14:00
+        self::assertSame(86_400, $apia->getGapAround(self::local('2011-12-30 12:00:00'))); // -10:00 to +14:00
 
         // Moscow moved from +04:00 to +03:00 on 2014-10-26, its only transition that year
         $moscow = new TimeZoneResolver(new DateTimeZone('Europe/Moscow'));
-        self::assertSame(0, $moscow->getMaxGapNear(self::local('2014-06-01 00:00:00')));
+        self::assertSame(0, $moscow->getGapAround(self::local('2014-10-26 01:30:00')));
         self::assertSame(3600, $moscow->getOffsetSpreadNear(self::local('2014-06-01 00:00:00')));
     }
 

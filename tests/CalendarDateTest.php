@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ShipMonk\RRule\CalendarDate;
+use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Weekday;
 
@@ -102,6 +103,18 @@ final class CalendarDateTest extends TestCase
         self::assertSame(0, CalendarDate::of(1970, 1, 1)->toDayNumber());
         self::assertSame(-1, CalendarDate::of(1969, 12, 31)->toDayNumber());
         self::assertSame('2026-01-31', CalendarDate::fromDayNumber(20_484)->toString());
+    }
+
+    public function testDayNumberRange(): void
+    {
+        self::assertSame('1970-01-01', CalendarDate::fromDayNumber(0)->toString());
+        self::assertSame(20_454, CalendarDate::of(2026, 1, 1)->toDayNumber());
+        self::assertSame('9999-12-31', CalendarDate::fromDayNumber(2_932_896)->toString());
+        self::assertSame('0001-01-01', CalendarDate::fromDayNumber(-719_162)->toString());
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Day number 2932897 is outside the years 1 to 9999');
+        CalendarDate::fromDayNumber(2_932_897);
     }
 
 }

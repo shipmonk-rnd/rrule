@@ -6,9 +6,12 @@ use DateTimeImmutable;
 use DateTimeZone;
 use LogicException;
 use ShipMonk\RRule\CalendarDate;
+use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidRecurrenceException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\FloatingDateTime;
+use ShipMonk\RRule\Internal\Civil;
+use ShipMonk\RRule\Internal\TimeZoneResolver;
 use ShipMonk\RRule\Internal\ValueKind;
 use function sprintf;
 
@@ -53,15 +56,36 @@ final class InstantValues implements ValueConverter
     ): DateTimeImmutable
     {
         if (!$value instanceof DateTimeImmutable) {
-            throw new InvalidRecurrenceException(sprintf('The %s value must be a DateTimeImmutable, because the start is a date-time with a time zone', $name));
+            throw new InvalidArgumentException(sprintf('The %s value must be a DateTimeImmutable, because the start is a date-time with a time zone', $name));
         }
 
         return $this->fromPosition($value->getTimestamp());
     }
 
-    public function dateAsValue(CalendarDate $date): ?CalendarDate
+    public function acceptStored(
+        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        string $name,
+    ): DateTimeImmutable
     {
-        return null;
+        $accepted = $this->accept($value, $name);
+        $unix = $accepted->getTimestamp();
+        $local = (new TimeZoneResolver($this->timeZone))->unixToLocal($unix);
+
+        foreach ([$unix, $local] as $seconds) {
+            $year = Civil::civilFromDays(Civil::floorDiv($seconds, Civil::SECONDS_PER_DAY))[0];
+
+            if ($year < Civil::MIN_YEAR || $year > Civil::MAX_YEAR) {
+                throw new InvalidRecurrenceException(sprintf(
+                    'The %s value %s is outside the years %d to %d in UTC or in the zone of the start, so RFC 5545 text cannot express it',
+                    $name,
+                    $accepted->format('Y-m-d\\TH:i:sP'),
+                    Civil::MIN_YEAR,
+                    Civil::MAX_YEAR,
+                ));
+            }
+        }
+
+        return $accepted;
     }
 
     public function toPosition(CalendarDate|FloatingDateTime|DateTimeImmutable $value): int

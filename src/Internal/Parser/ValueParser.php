@@ -148,7 +148,8 @@ final class ValueParser
     ): DateTimeZone
     {
         try {
-            $timeZone = new DateTimeZone($timeZoneId);
+            // TZID=CET means the IANA zone, which has DST; PHP would build a fixed-offset abbreviation
+            $timeZone = new DateTimeZone(ValueKind::DST_ABBREVIATION_ZONES[$timeZoneId] ?? $timeZoneId);
         } catch (Throwable $e) {
             throw ParseErrors::create(sprintf('Unknown time zone "%s" in TZID', $timeZoneId), $lineNumber, $e);
         }

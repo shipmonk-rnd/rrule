@@ -7,7 +7,7 @@ Strictly typed iCalendar recurrence for PHP: [RFC 5545](https://www.rfc-editor.o
 - 🧷 **Typed:** generics tell PHPStan whether you get dates, floating date-times or instants; immutable values everywhere
 - ⏩ **Fast queries:** `firstAfter()` skips ahead instead of iterating from the start; every rule is proven to terminate
 - 🕸️ **Zero dependencies:** only PHP 8.1+
-- 🧪 **Tested against the world:** ~950 cases from libical, Ical.Net, python-dateutil, Mozilla, ical.js, sabre/vobject, rust-rrule and the RFC examples, plus differential tests against libical 4 and an independent reference implementation
+- 🧪 **Tested against the world:** ~950 cases from libical, Ical.Net, python-dateutil, Mozilla, ical.js, sabre/vobject, rust-rrule, lib-recur, php-rrule, pycalendar and the RFC examples, plus differential tests against libical 4, python-dateutil and an independent reference implementation
 - 🔬 **PHPStan max level, 100 % coverage, mutation testing:** enforced in CI
 
 ## Installation
@@ -25,6 +25,11 @@ $recurrence = Recurrence::fromString(<<<'ICS'
     DTSTART;TZID=Europe/Prague:20260130T090000
     RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1
     ICS);
+
+// parsed text can have a date, floating or zoned start; this narrows the type for PHPStan
+if (!$recurrence->isInstant()) {
+    throw new LogicException('Expected a start with a time zone');
+}
 
 $next = $recurrence->firstAfter(new DateTimeImmutable()); // the last workday of the month, 09:00 Prague time
 
@@ -68,8 +73,10 @@ The type of the start (DTSTART) decides the type of every occurrence. PHPStan kn
 
 `Recurrence::inTimeZone()` takes the start as a local time, the way `DTSTART;TZID=...` writes it, and the parser uses it. The difference matters only for a start that does not exist (inside a DST gap): the first occurrence moves forward (02:30 becomes 03:30), but the rules keep 02:30 for the other days. A `DateTimeImmutable` has already lost the written time.
 
-A `DateTimeImmutable` start must use a named IANA zone or UTC: a fixed offset (`+02:00`) or an abbreviation (`CEST`) has no TZID, so it is rejected.
+A `DateTimeImmutable` start must use a named IANA zone or UTC: a fixed offset (`+02:00`) or an abbreviation (`CEST`) has no TZID, so it is rejected. PHP builds `new DateTimeZone('CET')` (also `EET`, `MET`, `WET`) as a fixed offset without DST, so such a start is rejected too; the parser reads `TZID=CET` as the IANA zone (`Europe/Brussels`).
 `FloatingDateTime::atTimeZone()` and `CalendarDate::atStartOfDayIn()` convert to instants with the RFC rules for DST gaps and overlaps.
+
+A parsed recurrence can have any start type. `isAllDay()`, `isFloating()` and `isInstant()` tell which, and narrow the type for PHPStan. A parameter that accepts every kind is `Recurrence<*>`. `getStartLocalTime()` returns the start as DTSTART writes it.
 
 ## Queries
 
@@ -86,7 +93,7 @@ $recurrence->occursAt($value);
 $recurrence->isFinite();                                // every rule has COUNT or UNTIL
 ```
 
-For an instant recurrence, query values may be in any time zone. A rule with `COUNT` is always expanded from the start, because the count depends on all earlier occurrences.
+For an instant recurrence, query values may be in any time zone. Occurrences have whole seconds; a query value with microseconds is compared exactly (`firstAfter(10:00:00.5)` does not return 10:00:00). A rule with `COUNT` is always expanded from the start, because the count depends on all earlier occurrences.
 
 ## Recurrence sets
 
@@ -101,6 +108,8 @@ $recurrence = Recurrence::of($start, $rule, $anotherRule)   // several RRULEs ar
 
 The set is the start, the rules and the added dates, without the excluded dates, the excluded days and the occurrences of the exclusion rules. Equal instants count once.
 
+Every `with*` method replaces its list. To add a value, pass the current ones too: `$recurrence->withAddedDates(...$recurrence->getAddedDates(), $newDate)`. The start, RDATE and EXDATE values must be in the years 1 to 9999, also in UTC, so that RFC 5545 text can express them.
+
 ## Parsing and serialization
 
 ```php
@@ -111,7 +120,13 @@ $rule->toString();          // FREQ=WEEKLY;BYDAY=MO,WE
 $recurrence->toString();    // content lines, folded at 75 octets, CRLF (or pass "\n")
 ```
 
-The parser is strict by default: it accepts exactly what RFC 5545 and RFC 7529 allow (names are case-insensitive, as the RFC says). `parse(toString(x))` equals `x` for every value.
+The parser is strict by default: it accepts exactly what RFC 5545 and RFC 7529 allow (names are case-insensitive, as the RFC says). `RecurrenceRule::fromString($rule->toString())` equals `$rule`, and `Recurrence::fromString($recurrence->toString())` has the same occurrences as `$recurrence`, except:
+
+- text with `EXRULE` parses only in lenient mode, because RFC 5545 removed `EXRULE`;
+- `DtStartPolicy` is not part of the text;
+- a zoned start in the second pass of a DST overlap (for example 02:30+01:00 on 2026-10-25 in Europe/Prague) has no text form, because `DTSTART;TZID` means the first pass. `toString()` then throws the unchecked `SerializationException`.
+
+Store recurrences as `toString()` text, not with `serialize()`. `Recurrence::fromString()` drops the parse warnings; use `RecurrenceParser` to read them.
 
 Real-world data breaks the RFC in known ways. `ParseMode::Lenient` accepts a closed list of such deviations and reports each one as a coded warning:
 
@@ -137,10 +152,15 @@ foreach ($result->warnings as $warning) {
 | `DTSTART` inside the `RRULE` value | rrule.js, old dateutil | used as the start |
 | `EXRULE` | RFC 2445 producers | accepted |
 | `SKIP` without `RSCALE` | | `RSCALE=GREGORIAN` assumed |
+| Unknown properties (for example `X-` lines) | various | ignored |
+| `TZID` with a UTC value (`DTSTART;TZID=Europe/Prague:20260101T090000Z`) | various | the TZID is ignored |
+| `RDATE;VALUE=DATE` with a DATE-TIME start | various | converted to the start of each day |
+
+Two warnings also come in strict mode, because the input is valid: `PeriodEndIgnored` (an `RDATE;VALUE=PERIOD` adds only the period start) and `DateExclusionForDateTimeStart` (`EXDATE;VALUE=DATE` with a DATE-TIME start excludes whole days). New warning codes and rule violations can come in minor versions, so do not match these enums without a default arm.
 
 ## Semantics
 
-Where RFC 5545 is ambiguous, the library follows the [JSCalendar 2.0](https://datatracker.ietf.org/doc/draft-ietf-calext-jscalendarbis/) expansion algorithm (section 4.3.3.1). That text comes from the same CalConnect authors and is meant to match the iCalendar RRULE.
+Where RFC 5545 is ambiguous, the library follows the [JSCalendar 2.0](https://datatracker.ietf.org/doc/draft-ietf-calext-jscalendarbis-22/) expansion algorithm (draft 22, section 4.3.3.1). That text comes from the same CalConnect authors and is meant to match the iCalendar RRULE.
 
 | | Question | Decision | Source |
 |---|---|---|---|
@@ -164,6 +184,7 @@ Where RFC 5545 is ambiguous, the library follows the [JSCalendar 2.0](https://da
 | S17 | Years | 1 to 9999 (proleptic Gregorian) | RFC 5545 DATE has four digits |
 | S18 | `BYSECOND=60` | Accepted; it matches nothing (PHP has no leap seconds) | RFC 5545 3.3.10 |
 | S19 | Non-Gregorian `RSCALE` | Rejected | RFC 7529 section 6 allows this |
+| S20 | `SKIP` moves a date into the next or previous month | The date belongs to the set of the period that produced it; occurrences are in ascending order, and `COUNT` counts them in that order | RFC 7529 3.1, JSCalendar step 2.2 |
 
 ## Time zones
 
@@ -183,15 +204,17 @@ All exceptions implement `ShipMonk\RRule\Exception\RecurrenceException`.
 |---|---|
 | `ParseException` | the text is not valid (in the chosen mode); `$lineNumber` points to the line |
 | `InvalidRecurrenceRuleException` | a rule breaks an RFC requirement; `$violation` says which |
-| `InvalidRecurrenceException` | the start, the rules and the dates do not fit together (for example the UNTIL value type) |
+| `InvalidRecurrenceException` | the start, the rules and the dates do not fit together (for example the UNTIL value type), a stored value is outside the years 1 to 9999, or the start zone is not supported |
 | `InvalidValueException` | a date, time, count or ordinal is out of range |
+| `InvalidArgumentException` (unchecked) | the calling code breaks a method contract: a value of another type than the start, a search limit below 1, a negative `take()` limit |
+| `SerializationException` (unchecked) | the recurrence has no RFC 5545 text form (see [Parsing and serialization](#parsing-and-serialization)) |
 | `SearchLimitExceededException` (unchecked) | see [Termination and limits](#termination-and-limits) |
 
 ## Testing
 
 - `tests/Corpus`: about 950 cases imported from the RFC 5545 and RFC 7529 examples, libical, Ical.Net, python-dateutil, Mozilla Calendar, ical.js, sabre/vobject, rust-rrule, lib-recur, php-rrule and pycalendar, each with its licence. A case where the source disagrees with this library is listed in `CorpusDeviations` with the reason; nothing is skipped silently.
 - `tests/Reference`: a slow, literal implementation of the JSCalendar algorithm that shares no code with the engine, compared on 1 000 random rules. Its results are stored in `tests/Reference/data/naive-snapshot.json`, so the default suite (and mutation testing) runs the comparison in about one second. The reference suite checks the snapshot against a new naive expansion.
-- `tests/Differential` (Docker): differential tests on 2 000 random rules each against libical 4 (through PHP FFI) and python-dateutil 4.0, and a check of the time zone resolver against Python `zoneinfo` (every zone, every transition from 1970 to 2037, about 147 000 local times). Every difference from libical or dateutil must fall in a documented category, or the reference implementation must side with this library; otherwise the test fails. These tests found libical bugs (BYSETPOS with FREQ=DAILY, sub-daily rules that skip the rest of the first hour, BYWEEKNO=-53, SKIP with BYDAY) and one bug in this library during development (a start in a DST gap moved the later occurrences).
+- `tests/Differential` (Docker): differential tests on 2 000 random rules each against libical 4 (through PHP FFI) and python-dateutil 4.0, and a check of the time zone resolver against Python `zoneinfo` (every zone, every transition from 1970 to 2037, about 147 000 local times). Every difference from libical or dateutil must fall in a documented category, or the reference implementation must side with this library; otherwise the test fails. These tests found bugs in libical, each pinned with its RFC result in `LibicalKnownBugsTest`: DAILY with BYSETPOS returns dates centuries later, sub-daily rules skip the rest of the first day, hour or minute, `BYWEEKNO=-53` selects the last week of every year, and SKIP drops the moved dates when BYDAY is present. They also found one bug in this library during development (a start in a DST gap moved the later occurrences).
 - `tests/Type`: PHPStan type-inference tests for the public API.
 
 ## Development

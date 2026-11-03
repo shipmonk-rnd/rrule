@@ -5,6 +5,7 @@ namespace ShipMonk\RRule;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Internal\Civil;
 use ShipMonk\RRule\Internal\TimeZoneResolver;
@@ -61,18 +62,23 @@ final class CalendarDate
     }
 
     /**
-     * @internal
+     * The date that is the given number of days after 1970-01-01 (negative: before it).
+     *
+     * @throws InvalidArgumentException when the date is outside the years 1 to 9999; it is unchecked
      */
     public static function fromDayNumber(int $days): self
     {
         [$year, $month, $day] = Civil::civilFromDays($days);
 
-        /** @var int<1, 9999> $year */
+        if ($year < Civil::MIN_YEAR || $year > Civil::MAX_YEAR) {
+            throw new InvalidArgumentException(sprintf('Day number %d is outside the years %d to %d', $days, Civil::MIN_YEAR, Civil::MAX_YEAR));
+        }
+
         return new self($year, $month, $day);
     }
 
     /**
-     * @internal
+     * The number of days from 1970-01-01 to this date (negative: before it).
      */
     public function toDayNumber(): int
     {

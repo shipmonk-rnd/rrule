@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Count;
+use ShipMonk\RRule\Exception\SerializationException;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\RecurrenceRule;
@@ -108,11 +109,22 @@ final class RuleSerializer
             $lines = ['DTSTART;VALUE=DATE:' . self::formatDate($start)];
         } elseif ($start instanceof FloatingDateTime) {
             $lines = ['DTSTART:' . self::formatFloating($start)];
-        } elseif ($recurrence->getKind() === ValueKind::Utc) {
+        } elseif (ValueKind::isUtc($start->getTimezone())) {
             $lines = ['DTSTART:' . self::formatUtc($start)];
         } else {
             $timeZone = $start->getTimezone();
-            $lines = ['DTSTART;TZID=' . self::formatParameterValue($timeZone->getName()) . ':' . self::formatFloating($recurrence->getStartLocalTime())];
+            $local = $recurrence->getStartLocalTime();
+
+            if ((new TimeZoneResolver($timeZone))->localToUnix($local->toLocalSeconds()) !== $start->getTimestamp()) {
+                throw new SerializationException(sprintf(
+                    'DTSTART;TZID cannot express the start %s: %s occurs twice in %s, and the text means the first one',
+                    $start->format('Y-m-d\\TH:i:sP'),
+                    $local->toString(),
+                    $timeZone->getName(),
+                ));
+            }
+
+            $lines = ['DTSTART;TZID=' . self::formatParameterValue($timeZone->getName()) . ':' . self::formatFloating($local)];
         }
 
         foreach ($recurrence->getRules() as $rule) {

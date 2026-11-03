@@ -5,7 +5,7 @@ namespace ShipMonk\RRule\Internal\Values;
 use DateTimeImmutable;
 use LogicException;
 use ShipMonk\RRule\CalendarDate;
-use ShipMonk\RRule\Exception\InvalidRecurrenceException;
+use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\Civil;
 use ShipMonk\RRule\Internal\ValueKind;
@@ -30,15 +30,18 @@ final class DateValues implements ValueConverter
     ): CalendarDate
     {
         if (!$value instanceof CalendarDate) {
-            throw new InvalidRecurrenceException(sprintf('The %s value must be a CalendarDate, because the start is a date', $name));
+            throw new InvalidArgumentException(sprintf('The %s value must be a CalendarDate, because the start is a date', $name));
         }
 
         return $value;
     }
 
-    public function dateAsValue(CalendarDate $date): CalendarDate
+    public function acceptStored(
+        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        string $name,
+    ): CalendarDate
     {
-        return $date;
+        return $this->accept($value, $name);
     }
 
     public function toPosition(CalendarDate|FloatingDateTime|DateTimeImmutable $value): int

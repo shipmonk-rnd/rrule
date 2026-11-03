@@ -187,7 +187,8 @@ final class RuleParsingTest extends ParserTestCase
         yield 'INTERVAL text' => ['FREQ=DAILY;INTERVAL=two', 'Invalid INTERVAL value "two": expected an integer'];
         yield 'INTERVAL with trailing text' => ['FREQ=DAILY;INTERVAL=2x', 'Invalid INTERVAL value "2x": expected an integer'];
         yield 'INTERVAL with leading text' => ['FREQ=DAILY;INTERVAL=x2', 'Invalid INTERVAL value "x2": expected an integer'];
-        yield 'INTERVAL with 19 digits' => ['FREQ=DAILY;INTERVAL=1000000000000000000', 'Invalid INTERVAL value "1000000000000000000": the number is too large'];
+        yield 'INTERVAL above PHP_INT_MAX' => ['FREQ=DAILY;INTERVAL=9223372036854775808', 'Invalid INTERVAL value "9223372036854775808": the number is larger than 9223372036854775807'];
+        yield 'INTERVAL with 20 digits' => ['FREQ=DAILY;INTERVAL=10000000000000000000', 'Invalid INTERVAL value "10000000000000000000": the number is larger than 9223372036854775807'];
         yield 'COUNT zero' => ['FREQ=DAILY;COUNT=0', 'Invalid COUNT value "0": COUNT must be a positive integer, 0 given', InvalidValueException::class];
         yield 'COUNT negative' => ['FREQ=DAILY;COUNT=-1', 'Invalid COUNT value "-1": COUNT must be a positive integer, -1 given', InvalidValueException::class];
         yield 'COUNT with plus' => ['FREQ=DAILY;COUNT=+1', 'Invalid COUNT value "+1": a sign is not allowed'];
@@ -209,7 +210,7 @@ final class RuleParsingTest extends ParserTestCase
         yield 'BYSECOND with plus' => ['FREQ=DAILY;BYSECOND=+1', 'Invalid BYSECOND value "+1": a sign is not allowed'];
         yield 'BYSECOND empty item' => ['FREQ=DAILY;BYSECOND=1,,2', 'Invalid BYSECOND value "1,,2": the list contains an empty item'];
         yield 'BYSECOND trailing comma' => ['FREQ=DAILY;BYSECOND=1,', 'Invalid BYSECOND value "1,": the list contains an empty item'];
-        yield 'BYSECOND huge' => ['FREQ=DAILY;BYSECOND=99999999999999999999', 'Invalid BYSECOND value "99999999999999999999": the number is too large'];
+        yield 'BYSECOND huge' => ['FREQ=DAILY;BYSECOND=99999999999999999999', 'Invalid BYSECOND value "99999999999999999999": the number is larger than 9223372036854775807'];
         yield 'BYMINUTE 60' => ['FREQ=DAILY;BYMINUTE=60', 'Invalid BYMINUTE value "60": allowed values are 0 to 59'];
         yield 'BYHOUR 24' => ['FREQ=DAILY;BYHOUR=24', 'Invalid BYHOUR value "24": allowed values are 0 to 23'];
         yield 'BYMONTH 0' => ['FREQ=YEARLY;BYMONTH=0', 'Invalid BYMONTH value "0": allowed values are 1 to 12'];
@@ -238,7 +239,7 @@ final class RuleParsingTest extends ParserTestCase
         yield 'BYDAY with leading text' => ['FREQ=MONTHLY;BYDAY=X1MO', 'Invalid BYDAY value "X1MO": expected a weekday (MO, TU, WE, TH, FR, SA, SU) with an optional ordinal'];
         yield 'BYDAY ordinal 54' => ['FREQ=MONTHLY;BYDAY=54MO', 'Invalid BYDAY value "54MO": Invalid BYDAY ordinal 54 (allowed: -53 to -1 and 1 to 53)', InvalidValueException::class];
         yield 'BYDAY ordinal 0' => ['FREQ=MONTHLY;BYDAY=0MO', 'Invalid BYDAY value "0MO": Invalid BYDAY ordinal 0 (allowed: -53 to -1 and 1 to 53)', InvalidValueException::class];
-        yield 'BYDAY huge ordinal' => ['FREQ=MONTHLY;BYDAY=99999999999999999999MO', 'Invalid BYDAY value "99999999999999999999MO": the number is too large'];
+        yield 'BYDAY huge ordinal' => ['FREQ=MONTHLY;BYDAY=99999999999999999999MO', 'Invalid BYDAY value "99999999999999999999MO": the number is larger than 9223372036854775807'];
         yield 'BYDAY empty item' => ['FREQ=WEEKLY;BYDAY=MO,', 'Invalid BYDAY value "MO,": the list contains an empty item'];
         yield 'WKST unknown' => ['FREQ=WEEKLY;WKST=XX', 'Invalid WKST value "XX" (allowed: MO, TU, WE, TH, FR, SA, SU)'];
         yield 'WKST with ordinal' => ['FREQ=WEEKLY;WKST=1MO', 'Invalid WKST value "1MO" (allowed: MO, TU, WE, TH, FR, SA, SU)'];

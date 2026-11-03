@@ -4,11 +4,14 @@ namespace ShipMonk\RRule\Internal;
 
 use Generator;
 use LogicException;
+use RuntimeException;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Skip;
+use SplMinHeap;
 use function abs;
 use function array_filter;
 use function array_flip;
+use function array_values;
 use function count;
 use function intdiv;
 use function max;
@@ -57,11 +60,6 @@ final class LocalRuleIterator
      */
     private readonly ?array $secondSet;
 
-    /**
-     * @var array<int, int>|null
-     */
-    private readonly ?array $setPositionSet;
-
     public function __construct(
         private readonly ExpansionPlan $plan,
         private readonly DateMatcher $matcher,
@@ -73,7 +71,6 @@ final class LocalRuleIterator
         $this->hourSet = $plan->hours === null ? null : array_flip($plan->hours);
         $this->minuteSet = $plan->minutes === null ? null : array_flip($plan->minutes);
         $this->secondSet = $plan->seconds === null ? null : array_flip($plan->seconds);
-        $this->setPositionSet = $plan->setPositions === [] ? null : array_flip($plan->setPositions);
     }
 
     /**
@@ -101,6 +98,11 @@ final class LocalRuleIterator
     }
 
     /**
+     * RFC 7529 SKIP moves an invalid date to the day before or after its month, so a period can produce a date
+     * of the neighbouring period. The expansion then starts one period earlier and ends one period later. A
+     * candidate on the last day of a period waits until a later candidate (or the end) shows that nothing earlier
+     * can still come.
+     *
      * @return Generator<int, int>
      */
     private function generateDaily(
@@ -110,41 +112,38 @@ final class LocalRuleIterator
     {
         $plan = $this->plan;
         $interval = $plan->interval;
-        $startDay = Civil::floorDiv($plan->startLocal, Civil::SECONDS_PER_DAY);
-        $startUnit = $this->getDailyUnit($startDay);
-        $maxDay = Civil::floorDiv($this->maxLocal, Civil::SECONDS_PER_DAY);
-        $maxPeriod = intdiv($this->getDailyUnit($maxDay) - $startUnit, $interval);
+        $spillDays = $plan->usesSkip() ? 1 : 0;
+        $startUnit = $this->getDailyUnit(Civil::floorDiv($plan->startLocal, Civil::SECONDS_PER_DAY));
+        $maxPeriod = intdiv($this->getDailyUnit(Civil::floorDiv($this->maxLocal, Civil::SECONDS_PER_DAY)) - $startUnit, $interval);
         $upperDay = Civil::floorDiv($upper, Civil::SECONDS_PER_DAY);
         $cycleDays = $interval > intdiv(PHP_INT_MAX, Civil::DAYS_PER_400_YEARS) ? null : $interval * Civil::DAYS_PER_400_YEARS;
-        $period = Civil::floorDiv($this->getDailyUnit(Civil::floorDiv($lower, Civil::SECONDS_PER_DAY)) - $startUnit, $interval);
+        $period = max(0, Civil::floorDiv($this->getDailyUnit(Civil::floorDiv($lower, Civil::SECONDS_PER_DAY)) - $startUnit, $interval) - $spillDays);
+        $held = new SplMinHeap();
         $quietSince = null;
 
         while ($period <= $maxPeriod) {
             $this->budget->step();
             [$firstDay, $lastDay, $days] = $this->getPeriodDays($startUnit + $period * $interval);
 
-            if ($firstDay > $upperDay) {
-                return;
+            if ($firstDay - $spillDays > $upperDay) {
+                break;
             }
 
-            $candidates = [];
+            // a later period produces no candidate before this bound
+            $releaseBelow = $spillDays === 0 || $period >= $maxPeriod
+                ? PHP_INT_MAX
+                : ($this->getPeriodDays($startUnit + ($period + 1) * $interval)[0] - $spillDays) * Civil::SECONDS_PER_DAY;
+            $days = array_values($days);
+            $indexes = $this->selectIndexes(count($days) * count($plan->timesOfDay));
 
-            foreach ($days as $day) {
-                foreach ($plan->timesOfDay as $timeOfDay) {
-                    $candidates[] = $day * Civil::SECONDS_PER_DAY + $timeOfDay;
-                }
-            }
-
-            $candidates = $this->selectSetPositions($candidates);
-
-            if ($candidates === []) {
+            if ($days === [] || $plan->timesOfDay === [] || $indexes === []) {
                 $quietSince ??= $firstDay;
 
                 if ($cycleDays !== null && $firstDay - $quietSince >= $cycleDays) {
-                    return;
+                    break;
                 }
 
-                if ($plan->usesSkip()) {
+                if ($spillDays > 0) {
                     $period++;
                     continue;
                 }
@@ -152,7 +151,7 @@ final class LocalRuleIterator
                 $nextDay = $this->matcher->findNextMatchingDay($lastDay + 1);
 
                 if ($nextDay === null) {
-                    return;
+                    break;
                 }
 
                 // the first period that contains the next matching day; it is after this period
@@ -162,18 +161,119 @@ final class LocalRuleIterator
 
             $quietSince = null;
 
-            foreach ($candidates as $candidate) {
+            foreach (self::combine($days, $plan->timesOfDay, $indexes) as $candidate) {
+                foreach (self::release($held, $candidate + 1, $lower) as $earlier) {
+                    yield $earlier;
+                }
+
                 if ($candidate > $upper) {
                     return;
                 }
 
-                if ($candidate >= $lower) {
+                if ($candidate >= $releaseBelow) {
+                    $held->insert($candidate);
+                } elseif ($candidate >= $lower) {
                     yield $candidate;
                 }
             }
 
             $period++;
         }
+
+        foreach (self::release($held, PHP_INT_MAX, $lower) as $candidate) {
+            yield $candidate;
+        }
+    }
+
+    /**
+     * Takes the held candidates below the bound in ascending order, from the lower bound on. A candidate is held
+     * only when it is within the upper bound.
+     *
+     * @param SplMinHeap<int> $held
+     * @return Generator<int, int>
+     */
+    private static function release(
+        SplMinHeap $held,
+        int $below,
+        int $lower,
+    ): Generator
+    {
+        while (!$held->isEmpty()) {
+            try {
+                if ($held->top() >= $below) {
+                    return;
+                }
+
+                $candidate = $held->extract();
+            } catch (RuntimeException $e) {
+                throw new LogicException('A heap that is not empty has a top', previous: $e);
+            }
+
+            if ($candidate >= $lower) {
+                yield $candidate;
+            }
+        }
+    }
+
+    /**
+     * The candidates of a period in ascending order: every day combined with every time of day, or only the
+     * combinations at the given indexes. The combinations are not stored, so a dense period needs no memory.
+     *
+     * @param list<int>      $days
+     * @param list<int>      $timesOfDay
+     * @param list<int>|null $indexes
+     * @return Generator<int, int>
+     */
+    private static function combine(
+        array $days,
+        array $timesOfDay,
+        ?array $indexes,
+    ): Generator
+    {
+        if ($indexes === null) {
+            foreach ($days as $day) {
+                foreach ($timesOfDay as $timeOfDay) {
+                    yield $day * Civil::SECONDS_PER_DAY + $timeOfDay;
+                }
+            }
+
+            return;
+        }
+
+        $timeCount = count($timesOfDay);
+
+        foreach ($indexes as $index) {
+            $day = $days[intdiv($index, $timeCount)] ?? throw new LogicException('Set position outside the period');
+            $timeOfDay = $timesOfDay[$index % $timeCount] ?? throw new LogicException('Set position outside the period');
+
+            yield $day * Civil::SECONDS_PER_DAY + $timeOfDay;
+        }
+    }
+
+    /**
+     * The sorted indexes that BYSETPOS selects from the given number of candidates; null without BYSETPOS.
+     *
+     * @return list<int>|null
+     */
+    private function selectIndexes(int $count): ?array
+    {
+        if ($this->plan->setPositions === []) {
+            return null;
+        }
+
+        $indexes = [];
+
+        foreach ($this->plan->setPositions as $position) {
+            $index = $position > 0 ? $position - 1 : $count + $position;
+
+            if ($index >= 0 && $index < $count) {
+                $indexes[$index] = $index;
+            }
+        }
+
+        sort($indexes);
+
+        return $indexes;
     }
 
     /**
@@ -516,17 +616,16 @@ final class LocalRuleIterator
      */
     private function selectSetPositions(array $candidates): array
     {
-        if ($this->setPositionSet === null) {
+        $indexes = $this->selectIndexes(count($candidates));
+
+        if ($indexes === null) {
             return $candidates;
         }
 
-        $count = count($candidates);
         $selected = [];
 
-        foreach ($candidates as $index => $candidate) {
-            if (isset($this->setPositionSet[$index + 1]) || isset($this->setPositionSet[$index - $count])) {
-                $selected[] = $candidate;
-            }
+        foreach ($indexes as $index) {
+            $selected[] = $candidates[$index] ?? throw new LogicException('Set position outside the period');
         }
 
         return $selected;

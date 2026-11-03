@@ -37,14 +37,33 @@ enum ValueKind
 
 
     /**
+     * IANA zones that PHP builds as fixed-offset abbreviations although they have DST (for example `new
+     * DateTimeZone('CET')` is +01:00 in July). Since tzdata 2024b they are links to these zones.
+     */
+    public const DST_ABBREVIATION_ZONES = [
+        'CET' => 'Europe/Brussels',
+        'EET' => 'Europe/Athens',
+        'MET' => 'Europe/Brussels',
+        'WET' => 'Europe/Lisbon',
+    ];
+
+    /**
      * @throws InvalidValueException
      */
     public static function ofTimeZone(DateTimeZone $timeZone): self
     {
         $name = $timeZone->getName();
 
-        if (in_array($name, ['UTC', 'Z', '+00:00', '-00:00'], true)) {
+        if (self::isUtc($timeZone)) {
             return self::Utc;
+        }
+
+        if (isset(self::DST_ABBREVIATION_ZONES[$name])) {
+            throw new InvalidValueException(sprintf(
+                'Time zone "%s" is not supported: PHP treats it as a fixed UTC offset without DST, but the IANA zone has DST; use %s',
+                $name,
+                self::DST_ABBREVIATION_ZONES[$name],
+            ));
         }
 
         if (in_array($name, DateTimeZone::listIdentifiers(DateTimeZone::ALL_WITH_BC), true)) {
@@ -55,6 +74,11 @@ enum ValueKind
             'Time zone "%s" is not supported: use a named IANA zone (for example Europe/Prague) or UTC, because RFC 5545 references a time zone by its identifier',
             $name,
         ));
+    }
+
+    public static function isUtc(DateTimeZone $timeZone): bool
+    {
+        return in_array($timeZone->getName(), ['UTC', 'Z', '+00:00', '-00:00'], true);
     }
 
 }

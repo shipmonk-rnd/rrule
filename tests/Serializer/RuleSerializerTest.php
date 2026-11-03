@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\CalendarScale;
 use ShipMonk\RRule\Count;
+use ShipMonk\RRule\Exception\SerializationException;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Internal\RuleSerializer;
@@ -19,6 +20,7 @@ use ShipMonk\RRule\Skip;
 use ShipMonk\RRule\Until;
 use ShipMonk\RRule\Weekday;
 use ShipMonk\RRule\WeekdayNum;
+use function array_map;
 use function explode;
 use function str_repeat;
 use function str_replace;
@@ -268,6 +270,20 @@ final class RuleSerializerTest extends TestCase
         yield 'colon' => ['/example.com:Europe/Prague', '"/example.com:Europe/Prague"'];
         yield 'semicolon' => ['a;b', '"a;b"'];
         yield 'comma' => ['a,b', '"a,b"'];
+    }
+
+    public function testStartInTheSecondPassOfAnOverlapHasNoTextForm(): void
+    {
+        $prague = new DateTimeZone('Europe/Prague');
+        $second = Recurrence::of((new DateTimeImmutable('2026-10-25T01:30:00Z'))->setTimezone($prague), new RecurrenceRule(Frequency::Daily, end: Count::of(2)));
+        $first = Recurrence::of((new DateTimeImmutable('2026-10-25T00:30:00Z'))->setTimezone($prague), new RecurrenceRule(Frequency::Daily, end: Count::of(2)));
+
+        self::assertSame(['2026-10-25T02:30:00+01:00', '2026-10-26T02:30:00+01:00'], array_map(static fn (DateTimeImmutable $occurrence): string => $occurrence->format('c'), $second->take(2)));
+        self::assertSame("DTSTART;TZID=Europe/Prague:20261025T023000\r\nRRULE:FREQ=DAILY;COUNT=2", $first->toString());
+
+        $this->expectException(SerializationException::class);
+        $this->expectExceptionMessage('DTSTART;TZID cannot express the start 2026-10-25T02:30:00+01:00: 2026-10-25T02:30:00 occurs twice in Europe/Prague, and the text means the first one');
+        $second->toString();
     }
 
 }

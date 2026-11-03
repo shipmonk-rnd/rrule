@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Count;
+use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Until;
@@ -101,6 +102,24 @@ final class SmallValuesTest extends TestCase
         $this->expectExceptionMessage(sprintf('Invalid BYDAY ordinal %d (allowed: -53 to -1 and 1 to 53)', $ordinal));
 
         WeekdayNum::of(Weekday::Monday, $ordinal);
+    }
+
+    #[DataProvider('provideInvalidIsoWeekdays')]
+    public function testInvalidIsoWeekday(int $isoNumber): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("ISO weekday number $isoNumber is not from 1 (Monday) to 7 (Sunday)");
+
+        Weekday::fromIsoNumber($isoNumber); // @phpstan-ignore argument.type, staticMethod.resultUnused
+    }
+
+    /**
+     * @return iterable<string, array{int}>
+     */
+    public static function provideInvalidIsoWeekdays(): iterable
+    {
+        yield 'zero' => [0];
+        yield 'eight' => [8];
     }
 
 }

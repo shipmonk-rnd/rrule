@@ -5,6 +5,7 @@ namespace ShipMonk\RRuleTests\Reference;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\DateMatcher;
 use ShipMonk\RRule\Internal\ExpansionPlan;
 use ShipMonk\RRule\Internal\LocalRuleIterator;
@@ -16,7 +17,11 @@ use ShipMonk\RRule\Internal\Values\DateValues;
 use ShipMonk\RRule\Internal\Values\FloatingValues;
 use ShipMonk\RRule\Internal\Values\InstantValues;
 use ShipMonk\RRule\Recurrence;
+use function array_map;
+use function array_unique;
 use function count;
+use function intdiv;
+use function iterator_to_array;
 use function str_ends_with;
 
 /**
@@ -43,23 +48,42 @@ final class NaiveExpanderDifferentialTest extends TestCase
         [$rule, $start] = ReferenceCase::generate($case->seed);
         self::assertSame($case->description, ReferenceCase::describe($rule, $start), 'The snapshot is out of date: run composer update:reference-snapshot');
 
-        $actual = [];
+        $recurrence = Recurrence::of($start, $rule);
+        $occurrences = [];
 
-        foreach (Recurrence::of($start, $rule) as $occurrence) {
+        foreach ($recurrence as $occurrence) {
             $value = $occurrence->toString();
 
             if ($case->completeBefore !== null && $value >= $case->completeBefore) {
                 break;
             }
 
-            $actual[] = $value;
+            $occurrences[] = $occurrence;
 
-            if (count($actual) >= count($case->expected) && $case->completeBefore !== null && str_ends_with($case->completeBefore, '!')) {
+            if (count($occurrences) >= count($case->expected) && $case->completeBefore !== null && str_ends_with($case->completeBefore, '!')) {
                 break;
             }
         }
 
+        $actual = array_map(static fn (FloatingDateTime $occurrence): string => $occurrence->toString(), $occurrences);
         self::assertSame($case->expected, $actual, $case->description . ' complete before ' . ($case->completeBefore ?? '-'));
+
+        // the skip-ahead queries must agree with iteration
+        foreach (array_unique([0, intdiv(count($occurrences), 2), count($occurrences) - 2]) as $index) {
+            $occurrence = $occurrences[$index] ?? null;
+            $next = $occurrences[$index + 1] ?? null;
+
+            if ($occurrence === null || $next === null) {
+                continue;
+            }
+
+            $message = $case->description . ' at ' . $occurrence->toString();
+            self::assertTrue($recurrence->occursAt($occurrence), $message);
+            self::assertSame($occurrence->toString(), $recurrence->firstAfter($occurrence, inclusive: true)?->toString(), $message);
+            self::assertSame($next->toString(), $recurrence->firstAfter($occurrence)?->toString(), $message);
+            self::assertSame($occurrence->toString(), $recurrence->lastBefore($next)?->toString(), $message);
+            self::assertSame([$occurrence->toString()], array_map(static fn (FloatingDateTime $value): string => $value->toString(), iterator_to_array($recurrence->between($occurrence, $next), false)), $message);
+        }
     }
 
     /**

@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Generator;
 use IteratorAggregate;
-use LogicException;
+use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidRecurrenceException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Exception\ParseException;
@@ -35,7 +35,10 @@ use function sprintf;
  *
  * The object is immutable. Every query starts a new expansion, so the object is safe to share and to iterate
  * more than once. Every query ends: a rule that stops producing occurrences is detected after one 400-year
- * Gregorian cycle at most. {@see SearchLimitExceededException} limits the work for extremely sparse rules.
+ * Gregorian cycle at most. {@see \ShipMonk\RRule\Exception\SearchLimitExceededException} limits the work for extremely sparse rules.
+ *
+ * Values have whole seconds: the start, RDATE and EXDATE values drop their microseconds. A query value with
+ * microseconds is compared exactly, so `firstAfter(10:00:00.5)` does not return 10:00:00.
  *
  * @template T of CalendarDate|FloatingDateTime|DateTimeImmutable
  * @implements IteratorAggregate<int, T>
@@ -94,7 +97,7 @@ final class Recurrence implements IteratorAggregate
         }
 
         $values = self::createInstantValues($start->getTimezone());
-        $normalized = $values->accept($start, 'start');
+        $normalized = $values->acceptStored($start, 'start');
 
         return self::create($values, $normalized, array_values($rules), (new TimeZoneResolver($normalized->getTimezone()))->unixToLocal($normalized->getTimestamp()));
     }
@@ -116,7 +119,9 @@ final class Recurrence implements IteratorAggregate
         RecurrenceRule ...$rules,
     ): self
     {
-        return self::create(self::createInstantValues($timeZone), $start->atTimeZone($timeZone), array_values($rules), $start->toLocalSeconds());
+        $values = self::createInstantValues($timeZone);
+
+        return self::create($values, $values->acceptStored($start->atTimeZone($timeZone), 'start'), array_values($rules), $start->toLocalSeconds());
     }
 
     /**
@@ -150,54 +155,42 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
-     * Adds RDATE values. They must have the type of the start; instants may be in any zone.
+     * Replaces the RDATE values. They must have the type of the start; instants may be in any zone.
+     * To add a value, pass the current ones too: `$r->withAddedDates(...$r->getAddedDates(), $new)`.
      *
      * @param T ...$dates
      * @return self<T>
      *
-     * @throws InvalidRecurrenceException
+     * @throws InvalidRecurrenceException when a value is outside the years 1 to 9999
      */
     public function withAddedDates(CalendarDate|FloatingDateTime|DateTimeImmutable ...$dates): self
     {
-        return $this->copy(addedDates: [...$this->addedDates, ...$this->acceptAll($dates, 'RDATE')]);
+        return $this->copy(addedDates: $this->acceptAll($dates, 'RDATE'));
     }
 
     /**
-     * Adds EXDATE values. They must have the type of the start; instants may be in any zone.
+     * Replaces the EXDATE values. They must have the type of the start; instants may be in any zone.
      *
      * @param T ...$dates
      * @return self<T>
      *
-     * @throws InvalidRecurrenceException
+     * @throws InvalidRecurrenceException when a value is outside the years 1 to 9999
      */
     public function withExcludedDates(CalendarDate|FloatingDateTime|DateTimeImmutable ...$dates): self
     {
-        return $this->copy(excludedDates: [...$this->excludedDates, ...$this->acceptAll($dates, 'EXDATE')]);
+        return $this->copy(excludedDates: $this->acceptAll($dates, 'EXDATE'));
     }
 
     /**
-     * Excludes every occurrence on the given local dates (EXDATE;VALUE=DATE with a DATE-TIME start).
-     * RFC 5545 does not define this combination; Outlook and Ical.Net give it this meaning (RFC 5545 erratum 6316).
-     * For a date start, this is the same as {@see self::withExcludedDates()}.
+     * Replaces the excluded days: every occurrence on one of these local dates is removed (EXDATE;VALUE=DATE).
+     * RFC 5545 does not define this for a DATE-TIME start; Outlook and Ical.Net give it this meaning (RFC 5545
+     * erratum 6316). For a date start, an excluded day and an excluded date have the same effect.
      *
      * @return self<T>
      */
     public function withExcludedDays(CalendarDate ...$days): self
     {
-        $excludedDates = $this->excludedDates;
-        $excludedDays = $this->excludedDays;
-
-        foreach ($days as $day) {
-            $value = $this->values->dateAsValue($day);
-
-            if ($value === null) {
-                $excludedDays[] = $day;
-            } else {
-                $excludedDates[] = $value;
-            }
-        }
-
-        return $this->copy(excludedDates: $excludedDates, excludedDays: $excludedDays);
+        return $this->copy(excludedDays: array_values($days));
     }
 
     /**
@@ -226,7 +219,7 @@ final class Recurrence implements IteratorAggregate
 
     /**
      * Sets how many expansion steps (periods or jumps) one query may take before it throws
-     * {@see SearchLimitExceededException}.
+     * {@see \ShipMonk\RRule\Exception\SearchLimitExceededException}.
      *
      * @param positive-int $searchLimit
      * @return self<T>
@@ -234,10 +227,48 @@ final class Recurrence implements IteratorAggregate
     public function withSearchLimit(int $searchLimit): self
     {
         if ($searchLimit < 1) { // @phpstan-ignore smaller.alwaysFalse (runtime check for callers without static analysis)
-            throw new LogicException('The search limit must be a positive integer');
+            throw new InvalidArgumentException('The search limit must be a positive integer');
         }
 
         return $this->copy(searchLimit: $searchLimit);
+    }
+
+    /**
+     * @return positive-int
+     */
+    public function getSearchLimit(): int
+    {
+        return $this->searchLimit;
+    }
+
+    /**
+     * True when the occurrences are dates (the start is a {@see CalendarDate}).
+     *
+     * @phpstan-assert-if-true self<CalendarDate> $this
+     */
+    public function isAllDay(): bool
+    {
+        return $this->start instanceof CalendarDate;
+    }
+
+    /**
+     * True when the occurrences are wall-clock date-times without a time zone (the start is a {@see FloatingDateTime}).
+     *
+     * @phpstan-assert-if-true self<FloatingDateTime> $this
+     */
+    public function isFloating(): bool
+    {
+        return $this->start instanceof FloatingDateTime;
+    }
+
+    /**
+     * True when the occurrences are instants (the start is a DateTimeImmutable in UTC or in a named zone).
+     *
+     * @phpstan-assert-if-true self<DateTimeImmutable> $this
+     */
+    public function isInstant(): bool
+    {
+        return $this->start instanceof DateTimeImmutable;
     }
 
     /**
@@ -246,6 +277,16 @@ final class Recurrence implements IteratorAggregate
     public function getStart(): CalendarDate|FloatingDateTime|DateTimeImmutable
     {
         return $this->start;
+    }
+
+    /**
+     * The start as a wall-clock time, as DTSTART writes it. For a zoned start, the rules repeat this time, which
+     * can differ from the local time of {@see self::getStart()}: a start of 02:30 in a DST gap begins at 03:30,
+     * and the later occurrences keep 02:30. For a date start, this is its midnight.
+     */
+    public function getStartLocalTime(): FloatingDateTime
+    {
+        return FloatingDateTime::fromLocalSeconds($this->startLocal);
     }
 
     /**
@@ -322,15 +363,15 @@ final class Recurrence implements IteratorAggregate
      *
      * @param T $after
      * @return T|null
-     *
-     * @throws InvalidRecurrenceException
      */
     public function firstAfter(
         CalendarDate|FloatingDateTime|DateTimeImmutable $after,
         bool $inclusive = false,
     ): CalendarDate|FloatingDateTime|DateTimeImmutable|null
     {
-        foreach ($this->createEngine()->iterate($this->toPosition($after, 'after') + ($inclusive ? 0 : 1), null) as $occurrence) {
+        $from = $inclusive ? $this->toPosition($after, 'after', roundUp: true) : $this->toPosition($after, 'after') + 1;
+
+        foreach ($this->createEngine()->iterate($from, null) as $occurrence) {
             return $occurrence;
         }
 
@@ -342,15 +383,15 @@ final class Recurrence implements IteratorAggregate
      *
      * @param T $before
      * @return T|null
-     *
-     * @throws InvalidRecurrenceException
      */
     public function lastBefore(
         CalendarDate|FloatingDateTime|DateTimeImmutable $before,
         bool $inclusive = false,
     ): CalendarDate|FloatingDateTime|DateTimeImmutable|null
     {
-        return $this->createEngine()->findLastBefore($this->toPosition($before, 'before') + ($inclusive ? 1 : 0));
+        $end = $inclusive ? $this->toPosition($before, 'before') + 1 : $this->toPosition($before, 'before', roundUp: true);
+
+        return $this->createEngine()->findLastBefore($end);
     }
 
     /**
@@ -359,15 +400,13 @@ final class Recurrence implements IteratorAggregate
      * @param T $from
      * @param T $to
      * @return Generator<int, T>
-     *
-     * @throws InvalidRecurrenceException
      */
     public function between(
         CalendarDate|FloatingDateTime|DateTimeImmutable $from,
         CalendarDate|FloatingDateTime|DateTimeImmutable $to,
     ): Generator
     {
-        return $this->createEngine()->iterate($this->toPosition($from, 'from'), $this->toPosition($to, 'to'));
+        return $this->createEngine()->iterate($this->toPosition($from, 'from', roundUp: true), $this->toPosition($to, 'to', roundUp: true));
     }
 
     /**
@@ -378,7 +417,11 @@ final class Recurrence implements IteratorAggregate
      */
     public function take(int $limit): array
     {
-        if ($limit < 1) {
+        if ($limit < 0) { // @phpstan-ignore smaller.alwaysFalse (runtime check for callers without static analysis)
+            throw new InvalidArgumentException('The limit must not be negative');
+        }
+
+        if ($limit === 0) {
             return [];
         }
 
@@ -397,14 +440,12 @@ final class Recurrence implements IteratorAggregate
 
     /**
      * @param T $value
-     *
-     * @throws InvalidRecurrenceException
      */
     public function occursAt(CalendarDate|FloatingDateTime|DateTimeImmutable $value): bool
     {
         $position = $this->toPosition($value, 'value');
 
-        return $this->createEngine()->iterate($position, $position + 1)->valid();
+        return !self::hasFraction($value) && $this->createEngine()->iterate($position, $position + 1)->valid();
     }
 
     /**
@@ -423,28 +464,13 @@ final class Recurrence implements IteratorAggregate
 
     /**
      * The RFC 5545 content lines: DTSTART, RRULE, RDATE, EXDATE and EXRULE. Lines are folded at 75 octets.
+     * The text keeps the meaning: parsing it gives the same occurrences. EXRULE text parses only in lenient mode.
+     * It throws the unchecked {@see \ShipMonk\RRule\Exception\SerializationException} when DTSTART cannot express the start: a zoned start
+     * in the second pass of a DST overlap.
      */
     public function toString(string $lineBreak = "\r\n"): string
     {
         return RuleSerializer::serializeRecurrence($this, $lineBreak);
-    }
-
-    /**
-     * @internal
-     */
-    public function getKind(): ValueKind
-    {
-        return $this->values->getKind();
-    }
-
-    /**
-     * The start as a local wall-clock time; for a zoned start, the time as DTSTART writes it.
-     *
-     * @internal
-     */
-    public function getStartLocalTime(): FloatingDateTime
-    {
-        return FloatingDateTime::fromLocalSeconds($this->startLocal);
     }
 
     /**
@@ -501,14 +527,22 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
-     * @throws InvalidRecurrenceException
+     * Positions are whole seconds. With $roundUp, a value with microseconds maps to the next whole second.
      */
     private function toPosition(
         CalendarDate|FloatingDateTime|DateTimeImmutable $value,
         string $name,
+        bool $roundUp = false,
     ): int
     {
-        return $this->values->toPosition($this->values->accept($value, $name));
+        $position = $this->values->toPosition($this->values->accept($value, $name));
+
+        return $roundUp && self::hasFraction($value) ? $position + 1 : $position;
+    }
+
+    private static function hasFraction(CalendarDate|FloatingDateTime|DateTimeImmutable $value): bool
+    {
+        return $value instanceof DateTimeImmutable && $value->format('u') !== '000000';
     }
 
     /**
@@ -525,7 +559,7 @@ final class Recurrence implements IteratorAggregate
         $accepted = [];
 
         foreach ($values as $value) {
-            $accepted[] = $this->values->accept($value, $name);
+            $accepted[] = $this->values->acceptStored($value, $name);
         }
 
         return $accepted;

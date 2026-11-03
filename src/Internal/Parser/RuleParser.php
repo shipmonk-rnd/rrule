@@ -26,9 +26,11 @@ use function ltrim;
 use function preg_match;
 use function sprintf;
 use function str_contains;
+use function strcmp;
 use function strlen;
 use function strpos;
 use function substr;
+use const PHP_INT_MAX;
 
 /**
  * Parses the RECUR value (RFC 5545 section 3.3.10, RFC 7529 section 4.1) in two steps:
@@ -516,8 +518,11 @@ final class RuleParser
             throw ParseErrors::create(sprintf('Invalid %s value "%s": a sign is not allowed', $name, $item), $lineNumber);
         }
 
-        if (strlen(ltrim($matches[2], '0')) > 18) {
-            throw ParseErrors::create(sprintf('Invalid %s value "%s": the number is too large', $name, $item), $lineNumber);
+        $digits = ltrim($matches[2], '0');
+        $maxDigits = (string) PHP_INT_MAX;
+
+        if (strlen($digits) > strlen($maxDigits) || (strlen($digits) === strlen($maxDigits) && strcmp($digits, $maxDigits) > 0)) {
+            throw ParseErrors::create(sprintf('Invalid %s value "%s": the number is larger than %s', $name, $item, $maxDigits), $lineNumber);
         }
 
         return (int) $number;

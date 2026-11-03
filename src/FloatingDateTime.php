@@ -5,6 +5,7 @@ namespace ShipMonk\RRule;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Internal\Civil;
 use ShipMonk\RRule\Internal\TimeZoneResolver;
@@ -98,7 +99,10 @@ final class FloatingDateTime
     }
 
     /**
-     * @internal
+     * The wall-clock time that is the given number of seconds after 1970-01-01T00:00:00 (negative: before it).
+     * Every day has 86400 seconds, because a floating time has no time zone.
+     *
+     * @throws InvalidArgumentException when the time is outside the years 1 to 9999; it is unchecked
      */
     public static function fromLocalSeconds(int $localSeconds): self
     {
@@ -106,7 +110,10 @@ final class FloatingDateTime
         $secondOfDay = $localSeconds - $days * Civil::SECONDS_PER_DAY;
         [$year, $month, $day] = Civil::civilFromDays($days);
 
-        /** @var int<1, 9999> $year */
+        if ($year < Civil::MIN_YEAR || $year > Civil::MAX_YEAR) {
+            throw new InvalidArgumentException(sprintf('Local seconds %d are outside the years %d to %d', $localSeconds, Civil::MIN_YEAR, Civil::MAX_YEAR));
+        }
+
         /** @var int<0, 23> $hour */
         $hour = intdiv($secondOfDay, 3600);
         /** @var int<0, 59> $minute */
@@ -118,7 +125,7 @@ final class FloatingDateTime
     }
 
     /**
-     * @internal
+     * The number of seconds from 1970-01-01T00:00:00 to this wall-clock time (negative: before it).
      */
     public function toLocalSeconds(): int
     {

@@ -87,7 +87,7 @@ Sources not imported:
 Each `data/<source>/` directory keeps the licence of its source; its `NOTICE` gives the details.
 `libical`, `mozilla` and `ical.js` are under MPL-2.0. MPL-2.0 is a file-level copyleft, so changes to those files stay under MPL-2.0. The rest of the repository is a "Larger Work" (MPL-2.0 section 3.3).
 `lib-recur`, `pycalendar` and `dateutil` include the Apache-2.0 text and a statement of changes.
-The tools in `tools/` are part of this project and use its licence.
+The tools in `tools/` are part of this project and use its licence. `extract_rfc5545.py`, `extract_rfc7529.py` and `verify_rfc5545.py` contain example data from the RFCs; the NOTICE files in `data/rfc5545-examples` and `data/rfc7529-examples` apply to that data.
 
 ## Regenerate
 

@@ -92,27 +92,34 @@ final class TimeZoneResolver
     }
 
     /**
-     * The largest forward offset change (the length of the longest gap) around the given time. Resolved Unix times
-     * are increasing in local time, except inside a gap, where they can go back by at most this amount.
+     * The length of the DST gap that the given local time is in or follows by less than the gap length; 0 when
+     * there is none. Resolved instants grow with the local time, except here: a local time in a gap resolves with
+     * the offset from before the gap, so its instant can come after the instant of a later local time, by less
+     * than the gap length.
      */
-    public function getMaxGapNear(int $seconds): int
+    public function getGapAround(int $localSeconds): int
     {
         if ($this->fixedOffset !== null) {
             return 0;
         }
 
-        $maxGap = 0;
+        $gap = 0;
         $previousOffset = null;
 
-        foreach ($this->getSegments($seconds) as [, $offset]) {
-            if ($previousOffset !== null) {
-                $maxGap = max($maxGap, $offset - $previousOffset);
+        foreach ($this->getSegments($localSeconds) as [$start, $offset]) {
+            if ($previousOffset !== null && $offset > $previousOffset) {
+                $length = $offset - $previousOffset;
+                $gapStart = $start + $previousOffset;
+
+                if ($localSeconds >= $gapStart && $localSeconds < $gapStart + 2 * $length) {
+                    $gap = max($gap, $length);
+                }
             }
 
             $previousOffset = $offset;
         }
 
-        return $maxGap;
+        return $gap;
     }
 
     /**

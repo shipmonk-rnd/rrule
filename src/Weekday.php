@@ -2,6 +2,9 @@
 
 namespace ShipMonk\RRule;
 
+use ShipMonk\RRule\Exception\InvalidArgumentException;
+use function sprintf;
+
 /**
  * A day of the week as RFC 5545 writes it (MO to SU).
  *
@@ -23,6 +26,10 @@ enum Weekday: string
      */
     public static function fromIsoNumber(int $isoNumber): self
     {
+        if ($isoNumber < 1 || $isoNumber > 7) { // @phpstan-ignore smaller.alwaysFalse, greater.alwaysFalse, booleanOr.alwaysFalse (runtime check for callers without static analysis)
+            throw new InvalidArgumentException(sprintf('ISO weekday number %d is not from 1 (Monday) to 7 (Sunday)', $isoNumber));
+        }
+
         return match ($isoNumber) {
             1 => self::Monday,
             2 => self::Tuesday,

@@ -232,9 +232,11 @@ final class RecurrenceTextParser
             );
         }
 
-        $recurrence = $isAddition ? $recurrence->withAddedDates(...$dates) : $recurrence->withExcludedDates(...$dates);
+        $recurrence = $isAddition
+            ? $recurrence->withAddedDates(...$recurrence->getAddedDates(), ...$dates)
+            : $recurrence->withExcludedDates(...$recurrence->getExcludedDates(), ...$dates);
 
-        return $recurrence->withExcludedDays(...$days);
+        return $days === [] ? $recurrence : $recurrence->withExcludedDays(...$recurrence->getExcludedDays(), ...$days);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace ShipMonk\RRule;
 
+use LogicException;
 use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
 use ShipMonk\RRule\Exception\ParseException;
 use ShipMonk\RRule\Exception\RuleViolation;
@@ -167,12 +168,13 @@ final class RecurrenceRule
         return $this->copy(interval: $interval);
     }
 
-    /**
-     * @throws InvalidRecurrenceRuleException
-     */
     public function withEnd(Count|Until|null $end): self
     {
-        return $this->copy(end: [$end]);
+        try {
+            return $this->copy(end: [$end]);
+        } catch (InvalidRecurrenceRuleException $e) {
+            throw new LogicException('Changing the end cannot make a valid rule invalid', previous: $e);
+        }
     }
 
     /**
@@ -265,22 +267,25 @@ final class RecurrenceRule
         return $this->copy(bySetPos: $bySetPos);
     }
 
-    /**
-     * @throws InvalidRecurrenceRuleException
-     */
     public function withWeekStart(Weekday $weekStart): self
     {
-        return $this->copy(weekStart: $weekStart);
+        try {
+            return $this->copy(weekStart: $weekStart);
+        } catch (InvalidRecurrenceRuleException $e) {
+            throw new LogicException('Changing WKST cannot make a valid rule invalid', previous: $e);
+        }
     }
 
     /**
      * Sets RSCALE=GREGORIAN and SKIP (RFC 7529). {@see Skip::Omit} removes both.
-     *
-     * @throws InvalidRecurrenceRuleException
      */
     public function withSkip(Skip $skip): self
     {
-        return $this->copy(calendarScale: [$skip === Skip::Omit ? null : CalendarScale::Gregorian], skip: $skip);
+        try {
+            return $this->copy(calendarScale: [$skip === Skip::Omit ? null : CalendarScale::Gregorian], skip: $skip);
+        } catch (InvalidRecurrenceRuleException $e) {
+            throw new LogicException('Changing SKIP cannot make a valid rule invalid', previous: $e);
+        }
     }
 
     /**

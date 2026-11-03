@@ -7,6 +7,7 @@ use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\FloatingDateTime;
 use function sprintf;
@@ -121,6 +122,17 @@ final class FloatingDateTimeTest extends TestCase
         self::assertFalse($dateTime->isBefore($dateTime));
         self::assertTrue($dateTime->isAfter(FloatingDateTime::of(2026, 3, 15, 9)));
         self::assertFalse($dateTime->isAfter($dateTime));
+    }
+
+    public function testLocalSecondsRange(): void
+    {
+        self::assertSame('1970-01-01T00:00:00', FloatingDateTime::fromLocalSeconds(0)->toString());
+        self::assertSame('9999-12-31T23:59:59', FloatingDateTime::fromLocalSeconds(253_402_300_799)->toString());
+        self::assertSame(253_402_300_799, FloatingDateTime::of(9999, 12, 31, 23, 59, 59)->toLocalSeconds());
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Local seconds 253402300800 are outside the years 1 to 9999');
+        FloatingDateTime::fromLocalSeconds(253_402_300_800);
     }
 
 }

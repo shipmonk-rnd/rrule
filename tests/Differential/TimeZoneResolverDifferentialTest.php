@@ -29,9 +29,9 @@ use function sprintf;
  * from 1970 to 2037: the times just before, at the start, in the middle, at the end of and just after each gap
  * and overlap, plus ordinary times.
  *
- * Both sides use the same zone data. PHP's bundled timezonedb (2023.3 in PHP 8.1.34) and the system or pip tzdata
- * that Python reads differ for zones whose rules changed since then. So the test writes the transitions that PHP
- * knows as TZif data, and Python loads exactly that data. The test then checks only the resolution rule.
+ * Both sides use the same zone data: the test writes the transitions that PHP knows as TZif data, and Python loads
+ * exactly that data. So the test checks only the resolution rule, also where PHP's timezonedb and the tzdata of
+ * Python are different releases.
  */
 #[CoversClass(FloatingDateTime::class)]
 #[CoversClass(TimeZoneResolver::class)]
