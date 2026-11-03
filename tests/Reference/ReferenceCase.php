@@ -6,6 +6,8 @@ use DateTimeImmutable;
 use LogicException;
 use ShipMonk\RRule\CalendarScale;
 use ShipMonk\RRule\Count;
+use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
+use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\RecurrenceRule;
@@ -26,6 +28,7 @@ use function is_int;
 use function is_string;
 use function json_decode;
 use function json_encode;
+use function range;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const SORT_REGULAR;
@@ -58,6 +61,10 @@ final class ReferenceCase
     {
     }
 
+    /**
+     * @throws InvalidRecurrenceRuleException
+     * @throws InvalidValueException
+     */
     public static function expandNaively(int $seed): self
     {
         [$rule, $start] = self::generate($seed);
@@ -69,6 +76,9 @@ final class ReferenceCase
 
     /**
      * @return array{RecurrenceRule, FloatingDateTime}
+     *
+     * @throws InvalidRecurrenceRuleException
+     * @throws InvalidValueException
      */
     public static function generate(int $seed): array
     {
@@ -87,15 +97,15 @@ final class ReferenceCase
             $random->pick([0, 0, 0, $random->between(0, 59)]),
         );
 
-        $byMonth = $random->chance(30) ? self::list($random, 1, 3, static fn () => $random->between(1, 12)) : [];
+        $byMonth = $random->chance(30) ? self::list($random, 1, 3, static fn () => $random->pick(range(1, 12))) : [];
         $byWeekNo = $frequency === Frequency::Yearly && $random->chance(25)
-            ? self::list($random, 1, 2, static fn () => $random->pick([1, 2, 10, 20, 26, 52, 53, -1, -2, -53, $random->between(1, 53)]))
+            ? self::list($random, 1, 2, static fn () => $random->pick([1, 2, 10, 20, 26, 52, 53, -1, -2, -53, $random->pick(range(1, 53))]))
             : [];
         $byYearDay = in_array($frequency, [Frequency::Yearly, Frequency::Hourly, Frequency::Minutely, Frequency::Secondly], true) && $random->chance(15)
-            ? self::list($random, 1, 3, static fn () => $random->pick([1, 60, 100, 200, 365, 366, -1, -366, $random->between(1, 366), -$random->between(1, 366)]))
+            ? self::list($random, 1, 3, static fn () => $random->pick([1, 60, 100, 200, 365, 366, -1, -366, $random->pick(range(1, 366)), -$random->pick(range(1, 366))]))
             : [];
         $byMonthDay = $frequency !== Frequency::Weekly && $random->chance(35)
-            ? self::list($random, 1, 3, static fn () => $random->pick([1, 13, 15, 28, 29, 30, 31, -1, -2, -31, $random->between(1, 31), -$random->between(1, 31)]))
+            ? self::list($random, 1, 3, static fn () => $random->pick([1, 13, 15, 28, 29, 30, 31, -1, -2, -31, $random->pick(range(1, 31)), -$random->pick(range(1, 31))]))
             : [];
         $ordinalsAllowed = ($frequency === Frequency::Monthly || $frequency === Frequency::Yearly) && $byWeekNo === [];
         $byDay = $random->chance(45) ? self::list($random, 1, 3, static function () use ($random, $ordinalsAllowed, $frequency, $byMonth): WeekdayNum {
@@ -110,11 +120,11 @@ final class ReferenceCase
 
             return WeekdayNum::of($weekday, $random->chance(30) ? -$ordinal : $ordinal);
         }) : [];
-        $byHour = $random->chance($subDaily ? 50 : 20) ? self::list($random, 1, 3, static fn () => $random->between(0, 23)) : [];
-        $byMinute = $random->chance($subDaily ? 50 : 15) ? self::list($random, 1, 3, static fn () => $random->pick([0, 15, 30, 45, $random->between(0, 59)])) : [];
-        $bySecond = $random->chance($frequency === Frequency::Secondly ? 70 : 10) ? self::list($random, 1, 3, static fn () => $random->pick([0, 30, 59, 60, $random->between(0, 59)])) : [];
+        $byHour = $random->chance($subDaily ? 50 : 20) ? self::list($random, 1, 3, static fn () => $random->pick(range(0, 23))) : [];
+        $byMinute = $random->chance($subDaily ? 50 : 15) ? self::list($random, 1, 3, static fn () => $random->pick([0, 15, 30, 45, $random->pick(range(0, 59))])) : [];
+        $bySecond = $random->chance($frequency === Frequency::Secondly ? 70 : 10) ? self::list($random, 1, 3, static fn () => $random->pick([0, 30, 59, 60, $random->pick(range(0, 59))])) : [];
         $hasOtherByPart = $byMonth !== [] || $byWeekNo !== [] || $byYearDay !== [] || $byMonthDay !== [] || $byDay !== [] || $byHour !== [] || $byMinute !== [] || $bySecond !== [];
-        $bySetPos = $hasOtherByPart && $random->chance(20) ? self::list($random, 1, 2, static fn () => $random->pick([1, 2, 3, -1, -2, $random->between(1, 10)])) : [];
+        $bySetPos = $hasOtherByPart && $random->chance(20) ? self::list($random, 1, 2, static fn () => $random->pick([1, 2, 3, -1, -2, $random->pick(range(1, 10))])) : [];
         $skip = ($frequency === Frequency::Monthly || $frequency === Frequency::Yearly) && $random->chance(15)
             ? $random->pick([Skip::Forward, Skip::Backward])
             : Skip::Omit;
@@ -128,7 +138,7 @@ final class ReferenceCase
 
         $rule = new RecurrenceRule(
             frequency: $frequency,
-            interval: $random->pick([1, 1, 1, 2, 3, $random->between(1, 7), 12]),
+            interval: $random->pick([1, 1, 1, 2, 3, $random->pick(range(1, 7)), 12]),
             end: $end,
             bySecond: $bySecond,
             byMinute: $byMinute,
@@ -242,6 +252,8 @@ final class ReferenceCase
      * @return list<V>
      *
      * @template V
+     *
+     * @param-immediately-invoked-callable $generate
      */
     private static function list(
         XorShiftRandom $random,

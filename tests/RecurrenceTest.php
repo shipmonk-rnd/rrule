@@ -128,61 +128,63 @@ final class RecurrenceTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{callable(): mixed, string}>
+     * @return array<string, array{callable(): mixed, string}>
      */
-    public static function provideRulesThatDoNotFitTheStart(): iterable
+    public static function provideRulesThatDoNotFitTheStart(): array
     {
         $date = CalendarDate::of(2026, 1, 1);
         $floating = FloatingDateTime::of(2026, 1, 1, 9);
         $instant = new DateTimeImmutable('2026-01-01T09:00:00Z');
 
-        yield 'time parts with a DATE start' => [
-            static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Daily, byHour: [9])),
-            'RRULE FREQ=DAILY;BYHOUR=9: BYSECOND, BYMINUTE and BYHOUR must not be used with a DATE start (RFC 5545 section 3.3.10)',
-        ];
-        yield 'BYMINUTE with a DATE start' => [
-            static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Daily, byMinute: [9])),
-            'RRULE FREQ=DAILY;BYMINUTE=9: BYSECOND, BYMINUTE and BYHOUR must not be used with a DATE start (RFC 5545 section 3.3.10)',
-        ];
-        yield 'BYSECOND with a DATE start' => [
-            static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Daily, bySecond: [9])),
-            'RRULE FREQ=DAILY;BYSECOND=9: BYSECOND, BYMINUTE and BYHOUR must not be used with a DATE start (RFC 5545 section 3.3.10)',
-        ];
-        yield 'HOURLY with a DATE start' => [
-            static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Hourly)),
-            'RRULE FREQ=HOURLY: a DATE start cannot have a frequency shorter than a day',
-        ];
-        yield 'MINUTELY with a DATE start' => [
-            static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Minutely)),
-            'RRULE FREQ=MINUTELY: a DATE start cannot have a frequency shorter than a day',
-        ];
-        yield 'SECONDLY with a DATE start' => [
-            static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Secondly)),
-            'RRULE FREQ=SECONDLY: a DATE start cannot have a frequency shorter than a day',
-        ];
-        yield 'DATE-TIME UNTIL with a DATE start' => [
-            static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Daily, end: Until::floating($floating))),
-            'RRULE FREQ=DAILY;UNTIL=20260101T090000: UNTIL must be a DATE for this start (RFC 5545 section 3.3.10)',
-        ];
-        yield 'DATE UNTIL with a floating start' => [
-            static fn () => Recurrence::of($floating, new RecurrenceRule(Frequency::Daily, end: Until::date($date))),
-            'RRULE FREQ=DAILY;UNTIL=20260101: UNTIL must be a floating DATE-TIME for this start (RFC 5545 section 3.3.10)',
-        ];
-        yield 'floating UNTIL with a zoned start' => [
-            static fn () => Recurrence::of(new DateTimeImmutable('2026-01-01', new DateTimeZone('Europe/Prague')), new RecurrenceRule(Frequency::Daily, end: Until::floating($floating))),
-            'RRULE FREQ=DAILY;UNTIL=20260101T090000: UNTIL must be a UTC DATE-TIME for this start (RFC 5545 section 3.3.10)',
-        ];
-        yield 'DATE UNTIL with a UTC start' => [
-            static fn () => Recurrence::of($instant, new RecurrenceRule(Frequency::Daily, end: Until::date($date))),
-            'RRULE FREQ=DAILY;UNTIL=20260101: UNTIL must be a UTC DATE-TIME for this start (RFC 5545 section 3.3.10)',
-        ];
-        yield 'withRules' => [
-            static fn () => Recurrence::of($date)->withRules(new RecurrenceRule(Frequency::Hourly)),
-            'RRULE FREQ=HOURLY: a DATE start cannot have a frequency shorter than a day',
-        ];
-        yield 'withExclusionRules' => [
-            static fn () => Recurrence::of($date)->withExclusionRules(new RecurrenceRule(Frequency::Hourly)),
-            'EXRULE FREQ=HOURLY: a DATE start cannot have a frequency shorter than a day',
+        return [
+            'time parts with a DATE start' => [
+                static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Daily, byHour: [9])),
+                'RRULE FREQ=DAILY;BYHOUR=9: BYSECOND, BYMINUTE and BYHOUR must not be used with a DATE start (RFC 5545 section 3.3.10)',
+            ],
+            'BYMINUTE with a DATE start' => [
+                static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Daily, byMinute: [9])),
+                'RRULE FREQ=DAILY;BYMINUTE=9: BYSECOND, BYMINUTE and BYHOUR must not be used with a DATE start (RFC 5545 section 3.3.10)',
+            ],
+            'BYSECOND with a DATE start' => [
+                static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Daily, bySecond: [9])),
+                'RRULE FREQ=DAILY;BYSECOND=9: BYSECOND, BYMINUTE and BYHOUR must not be used with a DATE start (RFC 5545 section 3.3.10)',
+            ],
+            'HOURLY with a DATE start' => [
+                static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Hourly)),
+                'RRULE FREQ=HOURLY: a DATE start cannot have a frequency shorter than a day',
+            ],
+            'MINUTELY with a DATE start' => [
+                static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Minutely)),
+                'RRULE FREQ=MINUTELY: a DATE start cannot have a frequency shorter than a day',
+            ],
+            'SECONDLY with a DATE start' => [
+                static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Secondly)),
+                'RRULE FREQ=SECONDLY: a DATE start cannot have a frequency shorter than a day',
+            ],
+            'DATE-TIME UNTIL with a DATE start' => [
+                static fn () => Recurrence::of($date, new RecurrenceRule(Frequency::Daily, end: Until::floating($floating))),
+                'RRULE FREQ=DAILY;UNTIL=20260101T090000: UNTIL must be a DATE for this start (RFC 5545 section 3.3.10)',
+            ],
+            'DATE UNTIL with a floating start' => [
+                static fn () => Recurrence::of($floating, new RecurrenceRule(Frequency::Daily, end: Until::date($date))),
+                'RRULE FREQ=DAILY;UNTIL=20260101: UNTIL must be a floating DATE-TIME for this start (RFC 5545 section 3.3.10)',
+            ],
+            'floating UNTIL with a zoned start' => [
+                static fn () => Recurrence::of(new DateTimeImmutable('2026-01-01', new DateTimeZone('Europe/Prague')), new RecurrenceRule(Frequency::Daily, end: Until::floating($floating))),
+                'RRULE FREQ=DAILY;UNTIL=20260101T090000: UNTIL must be a UTC DATE-TIME for this start (RFC 5545 section 3.3.10)',
+            ],
+            'DATE UNTIL with a UTC start' => [
+                static fn () => Recurrence::of($instant, new RecurrenceRule(Frequency::Daily, end: Until::date($date))),
+                'RRULE FREQ=DAILY;UNTIL=20260101: UNTIL must be a UTC DATE-TIME for this start (RFC 5545 section 3.3.10)',
+            ],
+            'withRules' => [
+                static fn () => Recurrence::of($date)->withRules(new RecurrenceRule(Frequency::Hourly)),
+                'RRULE FREQ=HOURLY: a DATE start cannot have a frequency shorter than a day',
+            ],
+            'withExclusionRules' => [
+                static fn () => Recurrence::of($date)->withExclusionRules(new RecurrenceRule(Frequency::Hourly)),
+                'EXRULE FREQ=HOURLY: a DATE start cannot have a frequency shorter than a day',
+            ],
         ];
     }
 
@@ -202,41 +204,43 @@ final class RecurrenceTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{callable(): mixed, string}>
+     * @return array<string, array{callable(): mixed, string}>
      */
-    public static function provideValuesOfAnotherType(): iterable
+    public static function provideValuesOfAnotherType(): array
     {
         $date = CalendarDate::of(2026, 1, 1);
         $floating = FloatingDateTime::of(2026, 1, 1, 9);
         $instant = new DateTimeImmutable('2026-01-01T09:00:00Z');
 
-        yield 'RDATE type' => [
-            static fn () => Recurrence::of($date)->withAddedDates($floating), // @phpstan-ignore argument.type
-            'The RDATE value must be a CalendarDate, because the start is a date',
-        ];
-        yield 'EXDATE type' => [
-            static fn () => Recurrence::of($floating)->withExcludedDates($date), // @phpstan-ignore argument.type
-            'The EXDATE value must be a FloatingDateTime, because the start is a floating date-time',
-        ];
-        yield 'firstAfter type' => [
-            static fn () => Recurrence::of($instant)->firstAfter($floating), // @phpstan-ignore argument.type
-            'The after value must be a DateTimeImmutable, because the start is a date-time with a time zone',
-        ];
-        yield 'lastBefore type' => [
-            static fn () => Recurrence::of($instant)->lastBefore($date), // @phpstan-ignore argument.type
-            'The before value must be a DateTimeImmutable, because the start is a date-time with a time zone',
-        ];
-        yield 'between from type' => [
-            static fn () => Recurrence::of($date)->between($floating, $date), // @phpstan-ignore argument.type
-            'The from value must be a CalendarDate, because the start is a date',
-        ];
-        yield 'between to type' => [
-            static fn () => Recurrence::of($date)->between($date, $floating), // @phpstan-ignore argument.type
-            'The to value must be a CalendarDate, because the start is a date',
-        ];
-        yield 'occursAt type' => [
-            static fn () => Recurrence::of($date)->occursAt($floating), // @phpstan-ignore argument.type
-            'The value value must be a CalendarDate, because the start is a date',
+        return [
+            'RDATE type' => [
+                static fn () => Recurrence::of($date)->withAddedDates($floating), // @phpstan-ignore argument.type
+                'The RDATE value must be a CalendarDate, because the start is a date',
+            ],
+            'EXDATE type' => [
+                static fn () => Recurrence::of($floating)->withExcludedDates($date), // @phpstan-ignore argument.type
+                'The EXDATE value must be a FloatingDateTime, because the start is a floating date-time',
+            ],
+            'firstAfter type' => [
+                static fn () => Recurrence::of($instant)->firstAfter($floating), // @phpstan-ignore argument.type
+                'The after value must be a DateTimeImmutable, because the start is a date-time with a time zone',
+            ],
+            'lastBefore type' => [
+                static fn () => Recurrence::of($instant)->lastBefore($date), // @phpstan-ignore argument.type
+                'The before value must be a DateTimeImmutable, because the start is a date-time with a time zone',
+            ],
+            'between from type' => [
+                static fn () => Recurrence::of($date)->between($floating, $date), // @phpstan-ignore argument.type
+                'The from value must be a CalendarDate, because the start is a date',
+            ],
+            'between to type' => [
+                static fn () => Recurrence::of($date)->between($date, $floating), // @phpstan-ignore argument.type
+                'The to value must be a CalendarDate, because the start is a date',
+            ],
+            'occursAt type' => [
+                static fn () => Recurrence::of($date)->occursAt($floating), // @phpstan-ignore argument.type
+                'The value value must be a CalendarDate, because the start is a date',
+            ],
         ];
     }
 
@@ -516,44 +520,46 @@ final class RecurrenceTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{string, RecurrenceRule, list<string>}>
+     * @return array<string, array{string, RecurrenceRule, list<string>}>
      */
-    public static function provideDaylightSavingTime(): iterable
+    public static function provideDaylightSavingTime(): array
     {
-        yield 'S3: a gap time moves forward once, later days keep 02:30' => [
-            '2026-03-28 02:30',
-            new RecurrenceRule(Frequency::Daily, end: Count::of(4)),
-            ['2026-03-28T02:30:00+01:00', '2026-03-29T03:30:00+02:00', '2026-03-30T02:30:00+02:00', '2026-03-31T02:30:00+02:00'],
-        ];
-        yield 'S4: an overlap time is the first occurrence' => [
-            '2026-10-24 02:30',
-            new RecurrenceRule(Frequency::Daily, end: Count::of(3)),
-            ['2026-10-24T02:30:00+02:00', '2026-10-25T02:30:00+02:00', '2026-10-26T02:30:00+01:00'],
-        ];
-        yield 'S5: HOURLY across the gap counts distinct instants' => [
-            '2026-03-29 00:00',
-            new RecurrenceRule(Frequency::Hourly, end: Count::of(5)),
-            ['2026-03-29T00:00:00+01:00', '2026-03-29T01:00:00+01:00', '2026-03-29T03:00:00+02:00', '2026-03-29T04:00:00+02:00', '2026-03-29T05:00:00+02:00'],
-        ];
-        yield 'S5: HOURLY with two minutes across the gap stays in order' => [
-            '2026-03-29 01:00',
-            new RecurrenceRule(Frequency::Hourly, byMinute: [0, 30], end: Count::of(6)),
-            ['2026-03-29T01:00:00+01:00', '2026-03-29T01:30:00+01:00', '2026-03-29T03:00:00+02:00', '2026-03-29T03:30:00+02:00', '2026-03-29T04:00:00+02:00', '2026-03-29T04:30:00+02:00'],
-        ];
-        yield 'S5: HOURLY across the overlap steps in wall-clock time' => [
-            '2026-10-25 00:00',
-            new RecurrenceRule(Frequency::Hourly, end: Count::of(5)),
-            ['2026-10-25T00:00:00+02:00', '2026-10-25T01:00:00+02:00', '2026-10-25T02:00:00+02:00', '2026-10-25T03:00:00+01:00', '2026-10-25T04:00:00+01:00'],
-        ];
-        yield 'UNTIL in UTC bounds a zoned MINUTELY rule' => [
-            '2026-07-01 09:58',
-            new RecurrenceRule(Frequency::Minutely, end: Until::instant(new DateTimeImmutable('2026-07-01T08:00:00Z'))),
-            ['2026-07-01T09:58:00+02:00', '2026-07-01T09:59:00+02:00', '2026-07-01T10:00:00+02:00'],
-        ];
-        yield 'UNTIL in UTC bounds a zoned DAILY rule' => [
-            '2026-07-01 09:00',
-            new RecurrenceRule(Frequency::Daily, end: Until::instant(new DateTimeImmutable('2026-07-02T06:30:00Z'))),
-            ['2026-07-01T09:00:00+02:00'],
+        return [
+            'S3: a gap time moves forward once, later days keep 02:30' => [
+                '2026-03-28 02:30',
+                new RecurrenceRule(Frequency::Daily, end: Count::of(4)),
+                ['2026-03-28T02:30:00+01:00', '2026-03-29T03:30:00+02:00', '2026-03-30T02:30:00+02:00', '2026-03-31T02:30:00+02:00'],
+            ],
+            'S4: an overlap time is the first occurrence' => [
+                '2026-10-24 02:30',
+                new RecurrenceRule(Frequency::Daily, end: Count::of(3)),
+                ['2026-10-24T02:30:00+02:00', '2026-10-25T02:30:00+02:00', '2026-10-26T02:30:00+01:00'],
+            ],
+            'S5: HOURLY across the gap counts distinct instants' => [
+                '2026-03-29 00:00',
+                new RecurrenceRule(Frequency::Hourly, end: Count::of(5)),
+                ['2026-03-29T00:00:00+01:00', '2026-03-29T01:00:00+01:00', '2026-03-29T03:00:00+02:00', '2026-03-29T04:00:00+02:00', '2026-03-29T05:00:00+02:00'],
+            ],
+            'S5: HOURLY with two minutes across the gap stays in order' => [
+                '2026-03-29 01:00',
+                new RecurrenceRule(Frequency::Hourly, byMinute: [0, 30], end: Count::of(6)),
+                ['2026-03-29T01:00:00+01:00', '2026-03-29T01:30:00+01:00', '2026-03-29T03:00:00+02:00', '2026-03-29T03:30:00+02:00', '2026-03-29T04:00:00+02:00', '2026-03-29T04:30:00+02:00'],
+            ],
+            'S5: HOURLY across the overlap steps in wall-clock time' => [
+                '2026-10-25 00:00',
+                new RecurrenceRule(Frequency::Hourly, end: Count::of(5)),
+                ['2026-10-25T00:00:00+02:00', '2026-10-25T01:00:00+02:00', '2026-10-25T02:00:00+02:00', '2026-10-25T03:00:00+01:00', '2026-10-25T04:00:00+01:00'],
+            ],
+            'UNTIL in UTC bounds a zoned MINUTELY rule' => [
+                '2026-07-01 09:58',
+                new RecurrenceRule(Frequency::Minutely, end: Until::instant(new DateTimeImmutable('2026-07-01T08:00:00Z'))),
+                ['2026-07-01T09:58:00+02:00', '2026-07-01T09:59:00+02:00', '2026-07-01T10:00:00+02:00'],
+            ],
+            'UNTIL in UTC bounds a zoned DAILY rule' => [
+                '2026-07-01 09:00',
+                new RecurrenceRule(Frequency::Daily, end: Until::instant(new DateTimeImmutable('2026-07-02T06:30:00Z'))),
+                ['2026-07-01T09:00:00+02:00'],
+            ],
         ];
     }
 

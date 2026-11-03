@@ -2,6 +2,7 @@
 
 namespace ShipMonk\RRuleTests\Differential\Generator;
 
+use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Weekday;
 use ShipMonk\RRule\WeekdayNum;
 use function array_map;
@@ -65,6 +66,8 @@ final class GeneratedParts
 
     /**
      * @return list<WeekdayNum>
+     *
+     * @throws InvalidValueException
      */
     public function getByDay(): array
     {

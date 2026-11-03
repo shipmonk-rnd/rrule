@@ -8,6 +8,8 @@ use LogicException;
 use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\CalendarScale;
 use ShipMonk\RRule\Count;
+use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
+use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\RecurrenceRule;
@@ -126,6 +128,10 @@ final class RandomRuleGenerator
         $this->random = new SeededRandom($seed);
     }
 
+    /**
+     * @throws InvalidRecurrenceRuleException
+     * @throws InvalidValueException
+     */
     public function next(): GeneratedRecurrence
     {
         $kind = $this->generateKind();
@@ -624,6 +630,8 @@ final class RandomRuleGenerator
 
     /**
      * @return array{Count|Until|null, string|null}
+     *
+     * @throws InvalidValueException
      */
     private function generateEnd(
         DtStartKind $kind,

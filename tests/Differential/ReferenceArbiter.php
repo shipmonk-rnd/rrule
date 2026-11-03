@@ -5,6 +5,7 @@ namespace ShipMonk\RRuleTests\Differential;
 use DateTimeImmutable;
 use DateTimeZone;
 use ShipMonk\RRule\CalendarDate;
+use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\TimeZoneResolver;
 use ShipMonk\RRule\Until;
@@ -33,6 +34,8 @@ final class ReferenceArbiter
      *
      * @param list<string> $ours
      * @param list<string> $theirs
+     *
+     * @throws InvalidValueException
      */
     public static function agreesWithEngine(
         GeneratedRecurrence $case,

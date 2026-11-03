@@ -273,7 +273,7 @@ final class RecurrenceRuleTest extends TestCase
     public function testExceptionIsPartOfTheHierarchy(): void
     {
         try {
-            new RecurrenceRule(Frequency::Daily, byHour: [24]); // @phpstan-ignore argument.type
+            new RecurrenceRule(Frequency::Monthly, byWeekNo: [1]);
         } catch (Throwable $e) {
             self::assertInstanceOf(RecurrenceException::class, $e);
             self::assertInstanceOf(RuntimeException::class, $e);
