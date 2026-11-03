@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle;
+namespace ShipMonk\RRuleTests\Differential;
 
 enum DtStartKind
 {

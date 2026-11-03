@@ -1,18 +1,18 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle;
+namespace ShipMonk\RRuleTests\Differential;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRuleTests\Oracle\Libical\LibicalException;
-use ShipMonk\RRuleTests\Oracle\Libical\LibicalOracle;
+use ShipMonk\RRuleTests\Differential\Libical\LibicalAdapter;
+use ShipMonk\RRuleTests\Differential\Libical\LibicalException;
 
 /**
- * Checks the libical binding and the libical builds in the oracle image against known RFC 5545 / RFC 7529 results.
+ * Checks the libical binding and the libical builds in the differential test image against known RFC 5545 / RFC 7529 results.
  */
 #[CoversNothing]
-final class LibicalOracleSelfTest extends TestCase
+final class LibicalAdapterTest extends TestCase
 {
 
     /**
@@ -28,13 +28,13 @@ final class LibicalOracleSelfTest extends TestCase
         ?array $expectedUtc,
     ): void
     {
-        $oracle = self::createOracle($libraryPath);
+        $adapter = self::createAdapter($libraryPath);
         $start = DtStart::fromString($dtStart);
 
-        self::assertSame($expectedLocal, $oracle->expand($start, $rrule, 10));
+        self::assertSame($expectedLocal, $adapter->expand($start, $rrule, 10));
 
         if ($expectedUtc !== null) {
-            self::assertSame($expectedUtc, $oracle->expandToUtc($start, $rrule, 10));
+            self::assertSame($expectedUtc, $adapter->expandToUtc($start, $rrule, 10));
         }
     }
 
@@ -138,12 +138,12 @@ final class LibicalOracleSelfTest extends TestCase
         $start = DtStart::fromString('TZID=Europe/Prague:20260329T010000');
         $rule = 'FREQ=HOURLY;COUNT=4';
 
-        $withoutIcu = self::createOracle(LibicalOracle::DEFAULT_LIBRARY_PATH);
+        $withoutIcu = self::createAdapter(LibicalAdapter::DEFAULT_LIBRARY_PATH);
         self::assertFalse($withoutIcu->hasIcu());
         self::assertSame(['20260329T010000', '20260329T020000', '20260329T030000', '20260329T040000'], $withoutIcu->expand($start, $rule, 10));
         self::assertSame(['20260329T000000Z', '20260329T010000Z', '20260329T010000Z', '20260329T020000Z'], $withoutIcu->expandToUtc($start, $rule, 10));
 
-        $withIcu = self::createOracle(LibicalOracle::ICU_LIBRARY_PATH);
+        $withIcu = self::createAdapter(LibicalAdapter::ICU_LIBRARY_PATH);
         self::assertTrue($withIcu->hasIcu());
         self::assertSame(['20260329T010000', '20260329T030000', '20260329T040000', '20260329T050000'], $withIcu->expand($start, $rule, 10));
         self::assertSame(['20260329T000000Z', '20260329T010000Z', '20260329T020000Z', '20260329T030000Z'], $withIcu->expandToUtc($start, $rule, 10));
@@ -152,10 +152,10 @@ final class LibicalOracleSelfTest extends TestCase
     #[DataProvider('provideLibraries')]
     public function testLimitStopsInfiniteRule(string $libraryPath): void
     {
-        $oracle = self::createOracle($libraryPath);
+        $adapter = self::createAdapter($libraryPath);
 
-        self::assertCount(25, $oracle->expand(DtStart::fromString('20260101T000000'), 'FREQ=SECONDLY', 25));
-        self::assertSame([], $oracle->expand(DtStart::fromString('20260101T000000'), 'FREQ=DAILY', 0));
+        self::assertCount(25, $adapter->expand(DtStart::fromString('20260101T000000'), 'FREQ=SECONDLY', 25));
+        self::assertSame([], $adapter->expand(DtStart::fromString('20260101T000000'), 'FREQ=DAILY', 0));
     }
 
     /**
@@ -169,10 +169,10 @@ final class LibicalOracleSelfTest extends TestCase
         string $expectedError,
     ): void
     {
-        $oracle = self::createOracle($libraryPath);
+        $adapter = self::createAdapter($libraryPath);
 
         try {
-            $oracle->expand(DtStart::fromString($dtStart), $rrule, 10);
+            $adapter->expand(DtStart::fromString($dtStart), $rrule, 10);
             self::fail('LibicalException expected');
         } catch (LibicalException $e) {
             self::assertStringStartsWith($expectedError, $e->libicalError);
@@ -196,12 +196,12 @@ final class LibicalOracleSelfTest extends TestCase
 
     public function testReportsUnknownTimeZone(): void
     {
-        $oracle = self::createOracle(LibicalOracle::DEFAULT_LIBRARY_PATH);
+        $adapter = self::createAdapter(LibicalAdapter::DEFAULT_LIBRARY_PATH);
 
         $this->expectException(LibicalException::class);
         $this->expectExceptionMessage('Mars/Olympus_Mons');
 
-        $oracle->expand(DtStart::fromString('TZID=Mars/Olympus_Mons:20260101T090000'), 'FREQ=DAILY', 10);
+        $adapter->expand(DtStart::fromString('TZID=Mars/Olympus_Mons:20260101T090000'), 'FREQ=DAILY', 10);
     }
 
     /**
@@ -209,15 +209,15 @@ final class LibicalOracleSelfTest extends TestCase
      */
     public static function provideLibraries(): iterable
     {
-        yield 'without ICU' => [LibicalOracle::DEFAULT_LIBRARY_PATH];
-        yield 'with ICU' => [LibicalOracle::ICU_LIBRARY_PATH];
+        yield 'without ICU' => [LibicalAdapter::DEFAULT_LIBRARY_PATH];
+        yield 'with ICU' => [LibicalAdapter::ICU_LIBRARY_PATH];
     }
 
-    private static function createOracle(string $libraryPath): LibicalOracle
+    private static function createAdapter(string $libraryPath): LibicalAdapter
     {
         try {
-            return new LibicalOracle($libraryPath);
-        } catch (OracleUnavailableException $e) {
+            return new LibicalAdapter($libraryPath);
+        } catch (AdapterUnavailableException $e) {
             self::markTestSkipped($e->getMessage());
         }
     }

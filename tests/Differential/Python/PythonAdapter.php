@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle\Python;
+namespace ShipMonk\RRuleTests\Differential\Python;
 
 use LogicException;
-use ShipMonk\RRuleTests\Oracle\OracleUnavailableException;
+use ShipMonk\RRuleTests\Differential\AdapterUnavailableException;
 use function array_is_list;
 use function array_map;
 use function base64_encode;
@@ -26,10 +26,10 @@ use function tmpfile;
 use const JSON_THROW_ON_ERROR;
 
 /**
- * Runs the Python oracle scripts in this directory: zoneinfo (local time to instant) and python-dateutil (expansion).
+ * Runs the Python scripts in this directory: zoneinfo (local time to instant) and python-dateutil (expansion).
  * The scripts run in isolated mode (python3 -I), so PYTHON* environment variables have no effect.
  */
-final class PythonOracle
+final class PythonAdapter
 {
 
     private const EXIT_COMMAND_NOT_FOUND = 127;
@@ -41,11 +41,11 @@ final class PythonOracle
     }
 
     /**
-     * Uses the Python binary from the environment variable ORACLE_PYTHON, or "python3".
+     * Uses the Python binary from the environment variable DIFFERENTIAL_PYTHON, or "python3".
      */
     public static function fromEnvironment(): self
     {
-        $python = getenv('ORACLE_PYTHON');
+        $python = getenv('DIFFERENTIAL_PYTHON');
 
         return new self(is_string($python) && $python !== '' ? $python : 'python3');
     }
@@ -57,7 +57,7 @@ final class PythonOracle
      * @param array<string, string>                    $tzifByZone binary TZif data that replaces the zone data from the Python TZ path
      * @return list<int>
      *
-     * @throws OracleUnavailableException
+     * @throws AdapterUnavailableException
      */
     public function resolveWithZoneinfo(
         array $points,
@@ -90,7 +90,7 @@ final class PythonOracle
      * @param list<array{recurrence: string, limit: int}> $cases recurrence: content lines, for example "DTSTART:20260101T090000\nRRULE:FREQ=DAILY"
      * @return list<list<string>|string>
      *
-     * @throws OracleUnavailableException
+     * @throws AdapterUnavailableException
      */
     public function expandWithDateutil(array $cases): array
     {
@@ -120,7 +120,7 @@ final class PythonOracle
     }
 
     /**
-     * @throws OracleUnavailableException
+     * @throws AdapterUnavailableException
      */
     private function run(
         string $script,
@@ -142,7 +142,7 @@ final class PythonOracle
         $process = @proc_open([$this->python, '-I', $script], [0 => $stdin, 1 => $stdout, 2 => $stderr], $pipes);
 
         if (!is_resource($process)) {
-            throw new OracleUnavailableException(sprintf('Cannot run %s', $this->python));
+            throw new AdapterUnavailableException(sprintf('Cannot run %s', $this->python));
         }
 
         $exitCode = proc_close($process);
@@ -152,7 +152,7 @@ final class PythonOracle
         $errorOutput = (string) stream_get_contents($stderr);
 
         if ($exitCode === self::EXIT_COMMAND_NOT_FOUND || str_contains($errorOutput, 'ModuleNotFoundError')) {
-            throw new OracleUnavailableException(sprintf('%s cannot run %s (set ORACLE_PYTHON): %s', $this->python, $script, $errorOutput));
+            throw new AdapterUnavailableException(sprintf('%s cannot run %s (set DIFFERENTIAL_PYTHON): %s', $this->python, $script, $errorOutput));
         }
 
         if ($exitCode !== 0) {

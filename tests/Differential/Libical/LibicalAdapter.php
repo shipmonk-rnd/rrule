@@ -1,14 +1,14 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle\Libical;
+namespace ShipMonk\RRuleTests\Differential\Libical;
 
 use FFI;
 use FFI\CData;
 use FFI\Exception as FfiException;
 use LogicException;
-use ShipMonk\RRuleTests\Oracle\DtStart;
-use ShipMonk\RRuleTests\Oracle\DtStartKind;
-use ShipMonk\RRuleTests\Oracle\OracleUnavailableException;
+use ShipMonk\RRuleTests\Differential\AdapterUnavailableException;
+use ShipMonk\RRuleTests\Differential\DtStart;
+use ShipMonk\RRuleTests\Differential\DtStartKind;
 use function count;
 use function extension_loaded;
 use function getenv;
@@ -24,7 +24,7 @@ use function sprintf;
  *
  * Time zones are libical builtin zones, which libical reads from the system zoneinfo directory.
  */
-final class LibicalOracle
+final class LibicalAdapter
 {
 
     public const DEFAULT_LIBRARY_PATH = '/opt/libical-noicu/lib/libical.so';
@@ -79,22 +79,22 @@ final class LibicalOracle
     private readonly FFI $ffi;
 
     /**
-     * @throws OracleUnavailableException
+     * @throws AdapterUnavailableException
      */
     public function __construct(string $libraryPath)
     {
         if (!extension_loaded('ffi')) {
-            throw new OracleUnavailableException('The PHP extension "ffi" is not loaded');
+            throw new AdapterUnavailableException('The PHP extension "ffi" is not loaded');
         }
 
         if (!is_file($libraryPath)) {
-            throw new OracleUnavailableException(sprintf('libical not found at %s (set LIBICAL_PATH)', $libraryPath));
+            throw new AdapterUnavailableException(sprintf('libical not found at %s (set LIBICAL_PATH)', $libraryPath));
         }
 
         try {
             $this->ffi = FFI::cdef(self::C_DECLARATIONS, $libraryPath);
         } catch (FfiException $e) {
-            throw new OracleUnavailableException(sprintf('Cannot load libical 4.x from %s: %s', $libraryPath, $e->getMessage()), 0, $e);
+            throw new AdapterUnavailableException(sprintf('Cannot load libical 4.x from %s: %s', $libraryPath, $e->getMessage()), 0, $e);
         }
 
         $this->call('icalerror_set_errors_are_fatal', false);
@@ -103,7 +103,7 @@ final class LibicalOracle
     /**
      * Uses the library at the path in the environment variable LIBICAL_PATH, or {@see self::DEFAULT_LIBRARY_PATH}.
      *
-     * @throws OracleUnavailableException
+     * @throws AdapterUnavailableException
      */
     public static function fromEnvironment(): self
     {

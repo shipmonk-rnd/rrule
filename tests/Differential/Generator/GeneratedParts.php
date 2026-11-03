@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle\Generator;
+namespace ShipMonk\RRuleTests\Differential\Generator;
 
 use ShipMonk\RRule\Weekday;
 use ShipMonk\RRule\WeekdayNum;

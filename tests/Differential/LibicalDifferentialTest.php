@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle;
+namespace ShipMonk\RRuleTests\Differential;
 
 use DateTimeImmutable;
 use DateTimeZone;
@@ -13,10 +13,10 @@ use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\Skip;
-use ShipMonk\RRuleTests\Oracle\Generator\GeneratedRecurrence;
-use ShipMonk\RRuleTests\Oracle\Generator\RandomRuleGenerator;
-use ShipMonk\RRuleTests\Oracle\Libical\LibicalException;
-use ShipMonk\RRuleTests\Oracle\Libical\LibicalOracle;
+use ShipMonk\RRuleTests\Differential\Generator\GeneratedRecurrence;
+use ShipMonk\RRuleTests\Differential\Generator\RandomRuleGenerator;
+use ShipMonk\RRuleTests\Differential\Libical\LibicalAdapter;
+use ShipMonk\RRuleTests\Differential\Libical\LibicalException;
 use function array_slice;
 use function array_unique;
 use function array_values;
@@ -50,8 +50,8 @@ final class LibicalDifferentialTest extends TestCase
     public function testEngineAgreesWithLibical(): void
     {
         try {
-            $oracle = new LibicalOracle(LibicalOracle::DEFAULT_LIBRARY_PATH);
-        } catch (OracleUnavailableException $e) {
+            $adapter = new LibicalAdapter(LibicalAdapter::DEFAULT_LIBRARY_PATH);
+        } catch (AdapterUnavailableException $e) {
             self::markTestSkipped($e->getMessage());
         }
 
@@ -66,8 +66,8 @@ final class LibicalDifferentialTest extends TestCase
 
             try {
                 $raw = $case->dtStart->kind === DtStartKind::Zoned
-                    ? $oracle->expandToUtc($case->dtStart, $case->rrule, self::LIMIT)
-                    : $oracle->expand($case->dtStart, $case->rrule, self::LIMIT);
+                    ? $adapter->expandToUtc($case->dtStart, $case->rrule, self::LIMIT)
+                    : $adapter->expand($case->dtStart, $case->rrule, self::LIMIT);
                 $theirs = array_values(array_unique($raw));
             } catch (LibicalException $e) {
                 $category = self::explainLibicalError($e, $ours);
@@ -102,7 +102,7 @@ final class LibicalDifferentialTest extends TestCase
             }
         }
 
-        $report = getenv('ORACLE_REPORT');
+        $report = getenv('DIFFERENTIAL_REPORT');
 
         if (is_string($report) && $report !== '') {
             file_put_contents($report, json_encode(['known' => $known, 'unexplained' => $unexplained], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));

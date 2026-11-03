@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle\Generator;
+namespace ShipMonk\RRuleTests\Differential\Generator;
 
 use DateTimeImmutable;
 use DateTimeZone;
@@ -14,8 +14,8 @@ use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Skip;
 use ShipMonk\RRule\Until;
 use ShipMonk\RRule\Weekday;
-use ShipMonk\RRuleTests\Oracle\DtStart;
-use ShipMonk\RRuleTests\Oracle\DtStartKind;
+use ShipMonk\RRuleTests\Differential\DtStart;
+use ShipMonk\RRuleTests\Differential\DtStartKind;
 use function array_map;
 use function array_unique;
 use function array_values;

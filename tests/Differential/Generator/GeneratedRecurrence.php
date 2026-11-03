@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle\Generator;
+namespace ShipMonk\RRuleTests\Differential\Generator;
 
 use ShipMonk\RRule\RecurrenceRule;
-use ShipMonk\RRuleTests\Oracle\DtStart;
+use ShipMonk\RRuleTests\Differential\DtStart;
 
 /**
  * One generated case: a start and a rule. $rule is built directly from the same parts as $rrule,

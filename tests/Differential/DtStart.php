@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle;
+namespace ShipMonk\RRuleTests\Differential;
 
 use InvalidArgumentException;
 use function preg_match;
@@ -14,7 +14,7 @@ use function sprintf;
  * - UTC DATE-TIME: 20260101T090000Z
  * - zoned DATE-TIME: TZID=Europe/Prague:20260101T090000
  *
- * Occurrences that the oracles return use the same forms, without the TZID (zoned values are local wall time).
+ * Occurrences that libical and dateutil return use the same forms, without the TZID (zoned values are local wall time).
  */
 final class DtStart
 {

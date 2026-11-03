@@ -1,16 +1,16 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle\Generator;
+namespace ShipMonk\RRuleTests\Differential\Generator;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use ShipMonk\RRule\Exception\ParseException;
 use ShipMonk\RRule\RecurrenceRule;
-use ShipMonk\RRuleTests\Oracle\DtStartKind;
-use ShipMonk\RRuleTests\Oracle\Libical\LibicalException;
-use ShipMonk\RRuleTests\Oracle\Libical\LibicalOracle;
-use ShipMonk\RRuleTests\Oracle\OracleUnavailableException;
-use ShipMonk\RRuleTests\Oracle\Python\PythonOracle;
+use ShipMonk\RRuleTests\Differential\AdapterUnavailableException;
+use ShipMonk\RRuleTests\Differential\DtStartKind;
+use ShipMonk\RRuleTests\Differential\Libical\LibicalAdapter;
+use ShipMonk\RRuleTests\Differential\Libical\LibicalException;
+use ShipMonk\RRuleTests\Differential\Python\PythonAdapter;
 use function array_combine;
 use function array_filter;
 use function array_keys;
@@ -138,8 +138,8 @@ final class RandomRuleGeneratorTest extends TestCase
     public function testLibicalExpandsMostGeneratedRules(): void
     {
         try {
-            $oracle = LibicalOracle::fromEnvironment();
-        } catch (OracleUnavailableException $e) {
+            $adapter = LibicalAdapter::fromEnvironment();
+        } catch (AdapterUnavailableException $e) {
             self::markTestSkipped($e->getMessage());
         }
 
@@ -149,7 +149,7 @@ final class RandomRuleGeneratorTest extends TestCase
 
         foreach (self::generate(11, $caseCount) as $case) {
             try {
-                $productive += $oracle->expand($case->dtStart, $case->rrule, 5) === [] ? 0 : 1;
+                $productive += $adapter->expand($case->dtStart, $case->rrule, 5) === [] ? 0 : 1;
             } catch (LibicalException $e) {
                 $rejected[] = sprintf('%s: %s', $case->toString(), $e->libicalError);
             }
@@ -168,11 +168,11 @@ final class RandomRuleGeneratorTest extends TestCase
         $cases = self::generate(13, 300);
 
         try {
-            $results = PythonOracle::fromEnvironment()->expandWithDateutil(array_map(
+            $results = PythonAdapter::fromEnvironment()->expandWithDateutil(array_map(
                 static fn (GeneratedRecurrence $case): array => ['recurrence' => $case->toRecurrenceText(), 'limit' => 5],
                 $cases,
             ));
-        } catch (OracleUnavailableException $e) {
+        } catch (AdapterUnavailableException $e) {
             self::markTestSkipped($e->getMessage());
         }
 

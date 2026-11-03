@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle\Python;
+namespace ShipMonk\RRuleTests\Differential\Python;
 
 use DateTimeZone;
 use LogicException;

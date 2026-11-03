@@ -27,7 +27,7 @@ use const PHP_INT_MAX;
 
 /**
  * A slow, literal implementation of the JSCalendar 2.0 recurrence expansion algorithm (section 4.3.3.1) for a
- * floating start, used as an independent oracle in tests. It shares no code with the library engine: calendar math
+ * floating start, used as an independent reference in tests. It shares no code with the library engine: calendar math
  * goes through PHP's DateTime in UTC, sub-daily periods are scanned second by second, and there are no jumps,
  * caches or termination proofs (it stops at a given year).
  */

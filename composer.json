@@ -66,12 +66,16 @@
         ],
         "check:cs": "phpcs",
         "check:dependencies": "composer-dependency-analyser",
+        "check:differential": [
+            "Composer\\Config::disableProcessTimeout",
+            "docker/differential/run.sh"
+        ],
         "check:ec": "ec src tests",
         "check:mutations": [
+            "Composer\\Config::disableProcessTimeout",
             "composer --working-dir=tools/infection install --no-interaction --no-progress",
             "XDEBUG_MODE=coverage tools/infection/vendor/bin/infection --threads=max --no-interaction"
         ],
-        "check:oracle": "phpunit --testsuite oracle",
         "check:reference": "phpunit --testsuite reference",
         "check:tests": "phpunit --testsuite default",
         "check:types": "phpstan analyse -vv --ansi",

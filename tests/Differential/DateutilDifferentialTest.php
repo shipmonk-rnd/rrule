@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle;
+namespace ShipMonk\RRuleTests\Differential;
 
 use DateTimeImmutable;
 use DateTimeZone;
@@ -11,9 +11,9 @@ use ShipMonk\RRule\DtStartPolicy;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\Skip;
-use ShipMonk\RRuleTests\Oracle\Generator\GeneratedRecurrence;
-use ShipMonk\RRuleTests\Oracle\Generator\RandomRuleGenerator;
-use ShipMonk\RRuleTests\Oracle\Python\PythonOracle;
+use ShipMonk\RRuleTests\Differential\Generator\GeneratedRecurrence;
+use ShipMonk\RRuleTests\Differential\Generator\RandomRuleGenerator;
+use ShipMonk\RRuleTests\Differential\Python\PythonAdapter;
 use function array_map;
 use function array_slice;
 use function count;
@@ -39,9 +39,9 @@ final class DateutilDifferentialTest extends TestCase
     public function testEngineAgreesWithDateutil(): void
     {
         try {
-            $oracle = PythonOracle::fromEnvironment();
-            $oracle->expandWithDateutil([['recurrence' => "DTSTART:20260101T000000\nRRULE:FREQ=DAILY;COUNT=1", 'limit' => 1]]);
-        } catch (OracleUnavailableException $e) {
+            $adapter = PythonAdapter::fromEnvironment();
+            $adapter->expandWithDateutil([['recurrence' => "DTSTART:20260101T000000\nRRULE:FREQ=DAILY;COUNT=1", 'limit' => 1]]);
+        } catch (AdapterUnavailableException $e) {
             self::markTestSkipped($e->getMessage());
         }
 
@@ -56,7 +56,7 @@ final class DateutilDifferentialTest extends TestCase
             }
         }
 
-        $results = $oracle->expandWithDateutil(array_map(
+        $results = $adapter->expandWithDateutil(array_map(
             static fn (GeneratedRecurrence $case): array => ['recurrence' => $case->toRecurrenceText(), 'limit' => self::LIMIT],
             $cases,
         ));

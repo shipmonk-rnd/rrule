@@ -1,19 +1,19 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle;
+namespace ShipMonk\RRuleTests\Differential;
 
 use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRuleTests\Oracle\Python\PythonOracle;
-use ShipMonk\RRuleTests\Oracle\Python\TzifWriter;
+use ShipMonk\RRuleTests\Differential\Python\PythonAdapter;
+use ShipMonk\RRuleTests\Differential\Python\TzifWriter;
 use function gmmktime;
 
 /**
- * Checks the Python oracle scripts against known RFC 5545 results.
+ * Checks the Python scripts against known RFC 5545 results.
  */
 #[CoversNothing]
-final class PythonOracleSelfTest extends TestCase
+final class PythonAdapterTest extends TestCase
 {
 
     private const POINTS = [
@@ -43,7 +43,7 @@ final class PythonOracleSelfTest extends TestCase
     public function testDateutilExpands(): void
     {
         try {
-            $results = PythonOracle::fromEnvironment()->expandWithDateutil([
+            $results = PythonAdapter::fromEnvironment()->expandWithDateutil([
                 ['recurrence' => "DTSTART;TZID=Europe/Prague:20260328T023000\nRRULE:FREQ=DAILY;COUNT=3", 'limit' => 10],
                 ['recurrence' => "DTSTART;VALUE=DATE:20260131\nRRULE:FREQ=MONTHLY;COUNT=4", 'limit' => 10],
                 ['recurrence' => "DTSTART:20260101T090000Z\nRRULE:FREQ=DAILY;INTERVAL=2;UNTIL=20260107T090000Z", 'limit' => 10],
@@ -52,7 +52,7 @@ final class PythonOracleSelfTest extends TestCase
                 ['recurrence' => "DTSTART:20260101T000000\nRRULE:FREQ=SECONDLY", 'limit' => 3],
                 ['recurrence' => "DTSTART:20260131T100000Z\nRRULE:RSCALE=GREGORIAN;FREQ=MONTHLY;SKIP=BACKWARD", 'limit' => 3],
             ]);
-        } catch (OracleUnavailableException $e) {
+        } catch (AdapterUnavailableException $e) {
             self::markTestSkipped($e->getMessage());
         }
 
@@ -77,8 +77,8 @@ final class PythonOracleSelfTest extends TestCase
     private static function resolve(array $tzifByZone): array
     {
         try {
-            return PythonOracle::fromEnvironment()->resolveWithZoneinfo(self::POINTS, $tzifByZone);
-        } catch (OracleUnavailableException $e) {
+            return PythonAdapter::fromEnvironment()->resolveWithZoneinfo(self::POINTS, $tzifByZone);
+        } catch (AdapterUnavailableException $e) {
             self::markTestSkipped($e->getMessage());
         }
     }

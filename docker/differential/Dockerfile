@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Differential-testing oracles for shipmonk/rrule: libical (PHP FFI) and Python zoneinfo / dateutil.
-# Build: docker build -t shipmonk-rrule-oracle docker/oracle
+# Differential tests of shipmonk/rrule: libical (PHP FFI), python-dateutil and Python zoneinfo.
+# Build: docker build -t shipmonk-rrule-differential docker/differential
 
 # php:8.1-cli = PHP 8.1.34 on Debian 13 (trixie). Both stages use it, so glibc and ICU versions match.
 ARG PHP_IMAGE=php:8.1-cli@sha256:76e563191d1ade120313a8736df24154d21da5155c0756f147c0b01bd19d9087
@@ -31,30 +31,30 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends "$icu" libffi-dev python3 python3-venv tzdata unzip; \
     docker-php-ext-install -j"$(nproc)" ffi; \
     # PHP bundles an older time zone database; use the same IANA release as libical (system zoneinfo) and Python
-    # (tzdata in requirements.txt), so that the oracles compare the engine, not two tzdata versions.
+    # (tzdata in requirements.txt), so that the tests compare the engines, not two tzdata versions.
     apt-get install -y --no-install-recommends $PHPIZE_DEPS; \
     pecl install timezonedb-2026.6; \
     docker-php-ext-enable timezonedb; \
     php -r 'exit(timezone_version_get() === "2026.6" ? 0 : 1);'; \
     apt-get purge -y --auto-remove libffi-dev $PHPIZE_DEPS; \
     rm -rf /var/lib/apt/lists/*; \
-    printf 'ffi.enable=1\nmemory_limit=1G\n' > "$PHP_INI_DIR/conf.d/zz-oracle.ini"
+    printf 'ffi.enable=1\nmemory_limit=1G\n' > "$PHP_INI_DIR/conf.d/zz-differential.ini"
 
-COPY requirements.txt /tmp/oracle-requirements.txt
-RUN python3 -m venv /opt/oracle-venv \
-    && /opt/oracle-venv/bin/pip install --no-cache-dir --disable-pip-version-check --require-hashes --only-binary :all: -r /tmp/oracle-requirements.txt \
-    && rm /tmp/oracle-requirements.txt
+COPY requirements.txt /tmp/differential-requirements.txt
+RUN python3 -m venv /opt/differential-venv \
+    && /opt/differential-venv/bin/pip install --no-cache-dir --disable-pip-version-check --require-hashes --only-binary :all: -r /tmp/differential-requirements.txt \
+    && rm /tmp/differential-requirements.txt
 
 COPY --from=composer/composer:2.11.1-bin /composer /usr/local/bin/composer
 COPY --from=libical /opt/libical-noicu /opt/libical-noicu
 COPY --from=libical /opt/libical-icu /opt/libical-icu
-COPY check-image.sh /usr/local/bin/check-oracle-image
+COPY check-image.sh /usr/local/bin/check-differential-image
 
 ENV LIBICAL_PATH=/opt/libical-noicu/lib/libical.so \
-    ORACLE_PYTHON=/opt/oracle-venv/bin/python3 \
+    DIFFERENTIAL_PYTHON=/opt/differential-venv/bin/python3 \
     COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_HOME=/tmp/composer
 
-RUN check-oracle-image
+RUN check-differential-image
 
 WORKDIR /app

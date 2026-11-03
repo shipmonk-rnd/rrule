@@ -20,11 +20,11 @@
     <testsuites>
         <testsuite name="default">
             <directory>tests</directory>
-            <exclude>tests/Oracle</exclude>
+            <exclude>tests/Differential</exclude>
             <exclude>tests/Reference/NaiveExpanderSnapshotTest.php</exclude>
         </testsuite>
-        <testsuite name="oracle">
-            <directory>tests/Oracle</directory>
+        <testsuite name="differential">
+            <directory>tests/Differential</directory>
         </testsuite>
         <testsuite name="reference">
             <file>tests/Reference/NaiveExpanderSnapshotTest.php</file>

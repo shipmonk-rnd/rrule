@@ -191,7 +191,7 @@ All exceptions implement `ShipMonk\RRule\Exception\RecurrenceException`.
 
 - `tests/Corpus`: about 950 cases imported from the RFC 5545 and RFC 7529 examples, libical, Ical.Net, python-dateutil, Mozilla Calendar, ical.js, sabre/vobject, rust-rrule, lib-recur, php-rrule and pycalendar, each with its licence. A case where the source disagrees with this library is listed in `CorpusDeviations` with the reason; nothing is skipped silently.
 - `tests/Reference`: a slow, literal implementation of the JSCalendar algorithm that shares no code with the engine, compared on 1 000 random rules. Its results are stored in `tests/Reference/data/naive-snapshot.json`, so the default suite (and mutation testing) runs the comparison in about one second. The reference suite checks the snapshot against a new naive expansion.
-- `tests/Oracle` (Docker): differential tests on 2 000 random rules each against libical 4 (through PHP FFI) and python-dateutil 4.0, and a check of the time zone resolver against Python `zoneinfo` (every zone, every transition from 1970 to 2037, about 147 000 local times). Every difference from an oracle must fall in a documented category, or the reference implementation must side with this library; otherwise the test fails. The oracles found libical bugs (BYSETPOS with FREQ=DAILY, sub-daily rules that skip the rest of the first hour, BYWEEKNO=-53, SKIP with BYDAY) and one bug in this library during development (a start in a DST gap moved the later occurrences).
+- `tests/Differential` (Docker): differential tests on 2 000 random rules each against libical 4 (through PHP FFI) and python-dateutil 4.0, and a check of the time zone resolver against Python `zoneinfo` (every zone, every transition from 1970 to 2037, about 147 000 local times). Every difference from libical or dateutil must fall in a documented category, or the reference implementation must side with this library; otherwise the test fails. These tests found libical bugs (BYSETPOS with FREQ=DAILY, sub-daily rules that skip the rest of the first hour, BYWEEKNO=-53, SKIP with BYDAY) and one bug in this library during development (a start in a DST gap moved the later occurrences).
 - `tests/Type`: PHPStan type-inference tests for the public API.
 
 ## Development
@@ -204,15 +204,8 @@ composer check:tests        # PHPUnit
 composer check:coverage     # PHPUnit with coverage + coverage guard (100 % per method)
 composer check:mutations    # Infection (needs PHP 8.3+)
 composer check:reference    # naive reference results against the snapshot (minutes)
+composer check:differential # differential tests against libical and python-dateutil (needs Docker)
 composer update:reference-snapshot  # write the snapshot again after a change of NaiveExpander or ReferenceCase
-```
-
-Oracle tests in Docker:
-
-```sh
-docker build -t shipmonk-rrule-oracle docker/oracle
-docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/app" shipmonk-rrule-oracle composer install --no-interaction --ignore-platform-req=php
-docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/app" shipmonk-rrule-oracle vendor/bin/phpunit --testsuite oracle
 ```
 
 ## License

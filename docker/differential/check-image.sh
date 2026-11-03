@@ -1,5 +1,5 @@
 #!/bin/sh
-# Smoke test of the oracle image: FFI loads both libical builds, Python has zoneinfo and dateutil.
+# Smoke test of the differential test image: FFI loads both libical builds, Python has zoneinfo and dateutil.
 set -eu
 
 for lib in /opt/libical-noicu/lib/libical.so /opt/libical-icu/lib/libical.so; do
@@ -15,7 +15,7 @@ for lib in /opt/libical-noicu/lib/libical.so /opt/libical-icu/lib/libical.so; do
     ' "$lib"
 done
 
-"$ORACLE_PYTHON" -I -c '
+"$DIFFERENTIAL_PYTHON" -I -c '
 import dateutil, zoneinfo
 from importlib.metadata import version
 zoneinfo.ZoneInfo("Europe/Prague")

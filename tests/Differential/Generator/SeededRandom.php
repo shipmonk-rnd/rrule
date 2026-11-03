@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle\Generator;
+namespace ShipMonk\RRuleTests\Differential\Generator;
 
 use LogicException;
 use function array_key_exists;

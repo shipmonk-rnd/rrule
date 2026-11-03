@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle;
+namespace ShipMonk\RRuleTests\Differential;
 
 use DateTimeImmutable;
 use DateTimeZone;
@@ -10,8 +10,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\TimeZoneResolver;
-use ShipMonk\RRuleTests\Oracle\Python\PythonOracle;
-use ShipMonk\RRuleTests\Oracle\Python\TzifWriter;
+use ShipMonk\RRuleTests\Differential\Python\PythonAdapter;
+use ShipMonk\RRuleTests\Differential\Python\TzifWriter;
 use function array_chunk;
 use function array_keys;
 use function array_map;
@@ -35,7 +35,7 @@ use function sprintf;
  */
 #[CoversClass(FloatingDateTime::class)]
 #[CoversClass(TimeZoneResolver::class)]
-final class TimeZoneResolverOracleTest extends TestCase
+final class TimeZoneResolverDifferentialTest extends TestCase
 {
 
     private const ZONES_PER_GROUP = 40;
@@ -79,11 +79,11 @@ final class TimeZoneResolverOracleTest extends TestCase
         }
 
         try {
-            $expected = PythonOracle::fromEnvironment()->resolveWithZoneinfo(
+            $expected = PythonAdapter::fromEnvironment()->resolveWithZoneinfo(
                 array_map(static fn (array $point): array => ['zone' => $point['zone']->getName(), 'local' => gmdate('Y-m-d\TH:i:s', $point['local'])], $points),
                 $tzifByZone,
             );
-        } catch (OracleUnavailableException $e) {
+        } catch (AdapterUnavailableException $e) {
             self::markTestSkipped($e->getMessage());
         }
 

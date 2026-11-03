@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle\Libical;
+namespace ShipMonk\RRuleTests\Differential\Libical;
 
 use RuntimeException;
 

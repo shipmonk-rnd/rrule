@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace ShipMonk\RRuleTests\Oracle;
+namespace ShipMonk\RRuleTests\Differential;
 
 use DateTimeImmutable;
 use DateTimeZone;
@@ -8,7 +8,7 @@ use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\TimeZoneResolver;
 use ShipMonk\RRule\Until;
-use ShipMonk\RRuleTests\Oracle\Generator\GeneratedRecurrence;
+use ShipMonk\RRuleTests\Differential\Generator\GeneratedRecurrence;
 use ShipMonk\RRuleTests\Reference\NaiveExpander;
 use function array_filter;
 use function array_keys;
@@ -21,14 +21,14 @@ use function str_starts_with;
 use function substr;
 
 /**
- * Decides a disagreement between the engine and an oracle with the slow JSCalendar reference implementation.
+ * Decides a disagreement between the engine and libical or dateutil with the slow JSCalendar reference implementation.
  */
 final class ReferenceArbiter
 {
 
     /**
      * The slow JSCalendar reference implementation decides: when it agrees with the engine and not with libical,
-     * the difference belongs to the oracle. For a zoned start, the reference expands the local times and the library
+     * the difference belongs to the other implementation. For a zoned start, the reference expands the local times and the library
      * resolver (checked against Python zoneinfo for every zone) converts them to instants.
      *
      * @param list<string> $ours
