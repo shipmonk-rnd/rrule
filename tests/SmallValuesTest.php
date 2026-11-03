@@ -110,7 +110,7 @@ final class SmallValuesTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("ISO weekday number $isoNumber is not from 1 (Monday) to 7 (Sunday)");
 
-        Weekday::fromIsoNumber($isoNumber); // @phpstan-ignore argument.type, staticMethod.resultUnused
+        Weekday::fromIsoNumber($isoNumber); // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis), staticMethod.resultUnused (the test expects the call to throw)
     }
 
     /**

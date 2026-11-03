@@ -116,72 +116,72 @@ final class RecurrenceRuleTest extends TestCase
     public static function provideInvalidRules(): iterable
     {
         yield 'interval 0' => [
-            static fn () => new RecurrenceRule(Frequency::Daily, interval: 0), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Daily, interval: 0), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::IntervalNotPositive,
             'INTERVAL must be a positive integer, 0 given',
         ];
         yield 'BYSECOND 61' => [
-            static fn () => new RecurrenceRule(Frequency::Daily, bySecond: [61]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Daily, bySecond: [61]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYSECOND value 61 is out of range (allowed: 0 to 60)',
         ];
         yield 'BYMINUTE -1' => [
-            static fn () => new RecurrenceRule(Frequency::Daily, byMinute: [-1]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Daily, byMinute: [-1]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYMINUTE value -1 is out of range (allowed: 0 to 59)',
         ];
         yield 'BYHOUR 24' => [
-            static fn () => new RecurrenceRule(Frequency::Daily, byHour: [24]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Daily, byHour: [24]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYHOUR value 24 is out of range (allowed: 0 to 23)',
         ];
         yield 'BYMONTHDAY 0' => [
-            static fn () => new RecurrenceRule(Frequency::Monthly, byMonthDay: [0]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Monthly, byMonthDay: [0]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYMONTHDAY value 0 is out of range (allowed: -31 to 31, except 0)',
         ];
         yield 'BYMONTHDAY -32' => [
-            static fn () => new RecurrenceRule(Frequency::Monthly, byMonthDay: [-32]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Monthly, byMonthDay: [-32]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYMONTHDAY value -32 is out of range (allowed: -31 to 31, except 0)',
         ];
         yield 'BYYEARDAY 367' => [
-            static fn () => new RecurrenceRule(Frequency::Yearly, byYearDay: [367]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Yearly, byYearDay: [367]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYYEARDAY value 367 is out of range (allowed: -366 to 366, except 0)',
         ];
         yield 'BYWEEKNO 54' => [
-            static fn () => new RecurrenceRule(Frequency::Yearly, byWeekNo: [54]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Yearly, byWeekNo: [54]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYWEEKNO value 54 is out of range (allowed: -53 to 53, except 0)',
         ];
         yield 'BYMONTH 13' => [
-            static fn () => new RecurrenceRule(Frequency::Yearly, byMonth: [13]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Yearly, byMonth: [13]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYMONTH value 13 is out of range (allowed: 1 to 12)',
         ];
         yield 'BYSETPOS 0' => [
-            static fn () => new RecurrenceRule(Frequency::Yearly, byMonth: [1], bySetPos: [0]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Yearly, byMonth: [1], bySetPos: [0]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYSETPOS value 0 is out of range (allowed: -366 to 366, except 0)',
         ];
         yield 'non-integer value' => [
-            static fn () => new RecurrenceRule(Frequency::Yearly, byMonth: ['1']), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Yearly, byMonth: ['1']), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYMONTH value of a non-integer type is out of range (allowed: 1 to 12)',
         ];
         yield 'not a list' => [
-            static fn () => new RecurrenceRule(Frequency::Yearly, byMonth: [1 => 1]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Yearly, byMonth: [1 => 1]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYMONTH must be a list',
         ];
         yield 'BYDAY not a list' => [
-            static fn () => new RecurrenceRule(Frequency::Weekly, byDay: [1 => WeekdayNum::every(Weekday::Monday)]), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Weekly, byDay: [1 => WeekdayNum::every(Weekday::Monday)]), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYDAY must be a list',
         ];
         yield 'BYDAY not WeekdayNum' => [
-            static fn () => new RecurrenceRule(Frequency::Weekly, byDay: ['MO']), // @phpstan-ignore argument.type
+            static fn () => new RecurrenceRule(Frequency::Weekly, byDay: ['MO']), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
             RuleViolation::ValueOutOfRange,
             'BYDAY must contain WeekdayNum objects',
         ];

@@ -214,31 +214,31 @@ final class RecurrenceTest extends TestCase
 
         return [
             'RDATE type' => [
-                static fn () => Recurrence::of($date)->withAddedDates($floating), // @phpstan-ignore argument.type
+                static fn () => Recurrence::of($date)->withAddedDates($floating), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
                 'The RDATE value must be a CalendarDate, because the start is a date',
             ],
             'EXDATE type' => [
-                static fn () => Recurrence::of($floating)->withExcludedDates($date), // @phpstan-ignore argument.type
+                static fn () => Recurrence::of($floating)->withExcludedDates($date), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
                 'The EXDATE value must be a FloatingDateTime, because the start is a floating date-time',
             ],
             'firstAfter type' => [
-                static fn () => Recurrence::of($instant)->firstAfter($floating), // @phpstan-ignore argument.type
+                static fn () => Recurrence::of($instant)->firstAfter($floating), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
                 'The after value must be a DateTimeImmutable, because the start is a date-time with a time zone',
             ],
             'lastBefore type' => [
-                static fn () => Recurrence::of($instant)->lastBefore($date), // @phpstan-ignore argument.type
+                static fn () => Recurrence::of($instant)->lastBefore($date), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
                 'The before value must be a DateTimeImmutable, because the start is a date-time with a time zone',
             ],
             'between from type' => [
-                static fn () => Recurrence::of($date)->between($floating, $date), // @phpstan-ignore argument.type
+                static fn () => Recurrence::of($date)->between($floating, $date), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
                 'The from value must be a CalendarDate, because the start is a date',
             ],
             'between to type' => [
-                static fn () => Recurrence::of($date)->between($date, $floating), // @phpstan-ignore argument.type
+                static fn () => Recurrence::of($date)->between($date, $floating), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
                 'The to value must be a CalendarDate, because the start is a date',
             ],
             'occursAt type' => [
-                static fn () => Recurrence::of($date)->occursAt($floating), // @phpstan-ignore argument.type
+                static fn () => Recurrence::of($date)->occursAt($floating), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
                 'The value value must be a CalendarDate, because the start is a date',
             ],
         ];
@@ -501,7 +501,7 @@ final class RecurrenceTest extends TestCase
     {
         $this->expectException(LogicException::class);
 
-        Recurrence::of(CalendarDate::of(2016, 2, 29))->withSearchLimit(0); // @phpstan-ignore argument.type
+        Recurrence::of(CalendarDate::of(2016, 2, 29))->withSearchLimit(0); // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
     }
 
     /**
@@ -762,8 +762,8 @@ final class RecurrenceTest extends TestCase
     public function testInvalidArguments(): void
     {
         foreach ([
-            'take(-1)' => static fn () => Recurrence::of(CalendarDate::of(2026, 1, 1))->take(-1), // @phpstan-ignore argument.type
-            'withSearchLimit(0)' => static fn () => Recurrence::of(CalendarDate::of(2026, 1, 1))->withSearchLimit(0), // @phpstan-ignore argument.type
+            'take(-1)' => static fn () => Recurrence::of(CalendarDate::of(2026, 1, 1))->take(-1), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
+            'withSearchLimit(0)' => static fn () => Recurrence::of(CalendarDate::of(2026, 1, 1))->withSearchLimit(0), // @phpstan-ignore argument.type (tests the runtime check for callers without static analysis)
         ] as $case => $call) {
             try {
                 $call();

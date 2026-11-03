@@ -315,7 +315,7 @@ final class LibicalAdapter
         mixed ...$arguments,
     ): mixed
     {
-        return $this->ffi->{$function}(...$arguments); // @phpstan-ignore method.dynamicName (libical functions are declared in C_DECLARATIONS, not in PHP)
+        return $this->ffi->{$function}(...$arguments); // @phpstan-ignore method.dynamicName (the methods are the C functions in C_DECLARATIONS; PHPStan does not know them, so a static name fails too)
     }
 
     private function callForPointer(
@@ -337,7 +337,7 @@ final class LibicalAdapter
         string $field,
     ): int
     {
-        $value = $struct->{$field}; // @phpstan-ignore property.dynamicName (struct fields are declared in C_DECLARATIONS)
+        $value = $struct->{$field}; // @phpstan-ignore property.dynamicName (the properties are the C struct fields in C_DECLARATIONS; PHPStan does not know them, so a static name fails too)
 
         if (!is_int($value)) {
             throw new LogicException(sprintf('Struct field %s is not an integer', $field));
