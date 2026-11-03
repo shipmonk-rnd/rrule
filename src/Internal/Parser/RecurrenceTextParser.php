@@ -265,7 +265,6 @@ final class RecurrenceTextParser
             throw ParseErrors::create(sprintf('TZID must not be used with VALUE=DATE (RFC 5545 section 3.2.19) in %s', $line->name), $line->lineNumber);
         }
 
-        $timeZone = null;
         $timeZoneIgnored = false;
         $values = [];
 
@@ -286,8 +285,7 @@ final class RecurrenceTextParser
             $dateTime = ValueParser::parseDateTime($valueType === self::VALUE_PERIOD ? $this->getPeriodStart($line, $text) : $text, $line->name, $line->lineNumber);
 
             if ($timeZoneId !== null && $dateTime instanceof FloatingDateTime) {
-                $timeZone ??= ValueParser::parseTimeZone($timeZoneId, $line->lineNumber);
-                $values[] = [$text, $dateTime->atTimeZone($timeZone)];
+                $values[] = [$text, $dateTime->atTimeZone(ValueParser::parseTimeZone($timeZoneId, $line->lineNumber))];
             } else {
                 $timeZoneIgnored = $timeZoneIgnored || $timeZoneId !== null;
                 $values[] = [$text, $dateTime];

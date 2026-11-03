@@ -83,6 +83,11 @@ final class Civil
         return $era * self::DAYS_PER_400_YEARS + $dayOfEra - 719_468;
     }
 
+    public static function firstDayOfYear(int $year): int
+    {
+        return self::daysFromCivil($year, 1, 1);
+    }
+
     /**
      * @return array{int, int<1, 12>, int<1, 31>}
      */

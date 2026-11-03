@@ -68,6 +68,27 @@ jobs:
       - name: PHPUnit
         run: composer check:tests
 
+  reference:
+    name: Reference snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      # The naive expansion takes minutes, so the default suite compares the engine with a stored snapshot.
+      # This job checks that the snapshot matches a new naive expansion.
+      - name: PHPUnit reference suite
+        run: composer check:reference
+
   coverage:
     name: Coverage
     runs-on: ubuntu-latest

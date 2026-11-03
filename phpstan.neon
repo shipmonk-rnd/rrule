@@ -58,4 +58,4 @@ parameters:
       path: tests/*
     # random rule parts are plain integers; the RecurrenceRule constructor checks their ranges
     - identifier: argument.type
-      path: tests/Reference/NaiveExpanderDifferentialTest.php
+      path: tests/Reference/ReferenceCase.php

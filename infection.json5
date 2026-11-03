@@ -11,6 +11,7 @@
         "text": "cache/infection.log"
     },
     "tmpDir": "cache/infection",
+    "timeout": 60,
     "minMsi": 98,
     "minCoveredMsi": 98,
     "mutators": {

@@ -30,10 +30,14 @@ use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Until;
 use ShipMonk\RRule\Weekday;
 use ShipMonk\RRule\WeekdayNum;
+use function array_filter;
 use function array_keys;
 use function array_map;
+use function array_values;
 use function count;
+use function intdiv;
 use function iterator_to_array;
+use function ksort;
 use function str_replace;
 use const PHP_INT_MAX;
 
@@ -428,15 +432,18 @@ final class RecurrenceTest extends TestCase
 
     public function testSearchLimit(): void
     {
-        // February 29 on a Monday: years apart, so a low limit is exceeded
-        $recurrence = Recurrence::of(CalendarDate::of(2016, 2, 29), new RecurrenceRule(Frequency::Daily, byMonth: [2], byMonthDay: [29], byDay: [WeekdayNum::every(Weekday::Monday)]));
+        // February 29 on a Monday: 28 years apart, found in one jump
+        $leapMonday = Recurrence::of(CalendarDate::of(2016, 2, 29), new RecurrenceRule(Frequency::Daily, byMonth: [2], byMonthDay: [29], byDay: [WeekdayNum::every(Weekday::Monday)]));
+        self::assertSame('2044-02-29', $leapMonday->withSearchLimit(2)->firstAfter(CalendarDate::of(2016, 3, 1))?->toString());
 
-        self::assertSame('2044-02-29', $recurrence->firstAfter(CalendarDate::of(2016, 3, 1))?->toString());
+        // BYSETPOS rejects each month from December 2026 to February 2027, so the answer is in the fourth period
+        $fifthMonday = Recurrence::of(CalendarDate::of(2026, 1, 1), new RecurrenceRule(Frequency::Monthly, byDay: [WeekdayNum::every(Weekday::Monday)], bySetPos: [5]));
+        self::assertSame('2027-03-29', $fifthMonday->withSearchLimit(4)->firstAfter(CalendarDate::of(2026, 12, 1))?->toString());
 
         $this->expectException(SearchLimitExceededException::class);
         $this->expectExceptionMessage('The search examined 3 periods without reaching an answer; raise the limit with Recurrence::withSearchLimit()');
 
-        $recurrence->withSearchLimit(3)->firstAfter(CalendarDate::of(2016, 3, 1));
+        $fifthMonday->withSearchLimit(3)->firstAfter(CalendarDate::of(2026, 12, 1));
     }
 
     public function testInvalidSearchLimit(): void
@@ -526,6 +533,100 @@ final class RecurrenceTest extends TestCase
         yield 'hourly' => [Frequency::Hourly, '2026-07-01T09:00:10'];
         yield 'minutely' => [Frequency::Minutely, '2026-07-01T11:57:10'];
         yield 'secondly' => [Frequency::Secondly, '2026-07-01T12:00:04'];
+    }
+
+    public function testLastBeforeInclusiveIsExact(): void
+    {
+        $recurrence = Recurrence::of(FloatingDateTime::of(2026, 1, 1), new RecurrenceRule(Frequency::Secondly, interval: 2));
+
+        self::assertSame('2026-01-01T00:00:10', $recurrence->lastBefore(FloatingDateTime::of(2026, 1, 1, 0, 0, 11), inclusive: true)?->toString());
+        self::assertSame('2026-01-01T00:00:10', $recurrence->lastBefore(FloatingDateTime::of(2026, 1, 1, 0, 0, 10), inclusive: true)?->toString());
+        self::assertSame('2026-01-01T00:00:08', $recurrence->lastBefore(FloatingDateTime::of(2026, 1, 1, 0, 0, 10))?->toString());
+    }
+
+    public function testInstantsInsideADstGapAreReordered(): void
+    {
+        // Every 7 minutes in wall-clock time: local times in the gap resolve to instants after the local times
+        // that follow the gap, so the stream must reorder them.
+        $prague = new DateTimeZone('Europe/Prague');
+        $recurrence = Recurrence::of(new DateTimeImmutable('2026-03-29 01:00', $prague), new RecurrenceRule(Frequency::Minutely, interval: 7));
+        $expected = [];
+
+        for ($minutes = 0; $minutes <= 180; $minutes += 7) {
+            $local = FloatingDateTime::of(2026, 3, 29, 1 + intdiv($minutes, 60), $minutes % 60);
+            $expected[$local->atTimeZone($prague)->getTimestamp()] = true;
+        }
+
+        ksort($expected);
+        $actual = [];
+
+        foreach ($recurrence->between(new DateTimeImmutable('2026-03-29 01:00', $prague), new DateTimeImmutable('2026-03-29 03:30', $prague)) as $occurrence) {
+            $actual[] = $occurrence->getTimestamp();
+        }
+
+        self::assertSame(array_values(array_filter(array_keys($expected), static fn (int $unix): bool => $unix < (new DateTimeImmutable('2026-03-29 03:30', $prague))->getTimestamp())), $actual);
+        self::assertCount(17, $actual);
+    }
+
+    public function testHugeIntervalStillMatchesItsFirstPeriod(): void
+    {
+        $secondly = Recurrence::of(FloatingDateTime::of(2026, 1, 5, 0, 0, 1), new RecurrenceRule(Frequency::Secondly, interval: PHP_INT_MAX, bySecond: [1]))
+            ->withDtStartPolicy(DtStartPolicy::OnlyIfMatching);
+        $hourly = Recurrence::of(FloatingDateTime::of(2026, 1, 5), new RecurrenceRule(Frequency::Hourly, interval: PHP_INT_MAX, byMinute: [30]))
+            ->withDtStartPolicy(DtStartPolicy::OnlyIfMatching);
+
+        self::assertSame(['2026-01-05T00:00:01'], self::formatAll($secondly));
+        self::assertSame(['2026-01-05T00:30:00'], self::formatAll($hourly));
+    }
+
+    public function testQueryBoundsAreExact(): void
+    {
+        $everySecond = Recurrence::of(FloatingDateTime::of(2026, 1, 1), new RecurrenceRule(Frequency::Secondly));
+        $everyOtherSecond = Recurrence::of(FloatingDateTime::of(2026, 1, 1), new RecurrenceRule(Frequency::Secondly, interval: 2));
+        $at = FloatingDateTime::of(2026, 1, 1, 0, 0, 10);
+
+        self::assertSame('2026-01-01T00:00:11', $everySecond->firstAfter($at)?->toString());
+        self::assertSame('2026-01-01T00:00:10', $everySecond->firstAfter($at, inclusive: true)?->toString());
+        self::assertSame('2026-01-01T00:00:09', $everySecond->lastBefore($at)?->toString());
+        self::assertSame('2026-01-01T00:00:10', $everySecond->lastBefore($at, inclusive: true)?->toString());
+        self::assertSame(['2026-01-01T00:00:10', '2026-01-01T00:00:11'], self::formatAll($everySecond->between($at, FloatingDateTime::of(2026, 1, 1, 0, 0, 12))));
+        self::assertTrue($everyOtherSecond->occursAt($at));
+        self::assertFalse($everyOtherSecond->occursAt(FloatingDateTime::of(2026, 1, 1, 0, 0, 11)));
+        self::assertSame(['2026-01-01T00:00:00'], self::formatAll($everySecond->take(1)));
+        self::assertSame('2026-01-01T00:00:00', $everySecond->withSearchLimit(1)->first()?->toString());
+    }
+
+    public function testBetweenDoesNotSearchPastItsEnd(): void
+    {
+        // April and May 2026 have no fifth Monday; the next one is on June 29
+        $recurrence = Recurrence::of(CalendarDate::of(2026, 1, 1), new RecurrenceRule(Frequency::Monthly, byDay: [WeekdayNum::every(Weekday::Monday)], bySetPos: [5]))
+            ->withSearchLimit(2);
+
+        self::assertSame([], self::formatAll($recurrence->between(CalendarDate::of(2026, 4, 1), CalendarDate::of(2026, 4, 2))));
+    }
+
+    public function testNamedRuleArgumentsBecomeLists(): void
+    {
+        $rule = new RecurrenceRule(Frequency::Daily);
+        $start = FloatingDateTime::of(2026, 1, 1, 9);
+        $prague = new DateTimeZone('Europe/Prague');
+        $recurrence = Recurrence::of(CalendarDate::of(2026, 1, 1));
+
+        self::assertSame([$rule], Recurrence::of(CalendarDate::of(2026, 1, 1), ...['daily' => $rule])->getRules());
+        self::assertSame([$rule], Recurrence::of($start, ...['daily' => $rule])->getRules());
+        self::assertSame([$rule], Recurrence::of($start->atTimeZone($prague), ...['daily' => $rule])->getRules());
+        self::assertSame([$rule], Recurrence::inTimeZone($start, $prague, ...['daily' => $rule])->getRules());
+        self::assertSame([$rule], $recurrence->withRules(...['daily' => $rule])->getRules());
+        self::assertSame([$rule], $recurrence->withExclusionRules(...['daily' => $rule])->getExclusionRules());
+    }
+
+    public function testSeveralDatesAtOnce(): void
+    {
+        $recurrence = Recurrence::of(CalendarDate::of(2026, 1, 1))
+            ->withAddedDates(CalendarDate::of(2026, 1, 3), CalendarDate::of(2026, 1, 5))
+            ->withExcludedDates(CalendarDate::of(2026, 1, 1), CalendarDate::of(2026, 1, 3));
+
+        self::assertSame(['2026-01-05'], self::formatAll($recurrence));
     }
 
     public function testBetweenBeforeTheStart(): void

@@ -345,7 +345,7 @@ final class LocalRuleIterator
     {
         switch ($this->plan->frequency) {
             case Frequency::Yearly:
-                $firstDay = Civil::daysFromCivil($unit, 1, 1);
+                $firstDay = Civil::firstDayOfYear($unit);
                 $lastDay = Civil::daysFromCivil($unit, 12, 31);
 
                 return [$firstDay, $lastDay, $this->plan->usesSkip() ? $this->getSkipDays($unit, null) : $this->matcher->getDaysOfYear($unit)];

@@ -61,6 +61,13 @@ final class CivilTest extends TestCase
         self::assertSame([-1, 3, 1], Civil::civilFromDays(Civil::daysFromCivil(-1, 3, 1)));
     }
 
+    public function testFirstDayOfYear(): void
+    {
+        self::assertSame(0, Civil::firstDayOfYear(1970));
+        self::assertSame(20_454, Civil::firstDayOfYear(2026));
+        self::assertSame(-719_162, Civil::firstDayOfYear(1));
+    }
+
     #[DataProvider('provideLeapYears')]
     public function testLeapYears(
         int $year,

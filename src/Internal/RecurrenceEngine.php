@@ -14,7 +14,10 @@ use ShipMonk\RRule\Internal\Values\InstantValues;
 use ShipMonk\RRule\Internal\Values\ValueConverter;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Until;
-use function array_keys;
+use function array_flip;
+use function array_map;
+use function array_unique;
+use function array_values;
 use function max;
 use function sort;
 
@@ -78,30 +81,28 @@ final class RecurrenceEngine
     }
 
     /**
-     * @param int|null $from start of the range (inclusive or exclusive); null for the beginning
+     * Positions are whole seconds, so an exclusive bound x is the inclusive bound x + 1.
+     *
+     * @param int|null $from start of the range (inclusive); null for the beginning
      * @param int|null $to   end of the range (exclusive); null for no end
      * @return Generator<int, T>
      */
     public function iterate(
         ?int $from,
-        bool $inclusive,
         ?int $to,
     ): Generator
     {
-        foreach ($this->iteratePositions($from, $inclusive, $to) as $position) {
+        foreach ($this->iteratePositions($from, $to) as $position) {
             yield $this->toValue($position);
         }
     }
 
     /**
+     * @param int $end exclusive
      * @return T|null
      */
-    public function findLastBefore(
-        int $position,
-        bool $inclusive,
-    ): CalendarDate|FloatingDateTime|DateTimeImmutable|null
+    public function findLastBefore(int $end): CalendarDate|FloatingDateTime|DateTimeImmutable|null
     {
-        $end = $inclusive ? $position + 1 : $position;
         $window = $this->getInitialWindow();
 
         while (true) {
@@ -113,7 +114,7 @@ final class RecurrenceEngine
 
             $last = null;
 
-            foreach ($this->iteratePositions($from, true, $end) as $candidate) {
+            foreach ($this->iteratePositions($from, $end) as $candidate) {
                 $last = $candidate;
             }
 
@@ -130,7 +131,6 @@ final class RecurrenceEngine
      */
     private function iteratePositions(
         ?int $from,
-        bool $inclusive,
         ?int $to,
     ): Generator
     {
@@ -157,17 +157,8 @@ final class RecurrenceEngine
             $exclusionStreams[] = $this->createRuleStream($rule, $startLocal, $resolver, $budget, false)->generate($from, $to);
         }
 
-        $excludedPositions = [];
-
-        foreach ($this->excludedDates as $excludedDate) {
-            $excludedPositions[$this->values->toPosition($excludedDate)] = true;
-        }
-
-        $excludedDays = [];
-
-        foreach ($this->excludedDays as $excludedDay) {
-            $excludedDays[$excludedDay->toDayNumber()] = true;
-        }
+        $excludedPositions = array_flip($this->toSortedPositions($this->excludedDates));
+        $excludedDays = array_flip(array_map(static fn (CalendarDate $day): int => $day->toDayNumber(), $this->excludedDays));
 
         while (true) {
             $next = null;
@@ -182,30 +173,26 @@ final class RecurrenceEngine
                 return;
             }
 
+            $included = ($from === null || $next >= $from)
+                && !isset($excludedPositions[$next])
+                && !$this->isExcludedDay($next, $resolver, $excludedDays)
+                && !self::isProducedByAny($exclusionStreams, $next);
+
+            if ($included) {
+                yield $next;
+            }
+
+            // Streams advance only after the yield, so a query that stops at this occurrence computes no more.
             foreach ($streams as $stream) {
                 while ($stream->valid() && $stream->current() <= $next) {
                     $stream->next();
                 }
             }
-
-            if ($from !== null && ($next < $from || (!$inclusive && $next === $from))) {
-                continue;
-            }
-
-            if (isset($excludedPositions[$next]) || $this->isExcludedDay($next, $resolver, $excludedDays)) {
-                continue;
-            }
-
-            if (self::isProducedByAny($exclusionStreams, $next)) {
-                continue;
-            }
-
-            yield $next;
         }
     }
 
     /**
-     * @param array<int, true> $excludedDays
+     * @param array<int, int> $excludedDays day number => index
      */
     private function isExcludedDay(
         int $position,
@@ -278,13 +265,7 @@ final class RecurrenceEngine
      */
     private function toSortedPositions(array $values): array
     {
-        $positionSet = [];
-
-        foreach ($values as $value) {
-            $positionSet[$this->values->toPosition($value)] = true;
-        }
-
-        $positions = array_keys($positionSet);
+        $positions = array_values(array_unique(array_map($this->values->toPosition(...), $values)));
         sort($positions);
 
         return $positions;
@@ -293,6 +274,9 @@ final class RecurrenceEngine
     /**
      * How far back the first try of {@see self::findLastBefore()} looks: two periods of the longest rule.
      * Null when a rule has COUNT, because such a rule must be expanded from the start.
+     * The size only changes how much work a query does, never its result.
+     *
+     * @infection-ignore-all
      */
     private function getInitialWindow(): ?int
     {

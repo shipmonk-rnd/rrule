@@ -72,8 +72,10 @@
             "XDEBUG_MODE=coverage tools/infection/vendor/bin/infection --threads=max --no-interaction"
         ],
         "check:oracle": "phpunit --testsuite oracle",
+        "check:reference": "phpunit --testsuite reference",
         "check:tests": "phpunit --testsuite default",
         "check:types": "phpstan analyse -vv --ansi",
-        "fix:cs": "phpcbf"
+        "fix:cs": "phpcbf",
+        "update:reference-snapshot": "php tests/Reference/update-snapshot.php"
     }
 }

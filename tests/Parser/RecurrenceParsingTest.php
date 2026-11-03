@@ -85,6 +85,34 @@ final class RecurrenceParsingTest extends ParserTestCase
         yield 'folded with tab' => ["DTSTART:2026\n\t0131T090000", '2026-01-31T09:00:00 floating'];
     }
 
+    public function testZonedStartKeepsTheWrittenTime(): void
+    {
+        $recurrence = (new RecurrenceParser())->parseRecurrence("DTSTART;TZID=America/New_York:20260308T023000\nRRULE:FREQ=DAILY;COUNT=3")->value;
+        $occurrences = [];
+
+        foreach ($recurrence as $occurrence) {
+            self::assertInstanceOf(DateTimeImmutable::class, $occurrence);
+            $occurrences[] = $occurrence->format('c');
+        }
+
+        self::assertSame(['2026-03-08T03:30:00-04:00', '2026-03-09T02:30:00-04:00', '2026-03-10T02:30:00-04:00'], $occurrences);
+        self::assertSame("DTSTART;TZID=America/New_York:20260308T023000\nRRULE:FREQ=DAILY;COUNT=3", $recurrence->toString("\n"));
+
+        $utc = (new RecurrenceParser())->parseRecurrence("DTSTART:20260308T023000Z\nRRULE:FREQ=DAILY;COUNT=1")->value;
+        self::assertSame('UTC', $utc->getStart() instanceof DateTimeImmutable ? $utc->getStart()->getTimezone()->getName() : null);
+    }
+
+    public function testParseExceptionDetails(): void
+    {
+        try {
+            (new RecurrenceParser())->parseRecurrence("DTSTART:20260101T000000\nRRULE:FREQ=SOMETIMES");
+            self::fail('ParseException expected');
+        } catch (ParseException $e) {
+            self::assertSame(0, $e->getCode());
+            self::assertSame(2, $e->lineNumber);
+        }
+    }
+
     public function testFullRecurrence(): void
     {
         $input = "DTSTART;TZID=Europe/Prague:20260105T090000\r\n"

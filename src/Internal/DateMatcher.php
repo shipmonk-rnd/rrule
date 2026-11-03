@@ -56,7 +56,7 @@ final class DateMatcher
             $day,
             $dayOfMonth,
             Civil::daysInMonth($year, $month),
-            $day - Civil::daysFromCivil($year, 1, 1) + 1,
+            $day - Civil::firstDayOfYear($year) + 1,
             Civil::daysInYear($year),
         );
     }
@@ -110,7 +110,7 @@ final class DateMatcher
     private function computeYear(int $year): array
     {
         $plan = $this->plan;
-        $yearStart = Civil::daysFromCivil($year, 1, 1);
+        $yearStart = Civil::firstDayOfYear($year);
         $daysInYear = Civil::daysInYear($year);
         $weekYearStarts = $plan->weekNumbers === null ? [] : $this->getWeekYearStarts($year);
         $days = [];

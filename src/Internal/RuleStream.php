@@ -3,9 +3,9 @@
 namespace ShipMonk\RRule\Internal;
 
 use Generator;
-use function array_splice;
-use function count;
+use function array_shift;
 use function min;
+use function sort;
 
 /**
  * The occurrences of one rule as positions: Unix seconds for UTC and zoned starts, local seconds otherwise.
@@ -32,14 +32,14 @@ final class RuleStream
     {
     }
 
-    public function canSkipAhead(): bool
+    private function canSkipAhead(): bool
     {
         return $this->count === null;
     }
 
     /**
      * Positions in strictly ascending order. Positions before $from may still appear (the caller filters them);
-     * the stream stops before $to.
+     * the stream stops at $to.
      *
      * @return Generator<int, int>
      */
@@ -52,10 +52,6 @@ final class RuleStream
         $last = null;
 
         if ($this->startCounts) {
-            if ($to !== null && $this->startPosition >= $to) {
-                return;
-            }
-
             yield $this->startPosition;
             $emitted = 1;
             $last = $this->startPosition;
@@ -68,7 +64,7 @@ final class RuleStream
         $limit = $this->untilPosition;
 
         if ($to !== null) {
-            $limit = $limit === null ? $to - 1 : min($limit, $to - 1);
+            $limit = $limit === null ? $to : min($limit, $to);
         }
 
         $fromLocal = $from === null || !$this->canSkipAhead() ? null : $this->toLocalLowerBound($from);
@@ -112,16 +108,16 @@ final class RuleStream
 
         foreach ($locals as $local) {
             $position = $this->resolver->localToUnix($local);
-            self::insertSorted($buffer, $position);
+            $buffer[] = $position;
+            sort($buffer);
+            $ready = $position - $this->resolver->getMaxGapNear($local);
 
-            foreach (self::takeUpTo($buffer, $position - $this->resolver->getMaxGapNear($local)) as $ready) {
-                yield $ready;
+            while ($buffer !== [] && $buffer[0] <= $ready) {
+                yield array_shift($buffer);
             }
         }
 
-        foreach ($buffer as $position) {
-            yield $position;
-        }
+        yield from $buffer;
     }
 
     private function toLocalLowerBound(int $position): int
@@ -140,45 +136,6 @@ final class RuleStream
         }
 
         return $this->resolver->unixToLocal($position) + $this->resolver->getOffsetSpreadNear($position);
-    }
-
-    /**
-     * @param list<int> $buffer
-     */
-    private static function insertSorted(
-        array &$buffer,
-        int $value,
-    ): void
-    {
-        $index = count($buffer);
-
-        while ($index > 0 && ($buffer[$index - 1] ?? $value) > $value) {
-            $index--;
-        }
-
-        array_splice($buffer, $index, 0, [$value]);
-    }
-
-    /**
-     * @param list<int> $buffer
-     * @return list<int>
-     */
-    private static function takeUpTo(
-        array &$buffer,
-        int $bound,
-    ): array
-    {
-        $count = 0;
-
-        foreach ($buffer as $value) {
-            if ($value > $bound) {
-                break;
-            }
-
-            $count++;
-        }
-
-        return array_splice($buffer, 0, $count);
     }
 
 }

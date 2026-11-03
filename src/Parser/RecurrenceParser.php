@@ -15,6 +15,7 @@ use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\RecurrenceRule;
 use function count;
 use function sprintf;
+use function strlen;
 use function strncasecmp;
 use function substr;
 use function trim;
@@ -28,6 +29,8 @@ use function trim;
  */
 final class RecurrenceParser
 {
+
+    private const RULE_PREFIX = 'RRULE:';
 
     public function __construct(
         private readonly ParseMode $mode = ParseMode::Strict,
@@ -53,8 +56,8 @@ final class RecurrenceParser
 
         $text = $lines[0];
 
-        if (strncasecmp($text, 'RRULE:', 6) === 0) {
-            $text = substr($text, 6);
+        if (strncasecmp($text, self::RULE_PREFIX, strlen(self::RULE_PREFIX)) === 0) {
+            $text = substr($text, strlen(self::RULE_PREFIX));
         }
 
         $ruleParser = new RuleParser($context);

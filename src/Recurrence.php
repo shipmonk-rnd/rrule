@@ -159,7 +159,7 @@ final class Recurrence implements IteratorAggregate
      */
     public function withAddedDates(CalendarDate|FloatingDateTime|DateTimeImmutable ...$dates): self
     {
-        return $this->copy(addedDates: [...$this->addedDates, ...$this->acceptAll(array_values($dates), 'RDATE')]);
+        return $this->copy(addedDates: [...$this->addedDates, ...$this->acceptAll($dates, 'RDATE')]);
     }
 
     /**
@@ -172,7 +172,7 @@ final class Recurrence implements IteratorAggregate
      */
     public function withExcludedDates(CalendarDate|FloatingDateTime|DateTimeImmutable ...$dates): self
     {
-        return $this->copy(excludedDates: [...$this->excludedDates, ...$this->acceptAll(array_values($dates), 'EXDATE')]);
+        return $this->copy(excludedDates: [...$this->excludedDates, ...$this->acceptAll($dates, 'EXDATE')]);
     }
 
     /**
@@ -300,7 +300,7 @@ final class Recurrence implements IteratorAggregate
      */
     public function getIterator(): Generator
     {
-        return $this->createEngine()->iterate(null, false, null);
+        return $this->createEngine()->iterate(null, null);
     }
 
     /**
@@ -308,7 +308,7 @@ final class Recurrence implements IteratorAggregate
      */
     public function first(): CalendarDate|FloatingDateTime|DateTimeImmutable|null
     {
-        foreach ($this->createEngine()->iterate(null, false, null) as $occurrence) {
+        foreach ($this->createEngine()->iterate(null, null) as $occurrence) {
             return $occurrence;
         }
 
@@ -330,7 +330,7 @@ final class Recurrence implements IteratorAggregate
         bool $inclusive = false,
     ): CalendarDate|FloatingDateTime|DateTimeImmutable|null
     {
-        foreach ($this->createEngine()->iterate($this->toPosition($after, 'after'), $inclusive, null) as $occurrence) {
+        foreach ($this->createEngine()->iterate($this->toPosition($after, 'after') + ($inclusive ? 0 : 1), null) as $occurrence) {
             return $occurrence;
         }
 
@@ -350,7 +350,7 @@ final class Recurrence implements IteratorAggregate
         bool $inclusive = false,
     ): CalendarDate|FloatingDateTime|DateTimeImmutable|null
     {
-        return $this->createEngine()->findLastBefore($this->toPosition($before, 'before'), $inclusive);
+        return $this->createEngine()->findLastBefore($this->toPosition($before, 'before') + ($inclusive ? 1 : 0));
     }
 
     /**
@@ -367,7 +367,7 @@ final class Recurrence implements IteratorAggregate
         CalendarDate|FloatingDateTime|DateTimeImmutable $to,
     ): Generator
     {
-        return $this->createEngine()->iterate($this->toPosition($from, 'from'), true, $this->toPosition($to, 'to'));
+        return $this->createEngine()->iterate($this->toPosition($from, 'from'), $this->toPosition($to, 'to'));
     }
 
     /**
@@ -378,13 +378,13 @@ final class Recurrence implements IteratorAggregate
      */
     public function take(int $limit): array
     {
-        $result = [];
-
         if ($limit < 1) {
-            return $result;
+            return [];
         }
 
-        foreach ($this->createEngine()->iterate(null, false, null) as $occurrence) {
+        $result = [];
+
+        foreach ($this->createEngine()->iterate(null, null) as $occurrence) {
             $result[] = $occurrence;
 
             if (count($result) >= $limit) {
@@ -404,7 +404,7 @@ final class Recurrence implements IteratorAggregate
     {
         $position = $this->toPosition($value, 'value');
 
-        return $this->createEngine()->iterate($position, true, $position + 1)->valid();
+        return $this->createEngine()->iterate($position, $position + 1)->valid();
     }
 
     /**
@@ -455,7 +455,7 @@ final class Recurrence implements IteratorAggregate
         try {
             return InstantValues::forTimeZone($timeZone);
         } catch (InvalidValueException $e) {
-            throw new InvalidRecurrenceException('Invalid start: ' . $e->getMessage(), 0, $e);
+            throw new InvalidRecurrenceException('Invalid start: ' . $e->getMessage(), previous: $e);
         }
     }
 
@@ -512,7 +512,7 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
-     * @param list<CalendarDate|FloatingDateTime|DateTimeImmutable> $values
+     * @param array<CalendarDate|FloatingDateTime|DateTimeImmutable> $values
      * @return list<T>
      *
      * @throws InvalidRecurrenceException

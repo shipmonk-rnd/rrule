@@ -116,6 +116,11 @@ final class TimeZoneResolverTest extends TestCase
 
         $apia = new TimeZoneResolver(new DateTimeZone('Pacific/Apia'));
         self::assertSame(86_400, $apia->getMaxGapNear(self::local('2011-12-30 00:00:00'))); // -10:00 to +14:00
+
+        // Moscow moved from +04:00 to +03:00 on 2014-10-26, its only transition that year
+        $moscow = new TimeZoneResolver(new DateTimeZone('Europe/Moscow'));
+        self::assertSame(0, $moscow->getMaxGapNear(self::local('2014-06-01 00:00:00')));
+        self::assertSame(3600, $moscow->getOffsetSpreadNear(self::local('2014-06-01 00:00:00')));
     }
 
     public function testEveryLocalTimeAroundAllTransitionsOfAZoneRoundTrips(): void

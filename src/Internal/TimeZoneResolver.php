@@ -5,6 +5,7 @@ namespace ShipMonk\RRule\Internal;
 use DateTimeImmutable;
 use DateTimeZone;
 use LogicException;
+use function array_column;
 use function array_reverse;
 use function max;
 use function min;
@@ -104,7 +105,10 @@ final class TimeZoneResolver
         $previousOffset = null;
 
         foreach ($this->getSegments($seconds) as [, $offset]) {
-            $maxGap = max($maxGap, $offset - ($previousOffset ?? $offset));
+            if ($previousOffset !== null) {
+                $maxGap = max($maxGap, $offset - $previousOffset);
+            }
+
             $previousOffset = $offset;
         }
 
@@ -120,16 +124,9 @@ final class TimeZoneResolver
             return 0;
         }
 
-        $segments = $this->getSegments($seconds);
-        $minOffset = $segments[0][1];
-        $maxOffset = $segments[0][1];
+        $offsets = array_column($this->getSegments($seconds), 1);
 
-        foreach ($segments as [, $offset]) {
-            $minOffset = min($minOffset, $offset);
-            $maxOffset = max($maxOffset, $offset);
-        }
-
-        return $maxOffset - $minOffset;
+        return max($offsets) - min($offsets);
     }
 
     /**
@@ -146,8 +143,8 @@ final class TimeZoneResolver
     private function getSegmentsOfYear(int $year): array
     {
         if (!isset($this->segmentsByYear[$year])) {
-            $begin = Civil::daysFromCivil($year, 1, 1) * Civil::SECONDS_PER_DAY - self::WINDOW_MARGIN;
-            $end = Civil::daysFromCivil($year + 1, 1, 1) * Civil::SECONDS_PER_DAY + self::WINDOW_MARGIN;
+            $begin = Civil::firstDayOfYear($year) * Civil::SECONDS_PER_DAY - self::WINDOW_MARGIN;
+            $end = Civil::firstDayOfYear($year + 1) * Civil::SECONDS_PER_DAY + self::WINDOW_MARGIN;
             $segments = [[$begin, $this->zone->getOffset(new DateTimeImmutable('@' . $begin))]];
             $transitions = $this->zone->getTransitions($begin, $end);
 

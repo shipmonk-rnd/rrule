@@ -21,9 +21,13 @@
         <testsuite name="default">
             <directory>tests</directory>
             <exclude>tests/Oracle</exclude>
+            <exclude>tests/Reference/NaiveExpanderSnapshotTest.php</exclude>
         </testsuite>
         <testsuite name="oracle">
             <directory>tests/Oracle</directory>
+        </testsuite>
+        <testsuite name="reference">
+            <file>tests/Reference/NaiveExpanderSnapshotTest.php</file>
         </testsuite>
     </testsuites>
 
