@@ -356,7 +356,7 @@ final class RecurrenceRule
             if (!is_int($value) || $value < $min || $value > $max || ($nonZero && $value === 0)) {
                 throw new InvalidRecurrenceRuleException(
                     RuleViolation::ValueOutOfRange,
-                    sprintf('%s value %s is out of range (allowed: %d to %d%s)', $part, is_int($value) ? (string) $value : 'of a non-integer type', $min, $max, $nonZero ? ', except 0' : ''),
+                    sprintf('%s value %s is out of range (allowed: %d to %d%s)', $part, is_int($value) ? $value : 'of a non-integer type', $min, $max, $nonZero ? ', except 0' : ''),
                 );
             }
         }

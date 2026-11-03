@@ -64,6 +64,9 @@ The type of the start (DTSTART) decides the type of every occurrence. PHPStan kn
 | `FloatingDateTime::of(2026, 1, 31, 9)` | DATE-TIME without zone ("floating") | `FloatingDateTime` | `Until::floating()` |
 | `new DateTimeImmutable('...', new DateTimeZone('UTC'))` | DATE-TIME in UTC | `DateTimeImmutable` in UTC | `Until::instant()` |
 | `new DateTimeImmutable('...', new DateTimeZone('Europe/Prague'))` | DATE-TIME with TZID | `DateTimeImmutable` in that zone | `Until::instant()` |
+| `Recurrence::inTimeZone(FloatingDateTime::of(2026, 3, 29, 2, 30), $prague)` | DATE-TIME with TZID, as written | `DateTimeImmutable` in that zone | `Until::instant()` |
+
+`Recurrence::inTimeZone()` takes the start as a local time, the way `DTSTART;TZID=...` writes it, and the parser uses it. The difference matters only for a start that does not exist (inside a DST gap): the first occurrence moves forward (02:30 becomes 03:30), but the rules keep 02:30 for the other days. A `DateTimeImmutable` has already lost the written time.
 
 A `DateTimeImmutable` start must use a named IANA zone or UTC: a fixed offset (`+02:00`) or an abbreviation (`CEST`) has no TZID, so it is rejected.
 `FloatingDateTime::atTimeZone()` and `CalendarDate::atStartOfDayIn()` convert to instants with the RFC rules for DST gaps and overlaps.
@@ -145,6 +148,7 @@ Where RFC 5545 is ambiguous, the library follows the [JSCalendar 2.0](https://da
 | S2 | Invalid date (February 30, the 31st of a short month) | Omitted and not counted. With `SKIP=BACKWARD`/`FORWARD`, moved. `SKIP` does not adjust `BYYEARDAY` or `BYWEEKNO`. | RFC 5545 3.3.10, RFC 7529 4.1, JSCalendar |
 | S3 | Local time in a DST gap | Moved with the offset before the gap (02:30 becomes 03:30), counted; later occurrences keep 02:30 | Verified erratum 4271, RFC 5545 3.3.5 |
 | S4 | Local time in a DST overlap | The first occurrence | RFC 5545 3.3.5 |
+| S4a | Start in a DST gap | The start moves forward (S3); the rules keep the written time; no occurrence comes before the start | RFC 5545 3.3.5, 3.8.5.1 |
 | S5 | `HOURLY`/`MINUTELY`/`SECONDLY` across DST | Computed in wall-clock time, then S3/S4; equal instants count once | RFC 5545 3.3.10, 3.8.5.3; JSCalendar periods |
 | S6 | `UNTIL` | Inclusive; the value type of the start (strict) | RFC 5545 3.3.10, erratum 4414 |
 | S7 | `UNTIL` before the start | The rule has no occurrences; the start follows S1 | JSCalendar |
@@ -187,7 +191,7 @@ All exceptions implement `ShipMonk\RRule\Exception\RecurrenceException`.
 
 - `tests/Corpus`: about 950 cases imported from the RFC 5545 and RFC 7529 examples, libical, Ical.Net, python-dateutil, Mozilla Calendar, ical.js, sabre/vobject, rust-rrule, lib-recur, php-rrule and pycalendar, each with its licence. A case where the source disagrees with this library is listed in `CorpusDeviations` with the reason; nothing is skipped silently.
 - `tests/Reference`: a slow, literal implementation of the JSCalendar algorithm that shares no code with the engine, compared on 400 random rules.
-- `tests/Oracle` (Docker): differential tests against libical 4 through PHP FFI, python-dateutil 4.0, and Python `zoneinfo` for the time zone resolver.
+- `tests/Oracle` (Docker): differential tests on 2 000 random rules each against libical 4 (through PHP FFI) and python-dateutil 4.0, and a check of the time zone resolver against Python `zoneinfo` (every zone, every transition from 1970 to 2037, about 147 000 local times). Every difference from an oracle must fall in a documented category, or the reference implementation must side with this library; otherwise the test fails. The oracles found libical bugs (BYSETPOS with FREQ=DAILY, sub-daily rules that skip the rest of the first hour, BYWEEKNO=-53, SKIP with BYDAY) and one bug in this library during development (a start in a DST gap moved the later occurrences).
 - `tests/Type`: PHPStan type-inference tests for the public API.
 
 ## Development

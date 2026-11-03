@@ -112,7 +112,7 @@ final class RuleSerializer
             $lines = ['DTSTART:' . self::formatUtc($start)];
         } else {
             $timeZone = $start->getTimezone();
-            $lines = ['DTSTART;TZID=' . self::formatParameterValue($timeZone->getName()) . ':' . self::formatWallTime($start)];
+            $lines = ['DTSTART;TZID=' . self::formatParameterValue($timeZone->getName()) . ':' . self::formatFloating($recurrence->getStartLocalTime())];
         }
 
         foreach ($recurrence->getRules() as $rule) {

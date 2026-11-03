@@ -101,6 +101,10 @@ final class FloatingDateTimeTest extends TestCase
 
         self::assertSame(-1, $dateTime->toLocalSeconds());
         self::assertSame('1969-12-31T23:59:59', FloatingDateTime::fromLocalSeconds(-1)->toString());
+        self::assertSame('1970-01-01T01:00:00', FloatingDateTime::fromLocalSeconds(3600)->toString());
+        self::assertSame('1970-01-01T00:59:59', FloatingDateTime::fromLocalSeconds(3599)->toString());
+        self::assertSame('1970-01-01T00:01:00', FloatingDateTime::fromLocalSeconds(60)->toString());
+        self::assertSame('1970-01-01T00:00:59', FloatingDateTime::fromLocalSeconds(59)->toString());
         self::assertSame('2026-01-31T09:05:07', FloatingDateTime::fromLocalSeconds(FloatingDateTime::of(2026, 1, 31, 9, 5, 7)->toLocalSeconds())->toString());
     }
 

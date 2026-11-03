@@ -121,6 +121,9 @@ final class Civil
         return $days * self::SECONDS_PER_DAY + $hour * 3600 + $minute * 60 + $second;
     }
 
+    /**
+     * Division rounded towards negative infinity. The divisor must be positive.
+     */
     public static function floorDiv(
         int $dividend,
         int $divisor,
@@ -128,15 +131,20 @@ final class Civil
     {
         $quotient = intdiv($dividend, $divisor);
 
-        return ($dividend % $divisor !== 0 && ($dividend < 0) !== ($divisor < 0)) ? $quotient - 1 : $quotient;
+        return $dividend % $divisor < 0 ? $quotient - 1 : $quotient;
     }
 
+    /**
+     * The non-negative remainder of {@see self::floorDiv()}. The divisor must be positive.
+     */
     public static function floorMod(
         int $dividend,
         int $divisor,
     ): int
     {
-        return $dividend - self::floorDiv($dividend, $divisor) * $divisor;
+        $remainder = $dividend % $divisor;
+
+        return $remainder < 0 ? $remainder + $divisor : $remainder;
     }
 
 }

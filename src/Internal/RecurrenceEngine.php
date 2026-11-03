@@ -36,6 +36,7 @@ final class RecurrenceEngine
     /**
      * @param ValueConverter<T>    $values
      * @param T                    $start
+     * @param int                  $startLocal     the start as local wall-clock seconds (for a zoned start, as written)
      * @param list<RecurrenceRule> $rules
      * @param list<T>              $addedDates
      * @param list<T>              $excludedDates
@@ -46,6 +47,7 @@ final class RecurrenceEngine
     public function __construct(
         private readonly ValueConverter $values,
         CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        private readonly int $startLocal,
         private readonly array $rules,
         private readonly array $addedDates,
         private readonly array $excludedDates,
@@ -134,7 +136,7 @@ final class RecurrenceEngine
     {
         $budget = new SearchBudget($this->searchLimit);
         $resolver = $this->timeZone === null ? null : new TimeZoneResolver($this->timeZone);
-        $startLocal = $resolver === null ? $this->startPosition : $resolver->unixToLocal($this->startPosition);
+        $startLocal = $this->startLocal;
 
         $streams = [];
         $startCounts = $this->dtStartPolicy === DtStartPolicy::Always;

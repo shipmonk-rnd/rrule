@@ -190,6 +190,11 @@ final class RecurrenceRuleTest extends TestCase
             RuleViolation::ByDayOrdinalNotAllowed,
             'BYDAY value 1MO has an ordinal, which is allowed only with FREQ=MONTHLY or FREQ=YEARLY',
         ];
+        yield 'BYDAY ordinal after a plain weekday' => [
+            static fn () => new RecurrenceRule(Frequency::Weekly, byDay: [WeekdayNum::every(Weekday::Monday), WeekdayNum::of(Weekday::Friday, 1)]),
+            RuleViolation::ByDayOrdinalNotAllowed,
+            'BYDAY value 1FR has an ordinal, which is allowed only with FREQ=MONTHLY or FREQ=YEARLY',
+        ];
         yield 'BYDAY ordinal with BYWEEKNO' => [
             static fn () => new RecurrenceRule(Frequency::Yearly, byDay: [WeekdayNum::of(Weekday::Monday, -1)], byWeekNo: [1]),
             RuleViolation::ByDayOrdinalNotAllowed,

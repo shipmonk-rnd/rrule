@@ -86,7 +86,7 @@ final class RecurrenceTextParser
         $lineNumber = null;
 
         try {
-            $recurrence = Recurrence::of($start);
+            $recurrence = $this->createRecurrence($startLine, $start);
 
             foreach ($entries as [$line, $rawRule]) {
                 $lineNumber = $line->lineNumber;
@@ -106,6 +106,31 @@ final class RecurrenceTextParser
         }
 
         return $recurrence;
+    }
+
+    /**
+     * A zoned start keeps the local time as written (RFC 5545 section 3.3.5): a start in a DST gap moves forward,
+     * but the rules keep the written time.
+     *
+     * @return Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable>
+     *
+     * @throws InvalidRecurrenceException
+     * @throws ParseException
+     */
+    private function createRecurrence(
+        ?ContentLine $startLine,
+        CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+    ): Recurrence
+    {
+        if ($startLine !== null && $start instanceof DateTimeImmutable && $startLine->getParameter('TZID') !== null) {
+            $written = ValueParser::parseDateTime($startLine->value, $startLine->name, $startLine->lineNumber);
+
+            if ($written instanceof FloatingDateTime) {
+                return Recurrence::inTimeZone($written, $start->getTimezone());
+            }
+        }
+
+        return Recurrence::of($start);
     }
 
     /**

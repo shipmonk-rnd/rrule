@@ -32,9 +32,9 @@ jobs:
           cache-from: type=gha,scope=oracle
           cache-to: type=gha,scope=oracle,mode=max
 
-      # The lock file has dev tools that need PHP 8.2+. The oracle tests need only PHPUnit, which supports PHP 8.1.
+      # No lock file is committed, so Composer resolves versions for the PHP 8.1 of the image.
       - name: Install dependencies
-        run: docker run --rm --user "$(id -u):$(id -g)" --volume "$PWD:/app" shipmonk-rrule-oracle:ci composer install --no-progress --prefer-dist --no-interaction --ignore-platform-req=php
+        run: docker run --rm --user "$(id -u):$(id -g)" --volume "$PWD:/app" shipmonk-rrule-oracle:ci composer install --no-progress --prefer-dist --no-interaction
 
       - name: Run oracle tests
         run: docker run --rm --user "$(id -u):$(id -g)" --volume "$PWD:/app" shipmonk-rrule-oracle:ci vendor/bin/phpunit --testsuite oracle

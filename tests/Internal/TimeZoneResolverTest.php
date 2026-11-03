@@ -84,6 +84,19 @@ final class TimeZoneResolverTest extends TestCase
         yield 'January 1 in the window of the previous year' => ['Europe/Prague', '2025-12-31T23:30:00Z', '2026-01-01 00:30:00'];
     }
 
+    public function testFixedOffsetZones(): void
+    {
+        foreach (['+02:00' => 7200, 'CEST' => 7200, '-05:30' => -19_800] as $name => $offset) {
+            $resolver = new TimeZoneResolver(new DateTimeZone($name));
+            $time = self::local('2026-03-29 02:30:00');
+
+            self::assertSame($time - $offset, $resolver->localToUnix($time), $name);
+            self::assertSame($time + $offset, $resolver->unixToLocal($time), $name);
+            self::assertSame(0, $resolver->getMaxGapNear($time));
+            self::assertSame(0, $resolver->getOffsetSpreadNear($time));
+        }
+    }
+
     public function testGapAndSpread(): void
     {
         $prague = new TimeZoneResolver(new DateTimeZone('Europe/Prague'));

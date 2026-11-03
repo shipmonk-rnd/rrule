@@ -30,7 +30,13 @@ RUN set -eux; \
     icu="$(apt-cache depends libicu-dev | sed -n 's/^ *Depends: \(libicu[0-9][0-9]*\)$/\1/p')"; \
     apt-get install -y --no-install-recommends "$icu" libffi-dev python3 python3-venv tzdata unzip; \
     docker-php-ext-install -j"$(nproc)" ffi; \
-    apt-get purge -y libffi-dev; \
+    # PHP bundles an older time zone database; use the same IANA release as libical (system zoneinfo) and Python
+    # (tzdata in requirements.txt), so that the oracles compare the engine, not two tzdata versions.
+    apt-get install -y --no-install-recommends $PHPIZE_DEPS; \
+    pecl install timezonedb-2026.6; \
+    docker-php-ext-enable timezonedb; \
+    php -r 'exit(timezone_version_get() === "2026.6" ? 0 : 1);'; \
+    apt-get purge -y --auto-remove libffi-dev $PHPIZE_DEPS; \
     rm -rf /var/lib/apt/lists/*; \
     printf 'ffi.enable=1\nmemory_limit=1G\n' > "$PHP_INI_DIR/conf.d/zz-oracle.ini"
 

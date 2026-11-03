@@ -32,10 +32,8 @@ final class InstantValues implements ValueConverter
     /**
      * @throws InvalidValueException
      */
-    public static function forStart(DateTimeImmutable $start): self
+    public static function forTimeZone(DateTimeZone $timeZone): self
     {
-        $timeZone = $start->getTimezone();
-
         return new self($timeZone, ValueKind::ofTimeZone($timeZone));
     }
 
@@ -61,7 +59,7 @@ final class InstantValues implements ValueConverter
         return $this->fromPosition($value->getTimestamp());
     }
 
-    public function dateAsValue(CalendarDate $date): null
+    public function dateAsValue(CalendarDate $date): ?CalendarDate
     {
         return null;
     }

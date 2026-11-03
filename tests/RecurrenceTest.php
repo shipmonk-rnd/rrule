@@ -384,6 +384,48 @@ final class RecurrenceTest extends TestCase
         }
     }
 
+    public function testRulesThatCanNeverAlignNeedNoIteration(): void
+    {
+        $never = [
+            new RecurrenceRule(Frequency::Daily, interval: 7, byDay: [WeekdayNum::every(Weekday::Tuesday)]),
+            new RecurrenceRule(Frequency::Hourly, interval: 2, byHour: [1]),
+            new RecurrenceRule(Frequency::Minutely, interval: 2, byMinute: [1]),
+            new RecurrenceRule(Frequency::Secondly, interval: 2, bySecond: [1]),
+            new RecurrenceRule(Frequency::Minutely, bySetPos: [2], bySecond: [5]),
+            new RecurrenceRule(Frequency::Daily, bySecond: [60]),
+        ];
+
+        foreach ($never as $rule) {
+            $recurrence = Recurrence::of(FloatingDateTime::of(2026, 1, 5), $rule)->withSearchLimit(2);
+            self::assertSame(['2026-01-05T00:00:00'], self::formatAll($recurrence), $rule->toString());
+        }
+
+        $aligned = Recurrence::of(FloatingDateTime::of(2026, 1, 5), new RecurrenceRule(Frequency::Daily, interval: 7, byDay: [WeekdayNum::every(Weekday::Monday)], end: Count::of(2)));
+        self::assertSame(['2026-01-05T00:00:00', '2026-01-12T00:00:00'], self::formatAll($aligned));
+
+        $hugeInterval = Recurrence::of(FloatingDateTime::of(2026, 1, 5), new RecurrenceRule(Frequency::Secondly, interval: PHP_INT_MAX, bySecond: [1]));
+        self::assertSame(['2026-01-05T00:00:00'], self::formatAll($hugeInterval));
+    }
+
+    public function testInTimeZoneKeepsTheWrittenTime(): void
+    {
+        $newYork = new DateTimeZone('America/New_York');
+        $recurrence = Recurrence::inTimeZone(FloatingDateTime::of(2026, 3, 8, 2), $newYork, new RecurrenceRule(Frequency::Weekly, end: Count::of(3)));
+
+        self::assertSame(['2026-03-08T03:00:00-04:00', '2026-03-15T02:00:00-04:00', '2026-03-22T02:00:00-04:00'], self::formatAll($recurrence));
+        self::assertSame('2026-03-08T03:00:00-04:00', $recurrence->getStart()->format('c'));
+        self::assertSame('2026-03-08T02:00:00', $recurrence->getStartLocalTime()->toString());
+        self::assertSame("DTSTART;TZID=America/New_York:20260308T020000\nRRULE:FREQ=WEEKLY;COUNT=3", $recurrence->toString("\n"));
+        self::assertSame(['2026-03-08T03:00:00-04:00', '2026-03-15T02:00:00-04:00'], self::formatAll(Recurrence::fromString($recurrence->toString())->take(2)));
+
+        // a start given as an instant keeps its wall-clock time
+        $instant = Recurrence::of(new DateTimeImmutable('2026-03-08 02:00', $newYork), new RecurrenceRule(Frequency::Weekly, end: Count::of(2)));
+        self::assertSame(['2026-03-08T03:00:00-04:00', '2026-03-15T03:00:00-04:00'], self::formatAll($instant));
+
+        $this->expectException(InvalidRecurrenceException::class);
+        Recurrence::inTimeZone(FloatingDateTime::of(2026, 3, 8, 2), new DateTimeZone('+02:00'));
+    }
+
     public function testSearchLimit(): void
     {
         // February 29 on a Monday: years apart, so a low limit is exceeded

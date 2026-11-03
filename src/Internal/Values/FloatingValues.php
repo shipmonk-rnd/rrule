@@ -35,7 +35,7 @@ final class FloatingValues implements ValueConverter
         return $value;
     }
 
-    public function dateAsValue(CalendarDate $date): null
+    public function dateAsValue(CalendarDate $date): ?CalendarDate
     {
         return null;
     }

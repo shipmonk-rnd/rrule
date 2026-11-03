@@ -5,9 +5,10 @@ namespace ShipMonk\RRule\Internal;
 use DateTimeImmutable;
 use DateTimeZone;
 use LogicException;
-use function count;
+use function array_reverse;
 use function max;
 use function min;
+use const PHP_INT_MAX;
 
 /**
  * Converts between local wall-clock time and Unix time for one time zone, as RFC 5545 section 3.3.5 requires:
@@ -53,27 +54,25 @@ final class TimeZoneResolver
         }
 
         $segments = $this->getSegments($localSeconds);
-        $count = count($segments);
-        $resolved = null;
-        $previousOffset = null;
-        $gapResolution = null;
 
         foreach ($segments as $index => [$start, $offset]) {
-            $end = $index + 1 < $count ? $segments[$index + 1][0] ?? null : null;
             $candidate = $localSeconds - $offset;
 
-            if ($candidate >= $start && ($end === null || $candidate < $end)) {
-                $resolved = $resolved === null ? $candidate : min($resolved, $candidate);
+            if ($candidate >= $start && $candidate < ($segments[$index + 1][0] ?? PHP_INT_MAX)) {
+                return $candidate; // the first match is the earliest instant: the first occurrence of a repeated time
             }
-
-            if ($previousOffset !== null && $localSeconds >= $start + $previousOffset && $localSeconds < $start + $offset) {
-                $gapResolution = $localSeconds - $previousOffset;
-            }
-
-            $previousOffset = $offset;
         }
 
-        return $resolved ?? $gapResolution ?? throw new LogicException('Local time matches no time zone segment');
+        // The local time is in a gap: use the offset in force before the transition that created the gap.
+        foreach ($segments as $index => [, $offset]) {
+            $next = $segments[$index + 1] ?? null;
+
+            if ($next !== null && $localSeconds < $next[0] + $next[1]) {
+                return $localSeconds - $offset;
+            }
+        }
+
+        throw new LogicException('Local time matches no time zone segment');
     }
 
     public function unixToLocal(int $unixSeconds): int
@@ -82,24 +81,18 @@ final class TimeZoneResolver
             return $unixSeconds + $this->fixedOffset;
         }
 
-        $segments = $this->getSegments($unixSeconds);
-        $offset = $segments[0][1];
-
-        foreach ($segments as [$start, $segmentOffset]) {
-            if ($start > $unixSeconds) {
-                break;
+        foreach (array_reverse($this->getSegments($unixSeconds)) as [$start, $offset]) {
+            if ($start <= $unixSeconds) {
+                return $unixSeconds + $offset;
             }
-
-            $offset = $segmentOffset;
         }
 
-        return $unixSeconds + $offset;
+        throw new LogicException('Instant precedes the time zone segments');
     }
 
     /**
-     * The largest forward offset change (the length of the longest gap) within a year around the given time.
-     * Resolved Unix times are increasing in local time, except inside a gap, where they can go back by at most
-     * this amount.
+     * The largest forward offset change (the length of the longest gap) around the given time. Resolved Unix times
+     * are increasing in local time, except inside a gap, where they can go back by at most this amount.
      */
     public function getMaxGapNear(int $seconds): int
     {
@@ -108,24 +101,18 @@ final class TimeZoneResolver
         }
 
         $maxGap = 0;
+        $previousOffset = null;
 
-        foreach ($this->getNearSegments($seconds) as $segments) {
-            $previousOffset = null;
-
-            foreach ($segments as [, $offset]) {
-                if ($previousOffset !== null) {
-                    $maxGap = max($maxGap, $offset - $previousOffset);
-                }
-
-                $previousOffset = $offset;
-            }
+        foreach ($this->getSegments($seconds) as [, $offset]) {
+            $maxGap = max($maxGap, $offset - ($previousOffset ?? $offset));
+            $previousOffset = $offset;
         }
 
         return $maxGap;
     }
 
     /**
-     * The difference between the largest and the smallest UTC offset within a year around the given time.
+     * The difference between the largest and the smallest UTC offset around the given time.
      */
     public function getOffsetSpreadNear(int $seconds): int
     {
@@ -133,25 +120,16 @@ final class TimeZoneResolver
             return 0;
         }
 
-        $offsets = [];
+        $segments = $this->getSegments($seconds);
+        $minOffset = $segments[0][1];
+        $maxOffset = $segments[0][1];
 
-        foreach ($this->getNearSegments($seconds) as $segments) {
-            foreach ($segments as [, $offset]) {
-                $offsets[] = $offset;
-            }
+        foreach ($segments as [, $offset]) {
+            $minOffset = min($minOffset, $offset);
+            $maxOffset = max($maxOffset, $offset);
         }
 
-        return $offsets === [] ? 0 : max($offsets) - min($offsets);
-    }
-
-    /**
-     * @return list<non-empty-list<array{int, int}>>
-     */
-    private function getNearSegments(int $seconds): array
-    {
-        $year = self::yearOf($seconds);
-
-        return [$this->getSegmentsOfYear($year - 1), $this->getSegmentsOfYear($year), $this->getSegmentsOfYear($year + 1)];
+        return $maxOffset - $minOffset;
     }
 
     /**

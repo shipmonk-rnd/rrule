@@ -3,6 +3,7 @@
 namespace ShipMonk\RRule;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use Generator;
 use IteratorAggregate;
 use LogicException;
@@ -11,6 +12,7 @@ use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Exception\ParseException;
 use ShipMonk\RRule\Internal\RecurrenceEngine;
 use ShipMonk\RRule\Internal\RuleSerializer;
+use ShipMonk\RRule\Internal\TimeZoneResolver;
 use ShipMonk\RRule\Internal\ValueKind;
 use ShipMonk\RRule\Internal\Values\DateValues;
 use ShipMonk\RRule\Internal\Values\FloatingValues;
@@ -54,10 +56,12 @@ final class Recurrence implements IteratorAggregate
      * @param list<CalendarDate>   $excludedDays
      * @param list<RecurrenceRule> $exclusionRules
      * @param positive-int         $searchLimit
+     * @param int                  $startLocal     the start as local wall-clock seconds; for a zoned start, the time as written
      */
     private function __construct(
         private readonly ValueConverter $values,
         private readonly CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        private readonly int $startLocal,
         private readonly array $rules,
         private readonly array $addedDates,
         private readonly array $excludedDates,
@@ -80,20 +84,39 @@ final class Recurrence implements IteratorAggregate
     ): self
     {
         if ($start instanceof CalendarDate) {
-            return self::create(new DateValues(), $start, array_values($rules));
+            $dates = new DateValues();
+
+            return self::create($dates, $start, array_values($rules), $dates->toPosition($start));
         }
 
         if ($start instanceof FloatingDateTime) {
-            return self::create(new FloatingValues(), $start, array_values($rules));
+            return self::create(new FloatingValues(), $start, array_values($rules), $start->toLocalSeconds());
         }
 
-        try {
-            $values = InstantValues::forStart($start);
-        } catch (InvalidValueException $e) {
-            throw new InvalidRecurrenceException('Invalid start: ' . $e->getMessage(), 0, $e);
-        }
+        $values = self::createInstantValues($start->getTimezone());
+        $normalized = $values->accept($start, 'start');
 
-        return self::create($values, $values->accept($start, 'start'), array_values($rules));
+        return self::create($values, $normalized, array_values($rules), (new TimeZoneResolver($normalized->getTimezone()))->unixToLocal($normalized->getTimestamp()));
+    }
+
+    /**
+     * A start written as a local wall-clock time in a time zone, as `DTSTART;TZID=...` writes it.
+     *
+     * The first occurrence is that time resolved by RFC 5545 section 3.3.5: a time in a DST gap moves forward,
+     * a repeated time is its first occurrence. The rules keep the written time, so a start in a gap does not
+     * move the later occurrences (02:30 stays 02:30 on the other days).
+     *
+     * @return self<DateTimeImmutable>
+     *
+     * @throws InvalidRecurrenceException
+     */
+    public static function inTimeZone(
+        FloatingDateTime $start,
+        DateTimeZone $timeZone,
+        RecurrenceRule ...$rules,
+    ): self
+    {
+        return self::create(self::createInstantValues($timeZone), $start->atTimeZone($timeZone), array_values($rules), $start->toLocalSeconds());
     }
 
     /**
@@ -415,6 +438,28 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
+     * The start as a local wall-clock time; for a zoned start, the time as DTSTART writes it.
+     *
+     * @internal
+     */
+    public function getStartLocalTime(): FloatingDateTime
+    {
+        return FloatingDateTime::fromLocalSeconds($this->startLocal);
+    }
+
+    /**
+     * @throws InvalidRecurrenceException
+     */
+    private static function createInstantValues(DateTimeZone $timeZone): InstantValues
+    {
+        try {
+            return InstantValues::forTimeZone($timeZone);
+        } catch (InvalidValueException $e) {
+            throw new InvalidRecurrenceException('Invalid start: ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
      * @param ValueConverter<S>    $values
      * @param S                    $start
      * @param list<RecurrenceRule> $rules
@@ -428,11 +473,12 @@ final class Recurrence implements IteratorAggregate
         ValueConverter $values,
         CalendarDate|FloatingDateTime|DateTimeImmutable $start,
         array $rules,
+        int $startLocal,
     ): self
     {
         self::checkRulesFitStart($rules, $values->getKind(), 'RRULE');
 
-        return new self($values, $start, $rules, [], [], [], [], DtStartPolicy::Always, self::DEFAULT_SEARCH_LIMIT);
+        return new self($values, $start, $startLocal, $rules, [], [], [], [], DtStartPolicy::Always, self::DEFAULT_SEARCH_LIMIT);
     }
 
     /**
@@ -443,6 +489,7 @@ final class Recurrence implements IteratorAggregate
         return new RecurrenceEngine(
             $this->values,
             $this->start,
+            $this->startLocal,
             $this->rules,
             $this->addedDates,
             $this->excludedDates,
@@ -566,6 +613,7 @@ final class Recurrence implements IteratorAggregate
         return new self(
             $this->values,
             $this->start,
+            $this->startLocal,
             $rules ?? $this->rules,
             $addedDates ?? $this->addedDates,
             $excludedDates ?? $this->excludedDates,

@@ -18,7 +18,7 @@ final class CivilTest extends TestCase
     {
         $firstDay = intdiv((new DateTimeImmutable('1800-01-01', new DateTimeZone('UTC')))->getTimestamp(), Civil::SECONDS_PER_DAY);
 
-        for ($i = 0; $i < Civil::DAYS_PER_400_YEARS; $i += 7) {
+        for ($i = 0; $i < Civil::DAYS_PER_400_YEARS; $i++) {
             $current = new DateTimeImmutable('@' . (($firstDay + $i) * Civil::SECONDS_PER_DAY));
             $year = (int) $current->format('Y');
             $month = (int) $current->format('n');
@@ -28,6 +28,24 @@ final class CivilTest extends TestCase
             self::assertSame($firstDay + $i, $days);
             self::assertSame([$year, $month, $day], Civil::civilFromDays($days));
             self::assertSame((int) $current->format('N') - 1, Civil::weekdayIndex($days));
+        }
+    }
+
+    public function testDayNumbersAroundYearZero(): void
+    {
+        // the engine looks one year beyond the supported range, so years 0 and below must still be exact
+        $previous = Civil::daysFromCivil(-801, 12, 31);
+
+        for ($year = -800; $year <= 2; $year++) {
+            for ($month = 1; $month <= 12; $month++) {
+                for ($day = 1; $day <= Civil::daysInMonth($year, $month); $day++) {
+                    $days = Civil::daysFromCivil($year, $month, $day);
+
+                    self::assertSame($previous + 1, $days, "$year-$month-$day");
+                    self::assertSame([$year, $month, $day], Civil::civilFromDays($days));
+                    $previous = $days;
+                }
+            }
         }
     }
 
@@ -126,8 +144,6 @@ final class CivilTest extends TestCase
     {
         yield '7 / 2' => [7, 2, 3, 1];
         yield '-7 / 2' => [-7, 2, -4, 1];
-        yield '7 / -2' => [7, -2, -4, -1];
-        yield '-7 / -2' => [-7, -2, 3, -1];
         yield '-8 / 2' => [-8, 2, -4, 0];
         yield '0 / 5' => [0, 5, 0, 0];
         yield '-1 / 86400' => [-1, 86_400, -1, 86_399];

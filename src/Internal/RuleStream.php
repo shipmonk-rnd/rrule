@@ -75,7 +75,9 @@ final class RuleStream
         $toLocal = $limit === null ? null : $this->toLocalUpperBound($limit);
 
         foreach ($this->resolveInOrder($this->iterator->generate($fromLocal, $toLocal)) as $position) {
-            if ($last !== null && $position <= $last) {
+            // A start in a DST gap resolves forward, so later local times can resolve to earlier instants;
+            // the start is the first instance (RFC 5545 section 3.8.5.1).
+            if ($position < $this->startPosition || ($last !== null && $position <= $last)) {
                 continue;
             }
 

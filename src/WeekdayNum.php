@@ -57,7 +57,7 @@ final class WeekdayNum
      */
     public function toString(): string
     {
-        return ($this->ordinal === null ? '' : (string) $this->ordinal) . $this->weekday->value;
+        return ($this->ordinal ?? '') . $this->weekday->value;
     }
 
 }
