@@ -25,16 +25,17 @@ final class RecurrenceRule
 {
 
     /**
-     * @param positive-int $interval
-     * @param list<int<0, 60>> $bySecond
-     * @param list<int<0, 59>> $byMinute
-     * @param list<int<0, 23>> $byHour
-     * @param list<WeekdayNum> $byDay
-     * @param list<int<-31, -1>|int<1, 31>> $byMonthDay
+     * @param positive-int                    $interval
+     * @param list<int<0, 60>>                $bySecond
+     * @param list<int<0, 59>>                $byMinute
+     * @param list<int<0, 23>>                $byHour
+     * @param list<WeekdayNum>                $byDay
+     * @param list<int<-31, -1>|int<1, 31>>   $byMonthDay
      * @param list<int<-366, -1>|int<1, 366>> $byYearDay
-     * @param list<int<-53, -1>|int<1, 53>> $byWeekNo
-     * @param list<int<1, 12>> $byMonth
+     * @param list<int<-53, -1>|int<1, 53>>   $byWeekNo
+     * @param list<int<1, 12>>                $byMonth
      * @param list<int<-366, -1>|int<1, 366>> $bySetPos
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function __construct(
@@ -55,7 +56,7 @@ final class RecurrenceRule
         public readonly Skip $skip = Skip::Omit,
     )
     {
-        if ($interval < 1) {
+        if ($interval < 1) { // @phpstan-ignore smaller.alwaysFalse (runtime check for callers without static analysis)
             throw new InvalidRecurrenceRuleException(RuleViolation::IntervalNotPositive, sprintf('INTERVAL must be a positive integer, %d given', $interval));
         }
 
@@ -68,7 +69,7 @@ final class RecurrenceRule
         self::checkRange('BYMONTH', $byMonth, 1, 12, false);
         self::checkRange('BYSETPOS', $bySetPos, -366, 366, true);
 
-        if (!array_is_list($byDay)) {
+        if (!array_is_list($byDay)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
             throw new InvalidRecurrenceRuleException(RuleViolation::ValueOutOfRange, 'BYDAY must be a list');
         }
 
@@ -158,6 +159,7 @@ final class RecurrenceRule
 
     /**
      * @param positive-int $interval
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withInterval(int $interval): self
@@ -175,6 +177,7 @@ final class RecurrenceRule
 
     /**
      * @param list<int<0, 60>> $bySecond
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withBySecond(array $bySecond): self
@@ -184,6 +187,7 @@ final class RecurrenceRule
 
     /**
      * @param list<int<0, 59>> $byMinute
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withByMinute(array $byMinute): self
@@ -193,6 +197,7 @@ final class RecurrenceRule
 
     /**
      * @param list<int<0, 23>> $byHour
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withByHour(array $byHour): self
@@ -202,6 +207,7 @@ final class RecurrenceRule
 
     /**
      * @param list<WeekdayNum> $byDay
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withByDay(array $byDay): self
@@ -211,6 +217,7 @@ final class RecurrenceRule
 
     /**
      * @param list<int<-31, -1>|int<1, 31>> $byMonthDay
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withByMonthDay(array $byMonthDay): self
@@ -220,6 +227,7 @@ final class RecurrenceRule
 
     /**
      * @param list<int<-366, -1>|int<1, 366>> $byYearDay
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withByYearDay(array $byYearDay): self
@@ -229,6 +237,7 @@ final class RecurrenceRule
 
     /**
      * @param list<int<-53, -1>|int<1, 53>> $byWeekNo
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withByWeekNo(array $byWeekNo): self
@@ -238,6 +247,7 @@ final class RecurrenceRule
 
     /**
      * @param list<int<1, 12>> $byMonth
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withByMonth(array $byMonth): self
@@ -247,6 +257,7 @@ final class RecurrenceRule
 
     /**
      * @param list<int<-366, -1>|int<1, 366>> $bySetPos
+     *
      * @throws InvalidRecurrenceRuleException
      */
     public function withBySetPos(array $bySetPos): self
@@ -273,18 +284,19 @@ final class RecurrenceRule
     }
 
     /**
-     * @param array{Count|Until|null}|null $end wrapped, so that null can mean "keep"
-     * @param list<int<0, 60>>|null $bySecond
-     * @param list<int<0, 59>>|null $byMinute
-     * @param list<int<0, 23>>|null $byHour
-     * @param list<WeekdayNum>|null $byDay
-     * @param list<int<-31, -1>|int<1, 31>>|null $byMonthDay
+     * @param array{Count|Until|null}|null         $end           wrapped, so that null can mean "keep"
+     * @param list<int<0, 60>>|null                $bySecond
+     * @param list<int<0, 59>>|null                $byMinute
+     * @param list<int<0, 23>>|null                $byHour
+     * @param list<WeekdayNum>|null                $byDay
+     * @param list<int<-31, -1>|int<1, 31>>|null   $byMonthDay
      * @param list<int<-366, -1>|int<1, 366>>|null $byYearDay
-     * @param list<int<-53, -1>|int<1, 53>>|null $byWeekNo
-     * @param list<int<1, 12>>|null $byMonth
+     * @param list<int<-53, -1>|int<1, 53>>|null   $byWeekNo
+     * @param list<int<1, 12>>|null                $byMonth
      * @param list<int<-366, -1>|int<1, 366>>|null $bySetPos
-     * @param positive-int|null $interval
-     * @param array{CalendarScale|null}|null $calendarScale wrapped, so that null can mean "keep"
+     * @param positive-int|null                    $interval
+     * @param array{CalendarScale|null}|null       $calendarScale wrapped, so that null can mean "keep"
+     *
      * @throws InvalidRecurrenceRuleException
      */
     private function copy(
@@ -325,6 +337,7 @@ final class RecurrenceRule
 
     /**
      * @param array<mixed> $values
+     *
      * @throws InvalidRecurrenceRuleException
      */
     private static function checkRange(

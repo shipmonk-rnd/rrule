@@ -34,7 +34,10 @@ final class Civil
     /**
      * @return int<28, 31>
      */
-    public static function daysInMonth(int $year, int $month): int
+    public static function daysInMonth(
+        int $year,
+        int $month,
+    ): int
     {
         return match ($month) {
             2 => self::isLeapYear($year) ? 29 : 28,
@@ -51,7 +54,11 @@ final class Civil
         return self::isLeapYear($year) ? 366 : 365;
     }
 
-    public static function isValidDate(int $year, int $month, int $day): bool
+    public static function isValidDate(
+        int $year,
+        int $month,
+        int $day,
+    ): bool
     {
         return $year >= self::MIN_YEAR
             && $year <= self::MAX_YEAR
@@ -61,7 +68,11 @@ final class Civil
             && $day <= self::daysInMonth($year, $month);
     }
 
-    public static function daysFromCivil(int $year, int $month, int $day): int
+    public static function daysFromCivil(
+        int $year,
+        int $month,
+        int $day,
+    ): int
     {
         $year -= $month <= 2 ? 1 : 0;
         $era = intdiv($year >= 0 ? $year : $year - 399, 400);
@@ -97,25 +108,33 @@ final class Civil
     public static function weekdayIndex(int $days): int
     {
         // 1970-01-01 was a Thursday (index 3)
-        $index = (($days % 7) + 10) % 7;
-
-        /** @var int<0, 6> $index */
-        return $index;
+        return (($days % 7) + 10) % 7;
     }
 
-    public static function localSeconds(int $days, int $hour, int $minute, int $second): int
+    public static function localSeconds(
+        int $days,
+        int $hour,
+        int $minute,
+        int $second,
+    ): int
     {
         return $days * self::SECONDS_PER_DAY + $hour * 3600 + $minute * 60 + $second;
     }
 
-    public static function floorDiv(int $dividend, int $divisor): int
+    public static function floorDiv(
+        int $dividend,
+        int $divisor,
+    ): int
     {
         $quotient = intdiv($dividend, $divisor);
 
         return ($dividend % $divisor !== 0 && ($dividend < 0) !== ($divisor < 0)) ? $quotient - 1 : $quotient;
     }
 
-    public static function floorMod(int $dividend, int $divisor): int
+    public static function floorMod(
+        int $dividend,
+        int $divisor,
+    ): int
     {
         return $dividend - self::floorDiv($dividend, $divisor) * $divisor;
     }

@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Static checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      - name: Composer normalize and validate
+        run: composer check:composer
+
+      - name: EditorConfig
+        run: composer check:ec
+
+      - name: Coding standard
+        run: composer check:cs
+
+      - name: PHPStan
+        run: composer check:types
+
+      - name: Dependency analysis
+        run: composer check:dependencies
+
+      - name: Name collisions
+        run: composer check:collisions
+
+  tests:
+    name: Tests (PHP ${{ matrix.php-version }}, ${{ matrix.dependency-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.1', '8.2', '8.3', '8.4', '8.5']
+        dependency-version: [prefer-lowest, prefer-stable]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+
+      - name: Update dependencies
+        run: composer update --no-interaction --no-progress --${{ matrix.dependency-version }}
+
+      - name: PHPUnit
+        run: composer check:tests
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: pcov
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      # Every method must be fully covered (coverage-guard.php).
+      - name: PHPUnit with coverage, coverage guard
+        run: composer check:coverage
+
+  mutations:
+    name: Mutation testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: pcov
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+
+      # Infection needs PHP 8.3+, so it lives in tools/infection with its own composer.json.
+      # The job fails below the minMsi threshold in infection.json5.
+      - name: Infection
+        run: composer check:mutations

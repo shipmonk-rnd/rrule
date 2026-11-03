@@ -3,20 +3,23 @@
 namespace ShipMonk\RRule;
 
 use DateTimeImmutable;
-use DateTimeZone;
 use Generator;
 use IteratorAggregate;
 use LogicException;
 use ShipMonk\RRule\Exception\InvalidRecurrenceException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Exception\ParseException;
-use ShipMonk\RRule\Exception\SearchLimitExceededException;
 use ShipMonk\RRule\Internal\RecurrenceEngine;
 use ShipMonk\RRule\Internal\RuleSerializer;
 use ShipMonk\RRule\Internal\ValueKind;
+use ShipMonk\RRule\Internal\Values\DateValues;
+use ShipMonk\RRule\Internal\Values\FloatingValues;
+use ShipMonk\RRule\Internal\Values\InstantValues;
+use ShipMonk\RRule\Internal\Values\ValueConverter;
 use ShipMonk\RRule\Parser\ParseMode;
 use ShipMonk\RRule\Parser\RecurrenceParser;
 use function array_values;
+use function count;
 use function sprintf;
 
 /**
@@ -29,10 +32,12 @@ use function sprintf;
  * - DateTimeImmutable in UTC or in a named zone: instants, returned in the zone of the start.
  *
  * The object is immutable. Every query starts a new expansion, so the object is safe to share and to iterate
- * more than once.
+ * more than once. Every query ends: a rule that stops producing occurrences is detected after one 400-year
+ * Gregorian cycle at most. {@see SearchLimitExceededException} limits the work for extremely sparse rules.
  *
  * @template T of CalendarDate|FloatingDateTime|DateTimeImmutable
  * @implements IteratorAggregate<int, T>
+ *
  * @api
  */
 final class Recurrence implements IteratorAggregate
@@ -41,17 +46,18 @@ final class Recurrence implements IteratorAggregate
     public const DEFAULT_SEARCH_LIMIT = 1_000_000;
 
     /**
-     * @param T $start
+     * @param ValueConverter<T>    $values
+     * @param T                    $start
      * @param list<RecurrenceRule> $rules
-     * @param list<T> $addedDates
-     * @param list<T> $excludedDates
-     * @param list<CalendarDate> $excludedDays
+     * @param list<T>              $addedDates
+     * @param list<T>              $excludedDates
+     * @param list<CalendarDate>   $excludedDays
      * @param list<RecurrenceRule> $exclusionRules
-     * @param positive-int $searchLimit
+     * @param positive-int         $searchLimit
      */
     private function __construct(
+        private readonly ValueConverter $values,
         private readonly CalendarDate|FloatingDateTime|DateTimeImmutable $start,
-        private readonly ValueKind $kind,
         private readonly array $rules,
         private readonly array $addedDates,
         private readonly array $excludedDates,
@@ -64,9 +70,8 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
-     * @template S of CalendarDate|FloatingDateTime|DateTimeImmutable
-     * @param S $start
-     * @return (S is DateTimeImmutable ? self<DateTimeImmutable> : self<S>)
+     * @return ($start is CalendarDate ? self<CalendarDate> : ($start is FloatingDateTime ? self<FloatingDateTime> : self<DateTimeImmutable>))
+     *
      * @throws InvalidRecurrenceException
      */
     public static function of(
@@ -74,29 +79,28 @@ final class Recurrence implements IteratorAggregate
         RecurrenceRule ...$rules,
     ): self
     {
+        if ($start instanceof CalendarDate) {
+            return self::create(new DateValues(), $start, array_values($rules));
+        }
+
+        if ($start instanceof FloatingDateTime) {
+            return self::create(new FloatingValues(), $start, array_values($rules));
+        }
+
         try {
-            $kind = ValueKind::of($start);
+            $values = InstantValues::forStart($start);
         } catch (InvalidValueException $e) {
             throw new InvalidRecurrenceException('Invalid start: ' . $e->getMessage(), 0, $e);
         }
 
-        if ($start instanceof DateTimeImmutable) {
-            $start = self::normalizeInstant($start, $start->getTimezone());
-        }
-
-        $rules = array_values($rules);
-
-        foreach ($rules as $rule) {
-            self::checkRuleFitsStart($rule, $kind, 'RRULE');
-        }
-
-        return new self($start, $kind, $rules, [], [], [], [], DtStartPolicy::Always, self::DEFAULT_SEARCH_LIMIT);
+        return self::create($values, $values->accept($start, 'start'), array_values($rules));
     }
 
     /**
      * Parses DTSTART, RRULE, RDATE, EXDATE (and in lenient mode EXRULE) content lines.
      *
      * @return self<CalendarDate>|self<FloatingDateTime>|self<DateTimeImmutable>
+     *
      * @throws ParseException
      */
     public static function fromString(
@@ -108,16 +112,16 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
+     * Replaces the rules (RRULE).
+     *
      * @return self<T>
+     *
      * @throws InvalidRecurrenceException
      */
     public function withRules(RecurrenceRule ...$rules): self
     {
         $rules = array_values($rules);
-
-        foreach ($rules as $rule) {
-            self::checkRuleFitsStart($rule, $this->kind, 'RRULE');
-        }
+        self::checkRulesFitStart($rules, $this->values->getKind(), 'RRULE');
 
         return $this->copy(rules: $rules);
     }
@@ -127,11 +131,12 @@ final class Recurrence implements IteratorAggregate
      *
      * @param T ...$dates
      * @return self<T>
+     *
      * @throws InvalidRecurrenceException
      */
     public function withAddedDates(CalendarDate|FloatingDateTime|DateTimeImmutable ...$dates): self
     {
-        return $this->copy(addedDates: [...$this->addedDates, ...$this->normalizeValues($dates, 'RDATE')]);
+        return $this->copy(addedDates: [...$this->addedDates, ...$this->acceptAll(array_values($dates), 'RDATE')]);
     }
 
     /**
@@ -139,11 +144,12 @@ final class Recurrence implements IteratorAggregate
      *
      * @param T ...$dates
      * @return self<T>
+     *
      * @throws InvalidRecurrenceException
      */
     public function withExcludedDates(CalendarDate|FloatingDateTime|DateTimeImmutable ...$dates): self
     {
-        return $this->copy(excludedDates: [...$this->excludedDates, ...$this->normalizeValues($dates, 'EXDATE')]);
+        return $this->copy(excludedDates: [...$this->excludedDates, ...$this->acceptAll(array_values($dates), 'EXDATE')]);
     }
 
     /**
@@ -155,23 +161,34 @@ final class Recurrence implements IteratorAggregate
      */
     public function withExcludedDays(CalendarDate ...$days): self
     {
-        return $this->copy(excludedDays: [...$this->excludedDays, ...array_values($days)]);
+        $excludedDates = $this->excludedDates;
+        $excludedDays = $this->excludedDays;
+
+        foreach ($days as $day) {
+            $value = $this->values->dateAsValue($day);
+
+            if ($value === null) {
+                $excludedDays[] = $day;
+            } else {
+                $excludedDates[] = $value;
+            }
+        }
+
+        return $this->copy(excludedDates: $excludedDates, excludedDays: $excludedDays);
     }
 
     /**
-     * Sets EXRULE rules (RFC 2445; RFC 5545 deprecates them). An occurrence that an exclusion rule produces
+     * Replaces the EXRULE rules (RFC 2445; RFC 5545 deprecates them). An occurrence that an exclusion rule produces
      * is removed. The start counts for COUNT of an exclusion rule only when the rule produces it.
      *
      * @return self<T>
+     *
      * @throws InvalidRecurrenceException
      */
     public function withExclusionRules(RecurrenceRule ...$rules): self
     {
         $rules = array_values($rules);
-
-        foreach ($rules as $rule) {
-            self::checkRuleFitsStart($rule, $this->kind, 'EXRULE');
-        }
+        self::checkRulesFitStart($rules, $this->values->getKind(), 'EXRULE');
 
         return $this->copy(exclusionRules: $rules);
     }
@@ -186,7 +203,7 @@ final class Recurrence implements IteratorAggregate
 
     /**
      * Sets how many expansion steps (periods or jumps) one query may take before it throws
-     * {@see SearchLimitExceededException}. The limit exists for rules that match very rarely.
+     * {@see SearchLimitExceededException}.
      *
      * @param positive-int $searchLimit
      * @return self<T>
@@ -257,7 +274,6 @@ final class Recurrence implements IteratorAggregate
      * All occurrences in ascending order. The keys are 0, 1, 2 and so on.
      *
      * @return Generator<int, T>
-     * @throws SearchLimitExceededException
      */
     public function getIterator(): Generator
     {
@@ -266,7 +282,6 @@ final class Recurrence implements IteratorAggregate
 
     /**
      * @return T|null
-     * @throws SearchLimitExceededException
      */
     public function first(): CalendarDate|FloatingDateTime|DateTimeImmutable|null
     {
@@ -279,13 +294,13 @@ final class Recurrence implements IteratorAggregate
 
     /**
      * The first occurrence after the given value (or at it, when inclusive). For an instant recurrence, the value
-     * may be in any time zone. The search skips ahead to the given value instead of iterating from the start,
-     * unless a rule has COUNT.
+     * may be in any time zone. The search skips ahead to the value instead of iterating from the start, unless
+     * a rule has COUNT.
      *
      * @param T $after
      * @return T|null
+     *
      * @throws InvalidRecurrenceException
-     * @throws SearchLimitExceededException
      */
     public function firstAfter(
         CalendarDate|FloatingDateTime|DateTimeImmutable $after,
@@ -304,8 +319,8 @@ final class Recurrence implements IteratorAggregate
      *
      * @param T $before
      * @return T|null
+     *
      * @throws InvalidRecurrenceException
-     * @throws SearchLimitExceededException
      */
     public function lastBefore(
         CalendarDate|FloatingDateTime|DateTimeImmutable $before,
@@ -316,13 +331,13 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
-     * Occurrences in the half-open range [from, to).
+     * Occurrences in the half-open range [from, to), in ascending order.
      *
      * @param T $from
      * @param T $to
      * @return Generator<int, T>
+     *
      * @throws InvalidRecurrenceException
-     * @throws SearchLimitExceededException
      */
     public function between(
         CalendarDate|FloatingDateTime|DateTimeImmutable $from,
@@ -337,7 +352,6 @@ final class Recurrence implements IteratorAggregate
      *
      * @param non-negative-int $limit
      * @return list<T>
-     * @throws SearchLimitExceededException
      */
     public function take(int $limit): array
     {
@@ -360,18 +374,14 @@ final class Recurrence implements IteratorAggregate
 
     /**
      * @param T $value
+     *
      * @throws InvalidRecurrenceException
-     * @throws SearchLimitExceededException
      */
     public function occursAt(CalendarDate|FloatingDateTime|DateTimeImmutable $value): bool
     {
         $position = $this->toPosition($value, 'value');
 
-        foreach ($this->createEngine()->iterate($position, true, $position + 1) as $occurrence) {
-            return true;
-        }
-
-        return false;
+        return $this->createEngine()->iterate($position, true, $position + 1)->valid();
     }
 
     /**
@@ -401,7 +411,28 @@ final class Recurrence implements IteratorAggregate
      */
     public function getKind(): ValueKind
     {
-        return $this->kind;
+        return $this->values->getKind();
+    }
+
+    /**
+     * @param ValueConverter<S>    $values
+     * @param S                    $start
+     * @param list<RecurrenceRule> $rules
+     * @return self<S>
+     *
+     * @template S of CalendarDate|FloatingDateTime|DateTimeImmutable
+     *
+     * @throws InvalidRecurrenceException
+     */
+    private static function create(
+        ValueConverter $values,
+        CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        array $rules,
+    ): self
+    {
+        self::checkRulesFitStart($rules, $values->getKind(), 'RRULE');
+
+        return new self($values, $start, $rules, [], [], [], [], DtStartPolicy::Always, self::DEFAULT_SEARCH_LIMIT);
     }
 
     /**
@@ -410,8 +441,8 @@ final class Recurrence implements IteratorAggregate
     private function createEngine(): RecurrenceEngine
     {
         return new RecurrenceEngine(
+            $this->values,
             $this->start,
-            $this->kind,
             $this->rules,
             $this->addedDates,
             $this->excludedDates,
@@ -430,66 +461,42 @@ final class Recurrence implements IteratorAggregate
         string $name,
     ): int
     {
-        $this->checkKind($value, $name, true);
-
-        return RecurrenceEngine::positionOf($value);
+        return $this->values->toPosition($this->values->accept($value, $name));
     }
 
     /**
      * @param list<CalendarDate|FloatingDateTime|DateTimeImmutable> $values
      * @return list<T>
+     *
      * @throws InvalidRecurrenceException
      */
-    private function normalizeValues(
+    private function acceptAll(
         array $values,
         string $name,
     ): array
     {
-        $normalized = [];
+        $accepted = [];
 
-        foreach (array_values($values) as $value) {
-            $this->checkKind($value, $name, false);
-
-            if ($value instanceof DateTimeImmutable && $this->start instanceof DateTimeImmutable) {
-                $value = self::normalizeInstant($value, $this->start->getTimezone());
-            }
-
-            /** @var T $value */
-            $normalized[] = $value;
+        foreach ($values as $value) {
+            $accepted[] = $this->values->accept($value, $name);
         }
 
-        return $normalized;
+        return $accepted;
     }
 
     /**
+     * @param list<RecurrenceRule> $rules
+     *
      * @throws InvalidRecurrenceException
      */
-    private function checkKind(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
-        string $name,
-        bool $anyInstant,
+    private static function checkRulesFitStart(
+        array $rules,
+        ValueKind $kind,
+        string $property,
     ): void
     {
-        if ($value instanceof DateTimeImmutable && $this->kind->hasInstant()) {
-            if (!$anyInstant) {
-                try {
-                    ValueKind::of($value);
-                } catch (InvalidValueException $e) {
-                    throw new InvalidRecurrenceException(sprintf('Invalid %s: %s', $name, $e->getMessage()), 0, $e);
-                }
-            }
-
-            return;
-        }
-
-        $expected = match ($this->kind) {
-            ValueKind::Date => CalendarDate::class,
-            ValueKind::Floating => FloatingDateTime::class,
-            ValueKind::Utc, ValueKind::Zoned => DateTimeImmutable::class,
-        };
-
-        if (!$value instanceof $expected) {
-            throw new InvalidRecurrenceException(sprintf('The %s value must be %s, because the start is %s', $name, $expected, $expected));
+        foreach ($rules as $rule) {
+            self::checkRuleFitsStart($rule, $kind, $property);
         }
     }
 
@@ -537,23 +544,13 @@ final class Recurrence implements IteratorAggregate
         }
     }
 
-    private static function normalizeInstant(
-        DateTimeImmutable $value,
-        DateTimeZone $timeZone,
-    ): DateTimeImmutable
-    {
-        $converted = DateTimeImmutable::createFromInterface($value)->setTimezone($timeZone);
-
-        return $converted->setTime((int) $converted->format('G'), (int) $converted->format('i'), (int) $converted->format('s'));
-    }
-
     /**
      * @param list<RecurrenceRule>|null $rules
-     * @param list<T>|null $addedDates
-     * @param list<T>|null $excludedDates
-     * @param list<CalendarDate>|null $excludedDays
+     * @param list<T>|null              $addedDates
+     * @param list<T>|null              $excludedDates
+     * @param list<CalendarDate>|null   $excludedDays
      * @param list<RecurrenceRule>|null $exclusionRules
-     * @param positive-int|null $searchLimit
+     * @param positive-int|null         $searchLimit
      * @return self<T>
      */
     private function copy(
@@ -567,8 +564,8 @@ final class Recurrence implements IteratorAggregate
     ): self
     {
         return new self(
+            $this->values,
             $this->start,
-            $this->kind,
             $rules ?? $this->rules,
             $addedDates ?? $this->addedDates,
             $excludedDates ?? $this->excludedDates,

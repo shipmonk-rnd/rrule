@@ -1,0 +1,37 @@
+tests/Corpus/data/rust-rrule/cases.json contains test vectors derived from
+rust-rrule (https://github.com/fmeringdal/rust-rrule), commit
+1c3420ede20e6190040804121e1b5e1eddac6493, files
+rrule/src/tests/rfc_tests.rs and rrule/src/tests/daylight_saving.rs.
+
+rust-rrule is dual-licensed "MIT OR Apache-2.0". This project uses the
+vectors under the MIT licence. The copyright notice and the permission
+notice of rust-rrule (LICENSE-MIT) follow.
+
+tools/extract_rust_rrule.py converted the Rust test code to JSON. It changed
+the format of the expected values only (RFC 3339 to iCalendar basic format
+with a UTC offset suffix).
+
+-------------------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) 2021 Fredrik Meringdal
+Copyright (c) 2021 Ralph Bisschops
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

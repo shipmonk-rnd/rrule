@@ -2,11 +2,8 @@
 
 namespace ShipMonk\RRule\Internal;
 
-use DateTimeImmutable;
 use DateTimeZone;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\InvalidValueException;
-use ShipMonk\RRule\FloatingDateTime;
 use function in_array;
 use function sprintf;
 
@@ -38,21 +35,6 @@ enum ValueKind
      */
     case Zoned;
 
-    /**
-     * @throws InvalidValueException
-     */
-    public static function of(CalendarDate|FloatingDateTime|DateTimeImmutable $value): self
-    {
-        if ($value instanceof CalendarDate) {
-            return self::Date;
-        }
-
-        if ($value instanceof FloatingDateTime) {
-            return self::Floating;
-        }
-
-        return self::ofTimeZone($value->getTimezone());
-    }
 
     /**
      * @throws InvalidValueException
@@ -73,16 +55,6 @@ enum ValueKind
             'Time zone "%s" is not supported: use a named IANA zone (for example Europe/Prague) or UTC, because RFC 5545 references a time zone by its identifier',
             $name,
         ));
-    }
-
-    public function isDateTime(): bool
-    {
-        return $this !== self::Date;
-    }
-
-    public function hasInstant(): bool
-    {
-        return $this === self::Utc || $this === self::Zoned;
     }
 
 }

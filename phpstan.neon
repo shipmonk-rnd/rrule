@@ -50,3 +50,12 @@ parameters:
       path: tests/*
     - identifier: staticMethod.alreadyNarrowedType
       path: tests/*
+      reportUnmatched: false
+    # data providers create values with constructors that throw checked exceptions
+    - identifier: shipmonk.checkedExceptionInCallable
+      path: tests/*
+    - identifier: shipmonk.checkedExceptionInYieldingMethod
+      path: tests/*
+    # random rule parts are plain integers; the RecurrenceRule constructor checks their ranges
+    - identifier: argument.type
+      path: tests/Reference/NaiveExpanderDifferentialTest.php

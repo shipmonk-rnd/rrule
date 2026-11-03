@@ -1,0 +1,1234 @@
+{
+  "source": "ical.net",
+  "sourceUrl": "https://github.com/ical-org/ical.net/blob/b7cd9063576825fd52b26839d1e16f7187d2e023/Ical.Net.Tests/Calendars/Recurrence/RecurrenceTestCases.txt",
+  "license": "MIT",
+  "dtStartPolicy": "OnlyIfMatching",
+  "cases": [
+    {
+      "id": "ical.net-001",
+      "description": "Monday and Thursday, 3 times. [line 2]",
+      "recurrence": "DTSTART;VALUE=DATE:20241024\nRRULE:FREQ=WEEKLY;BYDAY=MO,TH;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20241024",
+        "20241028",
+        "20241031"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-002",
+      "description": "The first date belongs to 2009, so after 6 years it will be 2015, which has a week 53. [line 11]",
+      "recurrence": "DTSTART:20100102T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=TU,SA;INTERVAL=6;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20100102T000000",
+        "20151229T000000",
+        "20160102T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-003",
+      "description": "The first date belongs to 2009, so after 5 years it will be 2014, which has NO week 53. [line 16]",
+      "recurrence": "DTSTART:20100102T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=TU,SA;INTERVAL=5;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20100102T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-004",
+      "description": "The first date belongs to 2009, so after 7 years it will be 2014, which has NO week 53. [line 21]",
+      "recurrence": "DTSTART:20100102T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=TU,SA;INTERVAL=7;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20100102T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-005",
+      "description": "DTSTART is in 2024 but the week belongs to 2025, so after 3 years it will be 2028. [line 26]",
+      "recurrence": "DTSTART;VALUE=DATE:20241231\nRRULE:FREQ=YEARLY;BYWEEKNO=1;BYDAY=MO,TU;INTERVAL=3;UNTIL=20320101",
+      "startAt": null,
+      "expected": [
+        "20241231",
+        "20280103",
+        "20280104",
+        "20301230",
+        "20301231"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-006",
+      "description": "30.12 in WEEK 1 with expansion on BYMONTH, BYMONTHDAY, BYWEEKNO [line 32]",
+      "recurrence": "DTSTART;VALUE=DATE:20241230\nRRULE:FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=1,30;BYWEEKNO=1;UNTIL=20320101",
+      "startAt": null,
+      "expected": [
+        "20241230",
+        "20251230",
+        "20301230",
+        "20311230"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-007",
+      "description": "30.12 in WEEK 1 with expansion on BYYEARDAY, BYWEEKNO [line 37]",
+      "recurrence": "DTSTART;VALUE=DATE:20241230\nRRULE:FREQ=YEARLY;BYYEARDAY=-2;BYWEEKNO=1;UNTIL=20320101",
+      "startAt": null,
+      "expected": [
+        "20241230",
+        "20251230",
+        "20301230",
+        "20311230"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-008",
+      "description": "30.12 in WEEK 52 with expansion on BYMONTH, BYMONTHDAY, BYWEEKNO [line 42]",
+      "recurrence": "DTSTART;VALUE=DATE:20271230\nRRULE:FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=1,30;BYWEEKNO=52;UNTIL=20340101",
+      "startAt": null,
+      "expected": [
+        "20271230",
+        "20281230",
+        "20291230",
+        "20331230"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-009",
+      "description": "30.12 in WEEK 52 with expansion on BYYEARDAY, BYWEEKNO [line 47]",
+      "recurrence": "DTSTART;VALUE=DATE:20271230\nRRULE:FREQ=YEARLY;BYYEARDAY=-2;BYWEEKNO=52;UNTIL=20340101",
+      "startAt": null,
+      "expected": [
+        "20271230",
+        "20281230",
+        "20291230",
+        "20331230"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-010",
+      "description": "30.12 in WEEK 53 with expansion on BYMONTH, BYMONTHDAY, BYWEEKNO [line 52]",
+      "recurrence": "DTSTART;VALUE=DATE:20261230\nRRULE:FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=1,30;BYWEEKNO=53;UNTIL=20380101",
+      "startAt": null,
+      "expected": [
+        "20261230",
+        "20321230",
+        "20371230"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-011",
+      "description": "30.12 in WEEK 53 with expansion on BYYEARDAY, BYWEEKNO [line 57]",
+      "recurrence": "DTSTART;VALUE=DATE:20261230\nRRULE:FREQ=YEARLY;BYYEARDAY=-2;BYWEEKNO=53;UNTIL=20380101",
+      "startAt": null,
+      "expected": [
+        "20261230",
+        "20321230",
+        "20371230"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-012",
+      "description": "2.1 in WEEK 1 with expansion on BYMONTH, BYMONTHDAY, BYWEEKNO [line 62]",
+      "recurrence": "DTSTART;VALUE=DATE:20250102\nRRULE:FREQ=YEARLY;BYMONTH=1;BYMONTHDAY=2,31;BYWEEKNO=1;UNTIL=20290102",
+      "startAt": null,
+      "expected": [
+        "20250102",
+        "20260102",
+        "20290102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-013",
+      "description": "2.1 in WEEK 1 with expansion on BYYEARDAY, BYWEEKNO [line 67]",
+      "recurrence": "DTSTART;VALUE=DATE:20250102\nRRULE:FREQ=YEARLY;BYYEARDAY=2;BYWEEKNO=1;UNTIL=20290102",
+      "startAt": null,
+      "expected": [
+        "20250102",
+        "20260102",
+        "20290102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-014",
+      "description": "2.1 in WEEK 52 with expansion on BYMONTH, BYMONTHDAY, BYWEEKNO [line 72]",
+      "recurrence": "DTSTART;VALUE=DATE:20280102\nRRULE:FREQ=YEARLY;BYMONTH=1;BYMONTHDAY=2,31;BYWEEKNO=52;UNTIL=20390102",
+      "startAt": null,
+      "expected": [
+        "20280102",
+        "20390102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-015",
+      "description": "2.1 in WEEK 52 with expansion on BYYEARDAY, BYWEEKNO [line 77]",
+      "recurrence": "DTSTART;VALUE=DATE:20280102\nRRULE:FREQ=YEARLY;BYYEARDAY=2;BYWEEKNO=52;UNTIL=20390102",
+      "startAt": null,
+      "expected": [
+        "20280102",
+        "20390102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-016",
+      "description": "2.1 in WEEK 53 with expansion on BYMONTH, BYMONTHDAY, BYWEEKNO [line 82]",
+      "recurrence": "DTSTART;VALUE=DATE:20270102\nRRULE:FREQ=YEARLY;BYMONTH=1;BYMONTHDAY=2,31;BYWEEKNO=53;UNTIL=20380102",
+      "startAt": null,
+      "expected": [
+        "20270102",
+        "20330102",
+        "20380102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-017",
+      "description": "2.1 in WEEK 53 with expansion on BYYEARDAY, BYWEEKNO [line 87]",
+      "recurrence": "DTSTART;VALUE=DATE:20270102\nRRULE:FREQ=YEARLY;BYYEARDAY=2;BYWEEKNO=53;UNTIL=20380102",
+      "startAt": null,
+      "expected": [
+        "20270102",
+        "20330102",
+        "20380102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-018",
+      "description": "BYMONTHDAY with limit behaviour; reproduces #728 as reported by pinkfloydx33 [line 92]",
+      "recurrence": "DTSTART;VALUE=DATE:20250220\nRRULE:FREQ=DAILY;BYMONTHDAY=20,-2;UNTIL=20250401",
+      "startAt": null,
+      "expected": [
+        "20250220",
+        "20250227",
+        "20250320",
+        "20250330"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-019",
+      "description": "BYYEARDAY with limit behaviour; BYHOUR limit behaviour [line 97]",
+      "recurrence": "DTSTART:20251220T000000\nRRULE:FREQ=HOURLY;BYHOUR=0;BYYEARDAY=360,-2;UNTIL=20260101T000000",
+      "startAt": null,
+      "expected": [
+        "20251226T000000",
+        "20251230T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-020",
+      "description": "BYYEARDAY with 1st day of the year and UNTIL [line 102]",
+      "recurrence": "DTSTART;VALUE=DATE:20250110\nRRULE:FREQ=YEARLY;BYYEARDAY=1,10;UNTIL=20260105",
+      "startAt": null,
+      "expected": [
+        "20250110",
+        "20260101"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-021",
+      "description": "BYHOUR, BYMINUTE, BYSECOND limit behaviour note that the max number of increments is 1000, so we can only observer a limited time span [line 108]",
+      "recurrence": "DTSTART:20250216T015905\nRRULE:FREQ=SECONDLY;BYHOUR=1,2;BYMINUTE=3,4,59;BYSECOND=5,6;UNTIL=20250216T020500",
+      "startAt": null,
+      "expected": [
+        "20250216T015905",
+        "20250216T015906",
+        "20250216T020305",
+        "20250216T020306",
+        "20250216T020405",
+        "20250216T020406"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-022",
+      "description": "BYWEEKNO 1 - UNTIL and the last recurrence are in 2024 while the week is 1 of 2025. [line 113]",
+      "recurrence": "DTSTART;VALUE=DATE:20240101\nRRULE:FREQ=YEARLY;BYWEEKNO=1;BYDAY=MO;UNTIL=20241230",
+      "startAt": null,
+      "expected": [
+        "20240101",
+        "20241230"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-023",
+      "description": "Evaluation until year 9999 must succeed [line 124]",
+      "recurrence": "DTSTART;VALUE=DATE:99980101\nRRULE:FREQ=YEARLY;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "99980101",
+        "99990101"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-024",
+      "description": "The end stil falls in the year 9999, so it should succeed [line 135]",
+      "recurrence": "DTSTART;VALUE=DATE:99990101\nRRULE:FREQ=YEARLY;COUNT=1",
+      "startAt": null,
+      "expected": [
+        "99990101"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "The source also has DURATION:P364D; it does not change the start times."
+      }
+    },
+    {
+      "id": "ical.net-025",
+      "description": "Yearly recurrence starting on Feb 28 of a leap year, 5 occurrences [line 166]",
+      "recurrence": "DTSTART;VALUE=DATE:20240228\nRRULE:FREQ=YEARLY;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20240228",
+        "20250228",
+        "20260228",
+        "20270228",
+        "20280228"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-026",
+      "description": "Yearly recurrence starting on Feb 29 of a leap year, 4 occurrences [line 171]",
+      "recurrence": "DTSTART;VALUE=DATE:20240229\nRRULE:FREQ=YEARLY;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240229",
+        "20280229",
+        "20320229",
+        "20360229"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-027",
+      "description": "First and last day of the year, 3 occurrences with first/last day of year expansion, issue #889 [line 176]",
+      "recurrence": "DTSTART;VALUE=DATE:20250101\nRRULE:FREQ=YEARLY;BYYEARDAY=-1,1;BYMONTHDAY=-1,1;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20250101",
+        "20251231",
+        "20260101"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-028",
+      "description": "Second and second last day of June, all occurrences in June 2025, issue #889 [line 181]",
+      "recurrence": "DTSTART;VALUE=DATE:20250601\nRRULE:FREQ=YEARLY;BYMONTH=6;BYMONTHDAY=2,-2;UNTIL=20250630",
+      "startAt": null,
+      "expected": [
+        "20250602",
+        "20250629"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-029",
+      "description": "Yearly BYMONTH numeric BYDAY (2MO) - 2nd Monday in each BYMONTH [line 199]",
+      "recurrence": "DTSTART:20260608T090000\nRRULE:FREQ=YEARLY;BYMONTH=6,9;BYDAY=2MO;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20260608T090000",
+        "20260914T090000",
+        "20270614T090000",
+        "20270913T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-030",
+      "description": "Yearly without BYMONTH numeric BYDAY (20MO) - 20th Monday of the YEAR [line 204]",
+      "recurrence": "DTSTART:20260518T090000\nRRULE:FREQ=YEARLY;BYDAY=20MO;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260518T090000",
+        "20270517T090000",
+        "20280515T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-031",
+      "description": "Yearly BYMONTH negative BYDAY (-1SU) - last Sunday of each BYMONTH [line 209]",
+      "recurrence": "DTSTART:20260628T090000\nRRULE:FREQ=YEARLY;BYMONTH=6,9;BYDAY=-1SU;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20260628T090000",
+        "20260927T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-032",
+      "description": "Yearly BYMONTH=3 BYDAY=1MO - valid: 1st Monday of March each year [line 214]",
+      "recurrence": "DTSTART:20240304T090000\nRRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=1MO;UNTIL=20270101T000000Z",
+      "startAt": "20240101T000000",
+      "expected": [
+        "20240304T090000",
+        "20250303T090000",
+        "20260302T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "START-AT is the DATE 20240101 in the source; the runner reads it as midnight."
+      }
+    },
+    {
+      "id": "ical.net-033",
+      "description": "Yearly BYWEEKNO=10 BYDAY=1MO - valid: Monday of ISO week 10 each year [line 227]",
+      "recurrence": "DTSTART:20240304T090000\nRRULE:FREQ=YEARLY;BYWEEKNO=10;BYDAY=1MO;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20240304T090000",
+        "20250303T090000",
+        "20260302T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 section 3.3.10: BYDAY MUST NOT have a numeric value with FREQ=YEARLY and BYWEEKNO. Ical.Net is lenient and applies the offset within the week."
+      }
+    },
+    {
+      "id": "ical.net-034",
+      "description": "Monthly BYMONTHDAY=13 with BYDAY=MO [line 238]",
+      "recurrence": "DTSTART:20250913T090000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=13;BYDAY=MO;UNTIL=20271231T235959Z",
+      "startAt": "20251013T000000",
+      "expected": [
+        "20251013T090000",
+        "20260413T090000",
+        "20260713T090000",
+        "20270913T090000",
+        "20271213T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "START-AT is the DATE 20251013 in the source; the runner reads it as midnight. The source lists only the instances from START-AT on."
+      }
+    },
+    {
+      "id": "ical.net-035",
+      "description": "Yearly BYMONTHDAY BYDAY [line 244]",
+      "recurrence": "DTSTART;VALUE=DATE:20250409\nRRULE:FREQ=YEARLY;BYMONTHDAY=8,9;BYDAY=WE,TH;UNTIL=20280101",
+      "startAt": null,
+      "expected": [
+        "20250409",
+        "20260408",
+        "20260409",
+        "20270408"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-036",
+      "description": "Yearly BYMONTHDAY=1,8 with BYDAY offsets (expand matrix - note2) [line 249]",
+      "recurrence": "DTSTART;VALUE=DATE:20260601\nRRULE:FREQ=YEARLY;BYMONTHDAY=1,8;BYDAY=22MO,23TU,25MO,36TU;UNTIL=20350101T000000",
+      "startAt": null,
+      "expected": [
+        "20260601",
+        "20270608",
+        "20320608"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-037",
+      "description": "Monthly BYMONTHDAY=1,8; BYDAY=1MO,2TU - limiting behavior: Monthly by month day with day offsets [line 254]",
+      "recurrence": "DTSTART;VALUE=DATE:20260601\nRRULE:FREQ=MONTHLY;BYMONTHDAY=1,8;BYDAY=1MO,2TU;UNTIL=20270101",
+      "startAt": null,
+      "expected": [
+        "20260601",
+        "20260908",
+        "20261208"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-038",
+      "description": "Yearly BYMONTH=6-12; BYMONTHDAY=1,8; BYDAY=1MO,2TU - Yearly by month and by month day, with day offsets [line 259]",
+      "recurrence": "DTSTART;VALUE=DATE:20260601\nRRULE:FREQ=YEARLY;BYMONTH=6,7,8,9,10,11,12;BYMONTHDAY=1,8;BYDAY=1MO,2TU;UNTIL=20270101",
+      "startAt": null,
+      "expected": [
+        "20260601",
+        "20260908",
+        "20261208"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-039",
+      "description": "Rule with COUNT, BYSETPOS and DTSTART not at the beginning of the BY set [line 266]",
+      "recurrence": "DTSTART;VALUE=DATE:20260106\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1,2;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260106",
+        "20260112",
+        "20260113"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-040",
+      "description": "Rule with COUNT, BYSETPOS and DTSTART not at the beginning of the BY set [line 271]",
+      "recurrence": "DTSTART;VALUE=DATE:20260201\nRRULE:FREQ=YEARLY;BYMONTH=1,2;BYSETPOS=1,2;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260201",
+        "20270101",
+        "20270201"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-041",
+      "description": "Rule with COUNT, BYSETPOS and DTSTART not at the beginning of the BY set [line 276]",
+      "recurrence": "DTSTART;VALUE=DATE:20260102\nRRULE:FREQ=YEARLY;BYMONTHDAY=1,2;BYSETPOS=1,2;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260102",
+        "20270101",
+        "20270102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-042",
+      "description": "Rule with COUNT, BYSETPOS and DTSTART not at the beginning of the BY set [line 281]",
+      "recurrence": "DTSTART;VALUE=DATE:20260102\nRRULE:FREQ=MONTHLY;BYMONTHDAY=1,2;BYSETPOS=1,2;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260102",
+        "20260201",
+        "20260202"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-043",
+      "description": "Rule with COUNT, BYSETPOS and DTSTART not at the beginning of the BY set [line 286]",
+      "recurrence": "DTSTART;VALUE=DATE:20260102\nRRULE:FREQ=YEARLY;BYMONTHDAY=1,2;BYSETPOS=1,2;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260102",
+        "20270101",
+        "20270102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-044",
+      "description": "BY rules are ordered when expanded [line 292]",
+      "recurrence": "DTSTART:20250201T000000\nRRULE:FREQ=YEARLY;BYMONTH=5,4;BYWEEKNO=16,15;BYYEARDAY=99,98;BYMONTHDAY=9,8;BYDAY=WE,TU;BYHOUR=2,1;BYMINUTE=4,3;BYSECOND=6,5;COUNT=8",
+      "startAt": null,
+      "expected": [
+        "20250408T010305",
+        "20250408T010306",
+        "20250408T010405",
+        "20250408T010406",
+        "20250408T020305",
+        "20250408T020306",
+        "20250408T020405",
+        "20250408T020406"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-045",
+      "description": "Limiting BYYEARDAY and BYDAY [line 297]",
+      "recurrence": "DTSTART;VALUE=DATE:20260601\nRRULE:FREQ=YEARLY;BYYEARDAY=152,173,251,272,321,342;BYDAY=22MO,26MO,36TU,37TU,49TU;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260601",
+        "20260908",
+        "20261208"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-046",
+      "description": "Positive BYSETPOS with some sets being empty [line 302]",
+      "recurrence": "DTSTART;VALUE=DATE:20260202\nRRULE:FREQ=MONTHLY;BYMONTHDAY=1,2,3;BYDAY=MO,TU;BYSETPOS=1;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260202",
+        "20260302",
+        "20260601"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-047",
+      "description": "Negative BYSETPOS with some sets being empty [line 307]",
+      "recurrence": "DTSTART;VALUE=DATE:20260203\nRRULE:FREQ=MONTHLY;BYMONTHDAY=1,2,3;BYDAY=MO,TU;BYSETPOS=-1;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260203",
+        "20260303",
+        "20260602"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-048",
+      "description": "Yearly BYDAY with positive BYSETPOS [line 312]",
+      "recurrence": "DTSTART;VALUE=DATE:20250101\nRRULE:FREQ=YEARLY;BYDAY=WE;BYSETPOS=1,3,6;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20250101",
+        "20250115",
+        "20250205",
+        "20260107"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-049",
+      "description": "Yearly BYDAY with positive and negative BYSETPOS [line 317]",
+      "recurrence": "DTSTART;VALUE=DATE:20250101\nRRULE:FREQ=YEARLY;BYDAY=WE;BYSETPOS=1,3,6,-3,-1;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20250101",
+        "20250115",
+        "20250205",
+        "20251217",
+        "20251231",
+        "20260107"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-050",
+      "description": "Yearly BYDAY with unordered positive and negative offsets [line 322]",
+      "recurrence": "DTSTART;VALUE=DATE:20250101\nRRULE:FREQ=YEARLY;BYDAY=1WE,-1WE,-1SA,6WE,3WE,-3WE;COUNT=7",
+      "startAt": null,
+      "expected": [
+        "20250101",
+        "20250115",
+        "20250205",
+        "20251217",
+        "20251227",
+        "20251231",
+        "20260107"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-051",
+      "description": "Monthly BYDAY with unordered positive and negative offsets [line 327]",
+      "recurrence": "DTSTART;VALUE=DATE:20250101\nRRULE:FREQ=MONTHLY;BYDAY=1WE,-1WE,-1SA,6WE,3WE,1SA,-3WE;COUNT=11",
+      "startAt": null,
+      "expected": [
+        "20250101",
+        "20250104",
+        "20250115",
+        "20250125",
+        "20250129",
+        "20250201",
+        "20250205",
+        "20250212",
+        "20250219",
+        "20250222",
+        "20250226"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-052",
+      "description": "Monthly BYDAY with and without offsets [line 332]",
+      "recurrence": "DTSTART;VALUE=DATE:20250106\nRRULE:FREQ=MONTHLY;BYDAY=MO,2TU;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20250106",
+        "20250113",
+        "20250114",
+        "20250120"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-053",
+      "description": "Yearly BYMONTH BYWEEKNO BYDAY excludes days before the month [line 337]",
+      "recurrence": "DTSTART;VALUE=DATE:20250201\nRRULE:FREQ=YEARLY;BYMONTH=2;BYWEEKNO=5;BYDAY=FR,SA;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20250201",
+        "20270205",
+        "20270206"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-054",
+      "description": "Yearly BYMONTH BYWEEKNO BYDAY excludes days after the month [line 342]",
+      "recurrence": "DTSTART;VALUE=DATE:20250131\nRRULE:FREQ=YEARLY;BYMONTH=1;BYWEEKNO=5;BYDAY=FR,SA;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20250131",
+        "20260130"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-055",
+      "description": "Negative BYDAY limiting due to BYYEARDAY [line 347]",
+      "recurrence": "DTSTART;VALUE=DATE:20251220\nRRULE:FREQ=YEARLY;BYYEARDAY=-1,-2;BYDAY=-1WE;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20251231",
+        "20261230",
+        "20311231",
+        "20361231"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-056",
+      "description": "Negative BYDAY limiting due to BYMONTH [line 352]",
+      "recurrence": "DTSTART;VALUE=DATE:20251126\nRRULE:FREQ=YEARLY;BYMONTH=11,12;BYMONTHDAY=31,30;BYDAY=-1WE;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20251231",
+        "20261230",
+        "20311231",
+        "20331130"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-057",
+      "description": "COUNT is correct with duplicate BYWEEKNO values [line 357]",
+      "recurrence": "DTSTART;VALUE=DATE:20250101\nRRULE:FREQ=YEARLY;BYWEEKNO=1,-52;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20250101",
+        "20251231"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-058",
+      "description": "COUNT is correct with duplicate BYYEARDAY values [line 362]",
+      "recurrence": "DTSTART;VALUE=DATE:20250101\nRRULE:FREQ=YEARLY;BYYEARDAY=1,-365;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20250101",
+        "20260101"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-059",
+      "description": "COUNT is correct with duplicate BYMONTHDAY values [line 367]",
+      "recurrence": "DTSTART;VALUE=DATE:20250101\nRRULE:FREQ=YEARLY;BYMONTHDAY=1,-31;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20250101",
+        "20260101"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-060",
+      "description": "COUNT is correct with duplicate BYDAY values [line 372]",
+      "recurrence": "DTSTART;VALUE=DATE:20250115\nRRULE:FREQ=MONTHLY;BYDAY=3WE,-3WE;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20250115",
+        "20250212"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-061",
+      "description": "COUNT is correct with duplicate BYSETPOS values [line 377]",
+      "recurrence": "DTSTART;VALUE=DATE:20250101\nRRULE:FREQ=YEARLY;BYSETPOS=1,-1;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20250101",
+        "20260101"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-062",
+      "description": "Minutely BYMINUTE [line 382]",
+      "recurrence": "DTSTART:20250101T000000\nRRULE:FREQ=MINUTELY;BYMINUTE=4,23;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20250101T000400",
+        "20250101T002300",
+        "20250101T010400",
+        "20250101T012300",
+        "20250101T020400",
+        "20250101T022300"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-063",
+      "description": "Minutely BYMINUTE with an interval larger than 1 hour [line 387]",
+      "recurrence": "DTSTART:20250101T000000\nRRULE:FREQ=MINUTELY;BYMINUTE=5,25;INTERVAL=61;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20250101T050500",
+        "20250102T012500",
+        "20250103T180500",
+        "20250104T142500",
+        "20250106T070500",
+        "20250107T032500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-064",
+      "description": "Secondly get occurrences after from DTSTART [line 392]",
+      "recurrence": "DTSTART:20250401T235858\nRRULE:FREQ=SECONDLY;UNTIL=20250402T000000",
+      "startAt": "20250401T235958",
+      "expected": [
+        "20250401T235958",
+        "20250401T235959",
+        "20250402T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "The source lists only the instances from START-AT on."
+      }
+    },
+    {
+      "id": "ical.net-065",
+      "description": "BYDAY offset with an invalid frequency should throw exception [line 404]",
+      "recurrence": "DTSTART;VALUE=DATE:20240101\nRRULE:FREQ=DAILY;BYDAY=1MO",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Ical.Net.Evaluation.EvaluationException",
+      "truncated": false,
+      "notes": {
+        "info": "RFC 5545 section 3.3.10: BYDAY with a numeric value MUST NOT be used unless FREQ is MONTHLY or YEARLY."
+      }
+    },
+    {
+      "id": "ical.net-066",
+      "description": "BYYEARDAY skips when BYMONTH does not match [line 410]",
+      "recurrence": "DTSTART;VALUE=DATE:20260301\nRRULE:FREQ=YEARLY;BYMONTH=3;BYYEARDAY=60;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20260301",
+        "20270301",
+        "20290301",
+        "20300301"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-067",
+      "description": "BYMONTHDAY with any invalid zero offset for BYDAY is ignored [line 415]",
+      "recurrence": "DTSTART;VALUE=DATE:20260613\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTHDAY=13;BYDAY=0MO,SA",
+      "startAt": null,
+      "expected": [
+        "20260613",
+        "20270213",
+        "20270313"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "Ical.Net ignores the BYDAY value with offset 0. RFC 5545 ordwk is 1 to 53, so a strict parser rejects the rule."
+      }
+    },
+    {
+      "id": "ical.net-068",
+      "description": "BYYEARDAY with any invalid zero offset for BYDAY is ignored [line 420]",
+      "recurrence": "DTSTART;VALUE=DATE:20290108\nRRULE:FREQ=YEARLY;COUNT=3;BYDAY=MO,0SA;BYYEARDAY=1,8",
+      "startAt": null,
+      "expected": [
+        "20290108",
+        "20350101",
+        "20350108"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "Ical.Net ignores the BYDAY value with offset 0. RFC 5545 ordwk is 1 to 53, so a strict parser rejects the rule."
+      }
+    },
+    {
+      "id": "ical.net-069",
+      "description": "BYMONTH with any invalid zero offset for BYDAY is ignored [line 425]",
+      "recurrence": "DTSTART;VALUE=DATE:20251127\nRRULE:FREQ=YEARLY;BYDAY=4TH,0MO;BYMONTH=11;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20251127",
+        "20261126",
+        "20271125"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "Ical.Net ignores the BYDAY value with offset 0. RFC 5545 ordwk is 1 to 53, so a strict parser rejects the rule."
+      }
+    },
+    {
+      "id": "ical.net-070",
+      "description": "Evaluation for BYWEEKNO with FREQ other than YEARLY should throw exception [line 430]",
+      "recurrence": "DTSTART;VALUE=DATE:20260101\nRRULE:FREQ=MONTHLY;BYWEEKNO=10",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Ical.Net.Evaluation.EvaluationException",
+      "truncated": false,
+      "notes": {
+        "info": "RFC 5545 section 3.3.10: BYWEEKNO MUST NOT be used unless FREQ is YEARLY."
+      }
+    },
+    {
+      "id": "ical.net-071",
+      "description": "Evaluation for BYYEARDAY with invalid FREQ should throw exception [line 436]",
+      "recurrence": "DTSTART;VALUE=DATE:20260101\nRRULE:FREQ=MONTHLY;BYYEARDAY=14;COUNT=3",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Ical.Net.Evaluation.EvaluationException",
+      "truncated": false,
+      "notes": {
+        "info": "RFC 5545 section 3.3.10: BYYEARDAY MUST NOT be used with FREQ=DAILY, WEEKLY or MONTHLY."
+      }
+    },
+    {
+      "id": "ical.net-072",
+      "description": "Evaluation for BYMONTHDAY is invalid for FREQ=WEEKLY [line 442]",
+      "recurrence": "DTSTART;VALUE=DATE:20260101\nRRULE:FREQ=WEEKLY;BYMONTHDAY=20;COUNT=3",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Ical.Net.Evaluation.EvaluationException",
+      "truncated": false,
+      "notes": {
+        "info": "RFC 5545 section 3.3.10: BYMONTHDAY MUST NOT be used with FREQ=WEEKLY."
+      }
+    },
+    {
+      "id": "ical.net-073",
+      "description": "Yearly BYMONTH BYWEEKNO BYDAY skips years when month does not match [line 448]",
+      "recurrence": "DTSTART;VALUE=DATE:20251230\nRRULE:FREQ=YEARLY;BYMONTH=12;BYWEEKNO=1;BYDAY=TU;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20251230",
+        "20301231"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-074",
+      "description": "Yearly BYMONTH BYWEEKNO BYDAY includes weeks that increment outside of BYMONTH but contain days within BYMONTH [line 453]",
+      "recurrence": "DTSTART;VALUE=DATE:20280128\nRRULE:FREQ=YEARLY;BYMONTH=1,3;BYWEEKNO=4,9;BYDAY=MO,FR;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20280128",
+        "20280303"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-075",
+      "description": "Yearly BYMONTH BYWEEKNO skips days not in BYMONTH and stays in the same day of week [line 458]",
+      "recurrence": "DTSTART;VALUE=DATE:20260226\nRRULE:FREQ=YEARLY;BYMONTH=2;BYWEEKNO=9;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260226",
+        "20300228",
+        "20310227"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-076",
+      "description": "Yearly BYWEEKNO BYMONTHDAY uses the correct negative offset when week spans month with fewer days [line 463]",
+      "recurrence": "DTSTART;VALUE=DATE:20260201\nRRULE:FREQ=YEARLY;BYWEEKNO=5,9;BYMONTHDAY=1,-1;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260201",
+        "20260228",
+        "20260301"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-077",
+      "description": "Monthly BYDAY includes listed days before the first listed day of week in the month's first week [line 468]",
+      "recurrence": "DTSTART;VALUE=DATE:20240206\nRRULE:FREQ=MONTHLY;BYDAY=TU,SA;COUNT=8",
+      "startAt": null,
+      "expected": [
+        "20240206",
+        "20240210",
+        "20240213",
+        "20240217",
+        "20240220",
+        "20240224",
+        "20240227",
+        "20240302"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-078",
+      "description": "Monthly BYDAY includes listed days before the first listed day of week in the month's first week - different week start [line 473]",
+      "recurrence": "DTSTART;VALUE=DATE:20240206\nRRULE:FREQ=MONTHLY;BYDAY=TU,SA;COUNT=18;WKST=TH",
+      "startAt": null,
+      "expected": [
+        "20240206",
+        "20240210",
+        "20240213",
+        "20240217",
+        "20240220",
+        "20240224",
+        "20240227",
+        "20240302",
+        "20240305",
+        "20240309",
+        "20240312",
+        "20240316",
+        "20240319",
+        "20240323",
+        "20240326",
+        "20240330",
+        "20240402",
+        "20240406"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-079",
+      "description": "Yearly BYMONTH BYDAY includes listed days before the first listed day of week in the month's first week [line 478]",
+      "recurrence": "DTSTART;VALUE=DATE:20260702\nRRULE:FREQ=YEARLY;BYMONTH=7;BYDAY=TH,TU;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20260702",
+        "20260707",
+        "20260709"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-080",
+      "description": "Yearly BYMONTH keeps the DTSTART day of month after a leap day [line 483]",
+      "recurrence": "DTSTART;VALUE=DATE:20240229\nRRULE:FREQ=YEARLY;BYMONTH=2,8;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20240229",
+        "20240829",
+        "20250829",
+        "20260829",
+        "20270829"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-081",
+      "description": "Weekly BYMONTH keeps the listed days of a week that starts in another month [line 488]",
+      "recurrence": "DTSTART;VALUE=DATE:20260126\nRRULE:FREQ=WEEKLY;BYMONTH=1,2;BYDAY=MO,TU,SU;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20260126",
+        "20260127",
+        "20260201",
+        "20260202",
+        "20260203",
+        "20260208"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-082",
+      "description": "Weekly BYMONTH keeps the listed days of a week that starts in an unlisted month [line 493]",
+      "recurrence": "DTSTART;VALUE=DATE:20260126\nRRULE:FREQ=WEEKLY;BYMONTH=1,3;BYDAY=MO,TU,SU;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20260126",
+        "20260127",
+        "20260301",
+        "20260302",
+        "20260303",
+        "20260308"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.net-083",
+      "description": "Weekly BYMONTH keeps the listed days of a week that starts in the previous month [line 498]",
+      "recurrence": "DTSTART;VALUE=DATE:20260125\nRRULE:FREQ=WEEKLY;BYMONTH=1,2;BYDAY=SU,SA;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20260125",
+        "20260131",
+        "20260201",
+        "20260207",
+        "20260208"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+libical recurrence test data
+
+Source: libical, https://github.com/libical/libical
+Commit: a298354d59a550afe63d44ee7760f2afea599a47
+Files:
+- src/test/icalrecur_test.txt
+- src/test/icalrecur_test_rscale.txt
+- src/test/icalrecur_test_rscale_withicu.txt
+- src/test/icalrecur_test_rscale_withicu_dangi.txt
+
+SPDX-FileCopyrightText: 1999 Contributors to the Libical project
+SPDX-License-Identifier: LGPL-2.1-only OR MPL-2.0 (libical REUSE.toml)
+
+We use these files under the Mozilla Public License, v. 2.0 (MPL-2.0).
+
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+The MPL-2.0 text is in MPL-2.0.txt in this directory (a copy of
+LICENSES/MPL-2.0.txt from the libical commit above).
+
+Files in this directory and their licence:
+- original/*.txt: unchanged copies of the libical files. They stay under
+  MPL-2.0.
+- cases.json: the same test cases in the format of tests/Corpus. It is a
+  modified form of the original files, so it also stays under MPL-2.0.
+  tools/extract_libical.py makes it. Changes: each block becomes one case;
+  the comment becomes "description"; a DATE value of DTSTART gets
+  ";VALUE=DATE"; "INSTANCES: *** <text>" becomes "expectedError"; the cases
+  that need ICU (non-Gregorian RSCALE) and the UNIMPLEMENTED case get a
+  "skip" note.
+
+MPL-2.0 is a file-level copyleft licence. Only the files in this directory
+are under MPL-2.0. The rest of the repository keeps its own licence
+(MPL-2.0 section 3.3, "Distribution of a Larger Work").

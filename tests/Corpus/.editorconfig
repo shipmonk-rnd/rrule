@@ -1,0 +1,8 @@
+# The corpus JSON files use 2-space indentation.
+[*.json]
+indent_size = 2
+
+# NOTICE files and licence texts keep the layout of the upstream licence text.
+[data/**/{NOTICE,*.txt}]
+indent_style = unset
+indent_size = unset

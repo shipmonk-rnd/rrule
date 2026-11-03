@@ -1,0 +1,40 @@
+name: Oracle
+on:
+  workflow_dispatch:
+  pull_request:
+  schedule:
+    - cron: '17 3 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oracle-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build the oracle image
+        uses: docker/build-push-action@v7
+        with:
+          context: docker/oracle
+          load: true
+          tags: shipmonk-rrule-oracle:ci
+          cache-from: type=gha,scope=oracle
+          cache-to: type=gha,scope=oracle,mode=max
+
+      # The lock file has dev tools that need PHP 8.2+. The oracle tests need only PHPUnit, which supports PHP 8.1.
+      - name: Install dependencies
+        run: docker run --rm --user "$(id -u):$(id -g)" --volume "$PWD:/app" shipmonk-rrule-oracle:ci composer install --no-progress --prefer-dist --no-interaction --ignore-platform-req=php
+
+      - name: Run oracle tests
+        run: docker run --rm --user "$(id -u):$(id -g)" --volume "$PWD:/app" shipmonk-rrule-oracle:ci vendor/bin/phpunit --testsuite oracle

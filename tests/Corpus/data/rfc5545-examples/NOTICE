@@ -1,0 +1,57 @@
+RFC 5545 recurrence rule examples
+
+Source: RFC 5545, "Internet Calendaring and Scheduling Core Object Specification
+(iCalendar)", B. Desruisseaux, Ed., September 2009, section 3.8.5.3.
+URL: https://www.rfc-editor.org/rfc/rfc5545#section-3.8.5.3
+
+cases.json contains the DTSTART, EXDATE and RRULE lines of the examples in
+section 3.8.5.3 and the instances that the example prose gives. Changes:
+- The prose instances are written as local date-times with the UTC offset
+  that the prose gives (EDT = -0400, EST = -0500).
+- Lists that the prose shortens with "..." are expanded.
+- Verified erratum 3883 (https://www.rfc-editor.org/errata/eid3883) is
+  applied to the HOURLY example: UNTIL=19970902T210000Z.
+tools/extract_rfc5545.py makes the file, and tools/verify_rfc5545.py checks it.
+
+RFC 5545 also contains material from documents published before
+November 10, 2008 (RFC 2445). Most of the examples come from RFC 2445.
+
+Copyright (c) 2009 IETF Trust and the persons identified as the document
+authors. All rights reserved.
+
+The RFC is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to
+IETF Documents (https://trustee.ietf.org/license-info) in effect on the date
+of publication of the RFC. The RFC states: "Code Components extracted from
+this document must include Simplified BSD License text as described in
+Section 4.e of the Trust Legal Provisions and are provided without warranty
+as described in the BSD License." The Section 4.e text follows. It has three
+clauses, so cases.json gives the licence as BSD-3-Clause.
+
+Copyright (c) 2009 IETF Trust and the persons identified as authors of the
+code. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+- Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+- Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+- Neither the name of Internet Society, IETF or IETF Trust, nor the names of
+  specific contributors, may be used to endorse or promote products derived
+  from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.

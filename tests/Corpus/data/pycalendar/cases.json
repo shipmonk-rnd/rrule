@@ -1,0 +1,310 @@
+{
+  "source": "pycalendar",
+  "sourceUrl": "https://github.com/apple/ccs-pycalendar/blob/a12dd4e1ce8822b022d4abf2cfe6cc93902ff03f/src/pycalendar/icalendar/tests/rrule_examples.json",
+  "license": "Apache-2.0",
+  "dtStartPolicy": "OnlyIfMatching",
+  "cases": [
+    {
+      "id": "pycalendar-001",
+      "description": "rrule_examples.json entry 1: FREQ=YEARLY;BYWEEKNO=1,2",
+      "recurrence": "DTSTART:20130101T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2",
+      "startAt": null,
+      "expected": [
+        "20130101T000000",
+        "20130108T000000",
+        "20140101T000000",
+        "20140108T000000",
+        "20150101T000000",
+        "20150108T000000",
+        "20160108T000000",
+        "20160115T000000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "suspicious": "BYWEEKNO without BYDAY: pycalendar takes the weekday of 1 January of each year (20140101 is a Wednesday, 20160108 a Friday). RFC 5545 takes missing parts from DTSTART (a Tuesday); libical-058 has the same rule and gives Tuesdays.",
+        "info": "pycalendar lists every instance in the period [20130101T000000, 20170101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-002",
+      "description": "rrule_examples.json entry 3: FREQ=MONTHLY",
+      "recurrence": "DTSTART:20140131T120000\nRRULE:FREQ=MONTHLY",
+      "startAt": null,
+      "expected": [
+        "20140131T120000",
+        "20140331T120000",
+        "20140531T120000",
+        "20140731T120000",
+        "20140831T120000",
+        "20141031T120000",
+        "20141231T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20140131T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-003",
+      "description": "rrule_examples.json entry 4: FREQ=MONTHLY;BYMONTHDAY=31",
+      "recurrence": "DTSTART:20140131T120000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=31",
+      "startAt": null,
+      "expected": [
+        "20140131T120000",
+        "20140331T120000",
+        "20140531T120000",
+        "20140731T120000",
+        "20140831T120000",
+        "20141031T120000",
+        "20141231T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20140131T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-004",
+      "description": "rrule_examples.json entry 5: FREQ=MONTHLY;BYMONTHDAY=-31",
+      "recurrence": "DTSTART:20140101T120000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-31",
+      "startAt": null,
+      "expected": [
+        "20140101T120000",
+        "20140301T120000",
+        "20140501T120000",
+        "20140701T120000",
+        "20140801T120000",
+        "20141001T120000",
+        "20141201T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20140101T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-005",
+      "description": "rrule_examples.json entry 6: FREQ=MONTHLY;BYDAY=-1FR",
+      "recurrence": "DTSTART:20140131T120000\nRRULE:FREQ=MONTHLY;BYDAY=-1FR",
+      "startAt": null,
+      "expected": [
+        "20140131T120000",
+        "20140228T120000",
+        "20140328T120000",
+        "20140425T120000",
+        "20140530T120000",
+        "20140627T120000",
+        "20140725T120000",
+        "20140829T120000",
+        "20140926T120000",
+        "20141031T120000",
+        "20141128T120000",
+        "20141226T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20140131T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-006",
+      "description": "rrule_examples.json entry 7: FREQ=MONTHLY;BYDAY=5FR",
+      "recurrence": "DTSTART:20140131T120000\nRRULE:FREQ=MONTHLY;BYDAY=5FR",
+      "startAt": null,
+      "expected": [
+        "20140131T120000",
+        "20140530T120000",
+        "20140829T120000",
+        "20141031T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20140131T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-007",
+      "description": "rrule_examples.json entry 8: FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "recurrence": "DTSTART:20140131T120000\nRRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "startAt": null,
+      "expected": [
+        "20140131T120000",
+        "20140228T120000",
+        "20140331T120000",
+        "20140430T120000",
+        "20140530T120000",
+        "20140630T120000",
+        "20140731T120000",
+        "20140829T120000",
+        "20140930T120000",
+        "20141031T120000",
+        "20141128T120000",
+        "20141231T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20140131T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-008",
+      "description": "rrule_examples.json entry 9: FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "recurrence": "DTSTART:20140127T120000\nRRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "startAt": null,
+      "expected": [
+        "20140131T120000",
+        "20140228T120000",
+        "20140331T120000",
+        "20140430T120000",
+        "20140530T120000",
+        "20140630T120000",
+        "20140731T120000",
+        "20140829T120000",
+        "20140930T120000",
+        "20141031T120000",
+        "20141128T120000",
+        "20141231T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20140127T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-009",
+      "description": "rrule_examples.json entry 10: FREQ=MONTHLY;INTERVAL=2;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "recurrence": "DTSTART:20140127T120000\nRRULE:FREQ=MONTHLY;INTERVAL=2;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "startAt": null,
+      "expected": [
+        "20140131T120000",
+        "20140331T120000",
+        "20140530T120000",
+        "20140731T120000",
+        "20140930T120000",
+        "20141128T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20140127T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-010",
+      "description": "rrule_examples.json entry 11: FREQ=MONTHLY;BYDAY=-1MO,-1TU,-1WE,-1TH,-1FR;BYSETPOS=-1",
+      "recurrence": "DTSTART:20140130T120000\nRRULE:FREQ=MONTHLY;BYDAY=-1MO,-1TU,-1WE,-1TH,-1FR;BYSETPOS=-1",
+      "startAt": null,
+      "expected": [
+        "20140131T120000",
+        "20140228T120000",
+        "20140331T120000",
+        "20140430T120000",
+        "20140530T120000",
+        "20140630T120000",
+        "20140731T120000",
+        "20140829T120000",
+        "20140930T120000",
+        "20141031T120000",
+        "20141128T120000",
+        "20141231T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20140130T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-011",
+      "description": "rrule_examples.json entry 12: FREQ=YEARLY",
+      "recurrence": "DTSTART:20120229T120000\nRRULE:FREQ=YEARLY",
+      "startAt": null,
+      "expected": [
+        "20120229T120000",
+        "20160229T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20120229T120000, 20200101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-012",
+      "description": "rrule_examples.json entry 13: FREQ=YEARLY;BYYEARDAY=366",
+      "recurrence": "DTSTART:20121231T120000\nRRULE:FREQ=YEARLY;BYYEARDAY=366",
+      "startAt": null,
+      "expected": [
+        "20121231T120000",
+        "20161231T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20121231T120000, 20200101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-013",
+      "description": "rrule_examples.json entry 14: FREQ=YEARLY;BYDAY=-1FR;BYMONTH=10",
+      "recurrence": "DTSTART:20101029T120000\nRRULE:FREQ=YEARLY;BYDAY=-1FR;BYMONTH=10",
+      "startAt": null,
+      "expected": [
+        "20101029T120000",
+        "20111028T120000",
+        "20121026T120000",
+        "20131025T120000",
+        "20141031T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20101029T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-014",
+      "description": "rrule_examples.json entry 15: FREQ=YEARLY;BYDAY=1FR;BYMONTH=4",
+      "recurrence": "DTSTART:20100402T120000\nRRULE:FREQ=YEARLY;BYDAY=1FR;BYMONTH=4",
+      "startAt": null,
+      "expected": [
+        "20100402T120000",
+        "20110401T120000",
+        "20120406T120000",
+        "20130405T120000",
+        "20140404T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20100402T120000, 20150101T000000)."
+      }
+    },
+    {
+      "id": "pycalendar-015",
+      "description": "rrule_examples.json entry 16: FREQ=YEARLY;BYDAY=FR;BYMONTHDAY=21,22,23,24,25,26,27;BYMONTH=10",
+      "recurrence": "DTSTART:20101022T120000\nRRULE:FREQ=YEARLY;BYDAY=FR;BYMONTHDAY=21,22,23,24,25,26,27;BYMONTH=10",
+      "startAt": null,
+      "expected": [
+        "20101022T120000",
+        "20111021T120000",
+        "20121026T120000",
+        "20131025T120000",
+        "20141024T120000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "pycalendar lists every instance in the period [20101022T120000, 20150101T000000)."
+      }
+    }
+  ]
+}

@@ -2,14 +2,14 @@
 
 namespace ShipMonk\RRule\Exception;
 
-use RuntimeException;
+use Throwable;
 
 /**
- * The base class of all exceptions that the library throws for invalid input or unsatisfiable requests.
+ * Implemented by every exception of the library.
  *
  * @api
  */
-abstract class RecurrenceException extends RuntimeException
+interface RecurrenceException extends Throwable
 {
 
 }

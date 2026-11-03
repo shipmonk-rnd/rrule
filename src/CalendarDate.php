@@ -20,8 +20,8 @@ final class CalendarDate
 
     /**
      * @param int<1, 9999> $year
-     * @param int<1, 12> $month
-     * @param int<1, 31> $day
+     * @param int<1, 12>   $month
+     * @param int<1, 31>   $day
      */
     private function __construct(
         public readonly int $year,
@@ -88,6 +88,7 @@ final class CalendarDate
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      * @param int<0, 59> $second
+     *
      * @throws InvalidValueException
      */
     public function atTime(

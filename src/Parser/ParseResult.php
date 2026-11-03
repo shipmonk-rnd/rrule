@@ -4,13 +4,14 @@ namespace ShipMonk\RRule\Parser;
 
 /**
  * @template-covariant T
+ *
  * @api
  */
 final class ParseResult
 {
 
     /**
-     * @param T $value
+     * @param T                  $value
      * @param list<ParseWarning> $warnings
      */
     public function __construct(

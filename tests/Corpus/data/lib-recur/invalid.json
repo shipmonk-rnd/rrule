@@ -1,0 +1,295 @@
+{
+  "source": "lib-recur",
+  "sourceUrl": "https://github.com/dmfs/lib-recur/blob/5ba0c83529d47e8020fa3b6411689841edca6242/src/test/java/org/dmfs/rfc5545/recur/InvalidRuleTest.java",
+  "license": "Apache-2.0",
+  "cases": [
+    {
+      "id": "lib-recur-invalid-001",
+      "description": "can't parse rules without FREQ part",
+      "rule": ";COUNT=0",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur also throws in RFC5545_LAX mode"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-002",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=MONTHLY;BYDAY=0TU;INTERVAL=1",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=MONTHLY;BYDAY=TU"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-003",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=MONTHLY;BYDAY=2;INTERVAL=1",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=MONTHLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-004",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=0",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=MONTHLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-005",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=MONTHLY;;INTERVAL=3;BYMONTHDAY=1",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=1"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-006",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=MONTHLY;UNTIL=20120215T115959Z;;BYDAY=3WE;WKST=SU",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=MONTHLY;WKST=SU;BYDAY=3WE;UNTIL=20120215T115959Z"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-007",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=MONTHLY;UNTIL=20120924T215959Z;BYDAY=4",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=MONTHLY;UNTIL=20120924T215959Z"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-008",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=WEEKLY;FREQ=WEEKLY;INTERVAL=2",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=WEEKLY;INTERVAL=2"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-009",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=WEEKLY;INTERVAL=1;UNTIL=20120830T220000Z;WKST=MO;BYDAY=",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=WEEKLY;WKST=MO;UNTIL=20120830T220000Z"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-010",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=WEEKLY;INTERVAL=2;BYDAY=",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=WEEKLY;INTERVAL=2"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-011",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=WEEKLY;INTERVAL=2;UNTIL=20130221T230000Z;WKST=MO;BYDAY=",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=WEEKLY;INTERVAL=2;WKST=MO;UNTIL=20130221T230000Z"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-012",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=WEEKLY;;INTERVAL=3",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=WEEKLY;INTERVAL=3"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-013",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=WEEKLY;UNTIL=20120626T215959Z;BYMONTHDAY=0",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=WEEKLY;UNTIL=20120626T215959Z"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-014",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=YEARLY;BYMONTH=0;BYMONTHDAY=0",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-015",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=YEARLY;BYMONTH=1;BYMONTHDAY=0",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY;BYMONTH=1"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-016",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=YEARLY;BYMONTH=255;BYMONTHDAY=0",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-017",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=YEARLY;BYMONTH=255;BYMONTHDAY=29",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY;BYMONTHDAY=29"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-018",
+      "description": "Invalid rule found in the wild",
+      "rule": "FREQ=YEARLY;BYMONTHDAY=0;BYMONTH=0",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-019",
+      "description": "FREQ keyword is missing",
+      "rule": "YEARLY;BYMONTH=11;BYDAY=1SU",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur also throws in RFC5545_LAX mode"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-020",
+      "description": "invalid keyword",
+      "rule": "FREQU=YEARLY;BYMONTH=11;BYDAY=1SU",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur also throws in RFC5545_LAX mode"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-021",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;BYMONT=11;BYDAY=1SU",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY;BYDAY=1SU"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-022",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;BYMONTH=13",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-023",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;BYDAY=64WE",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-024",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;BYDAY=1UZ",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-025",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;BYDAY=1WE,2WE,-1WE,55WE",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY;BYDAY=1WE,2WE,-1WE"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-026",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;INTERVAL=0",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-027",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;INTERVAL=MO",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-028",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;COUNT=-200",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-029",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;COUNT=abc",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-030",
+      "description": "Invalid rule",
+      "rule": "FREQ=YEARLY;INTERVAL=-1",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-031",
+      "description": "Invalid rule",
+      "rule": "FREQ=DAILY;BYWEEKNO=1,5,8",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=YEARLY;BYWEEKNO=1,5,8"
+      }
+    },
+    {
+      "id": "lib-recur-invalid-032",
+      "description": "Invalid rule",
+      "rule": "FREQ=MONTHLY;UNTIL=20120924T215959ZZ",
+      "expectedError": "InvalidRecurrenceRuleException (RFC5545_STRICT mode)",
+      "notes": {
+        "laxMode": "lib-recur RFC5545_LAX mode parses it as FREQ=MONTHLY;UNTIL=20120924T215959Z"
+      }
+    }
+  ]
+}

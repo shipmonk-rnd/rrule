@@ -2,6 +2,7 @@
 
 namespace ShipMonk\RRule\Exception;
 
+use RuntimeException;
 use Throwable;
 
 /**
@@ -9,7 +10,7 @@ use Throwable;
  *
  * @api
  */
-final class ParseException extends RecurrenceException
+final class ParseException extends RuntimeException implements RecurrenceException
 {
 
     /**

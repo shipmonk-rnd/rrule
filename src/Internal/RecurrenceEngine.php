@@ -1,0 +1,328 @@
+<?php declare(strict_types = 1);
+
+namespace ShipMonk\RRule\Internal;
+
+use DateTimeImmutable;
+use DateTimeZone;
+use Generator;
+use ShipMonk\RRule\CalendarDate;
+use ShipMonk\RRule\Count;
+use ShipMonk\RRule\DtStartPolicy;
+use ShipMonk\RRule\FloatingDateTime;
+use ShipMonk\RRule\Frequency;
+use ShipMonk\RRule\Internal\Values\InstantValues;
+use ShipMonk\RRule\Internal\Values\ValueConverter;
+use ShipMonk\RRule\RecurrenceRule;
+use ShipMonk\RRule\Until;
+use function array_keys;
+use function max;
+use function sort;
+
+/**
+ * Evaluates a recurrence set (RFC 5545 section 3.8.5.3): the start, the rules and the added dates, minus the
+ * excluded dates, the excluded days and the exclusion rules. Every call works on fresh state.
+ *
+ * @template T of CalendarDate|FloatingDateTime|DateTimeImmutable
+ *
+ * @internal
+ */
+final class RecurrenceEngine
+{
+
+    private readonly ?DateTimeZone $timeZone;
+
+    private readonly int $startPosition;
+
+    /**
+     * @param ValueConverter<T>    $values
+     * @param T                    $start
+     * @param list<RecurrenceRule> $rules
+     * @param list<T>              $addedDates
+     * @param list<T>              $excludedDates
+     * @param list<CalendarDate>   $excludedDays
+     * @param list<RecurrenceRule> $exclusionRules
+     * @param positive-int         $searchLimit
+     */
+    public function __construct(
+        private readonly ValueConverter $values,
+        CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        private readonly array $rules,
+        private readonly array $addedDates,
+        private readonly array $excludedDates,
+        private readonly array $excludedDays,
+        private readonly array $exclusionRules,
+        private readonly DtStartPolicy $dtStartPolicy,
+        private readonly int $searchLimit,
+    )
+    {
+        $this->timeZone = $values instanceof InstantValues ? $values->getTimeZone() : null;
+        $this->startPosition = $values->toPosition($start);
+    }
+
+    /**
+     * Unix seconds for instants, local seconds for floating date-times and dates.
+     */
+    private static function positionOf(CalendarDate|FloatingDateTime|DateTimeImmutable $value): int
+    {
+        if ($value instanceof CalendarDate) {
+            return $value->toDayNumber() * Civil::SECONDS_PER_DAY;
+        }
+
+        if ($value instanceof FloatingDateTime) {
+            return $value->toLocalSeconds();
+        }
+
+        return $value->getTimestamp();
+    }
+
+    /**
+     * @param int|null $from start of the range (inclusive or exclusive); null for the beginning
+     * @param int|null $to   end of the range (exclusive); null for no end
+     * @return Generator<int, T>
+     */
+    public function iterate(
+        ?int $from,
+        bool $inclusive,
+        ?int $to,
+    ): Generator
+    {
+        foreach ($this->iteratePositions($from, $inclusive, $to) as $position) {
+            yield $this->toValue($position);
+        }
+    }
+
+    /**
+     * @return T|null
+     */
+    public function findLastBefore(
+        int $position,
+        bool $inclusive,
+    ): CalendarDate|FloatingDateTime|DateTimeImmutable|null
+    {
+        $end = $inclusive ? $position + 1 : $position;
+        $window = $this->getInitialWindow();
+
+        while (true) {
+            $from = $window === null ? null : $end - $window;
+
+            if ($from !== null && $from <= $this->startPosition) {
+                $from = null;
+            }
+
+            $last = null;
+
+            foreach ($this->iteratePositions($from, true, $end) as $candidate) {
+                $last = $candidate;
+            }
+
+            if ($last !== null || $from === null) {
+                return $last === null ? null : $this->toValue($last);
+            }
+
+            $window *= 8;
+        }
+    }
+
+    /**
+     * @return Generator<int, int>
+     */
+    private function iteratePositions(
+        ?int $from,
+        bool $inclusive,
+        ?int $to,
+    ): Generator
+    {
+        $budget = new SearchBudget($this->searchLimit);
+        $resolver = $this->timeZone === null ? null : new TimeZoneResolver($this->timeZone);
+        $startLocal = $resolver === null ? $this->startPosition : $resolver->unixToLocal($this->startPosition);
+
+        $streams = [];
+        $startCounts = $this->dtStartPolicy === DtStartPolicy::Always;
+
+        foreach ($this->rules as $rule) {
+            $streams[] = $this->createRuleStream($rule, $startLocal, $resolver, $budget, $startCounts)->generate($from, $to);
+        }
+
+        if ($this->rules === [] || $startCounts) {
+            $streams[] = self::listStream([$this->startPosition]);
+        }
+
+        $streams[] = self::listStream($this->toSortedPositions($this->addedDates));
+
+        $exclusionStreams = [];
+
+        foreach ($this->exclusionRules as $rule) {
+            $exclusionStreams[] = $this->createRuleStream($rule, $startLocal, $resolver, $budget, false)->generate($from, $to);
+        }
+
+        $excludedPositions = [];
+
+        foreach ($this->excludedDates as $excludedDate) {
+            $excludedPositions[$this->values->toPosition($excludedDate)] = true;
+        }
+
+        $excludedDays = [];
+
+        foreach ($this->excludedDays as $excludedDay) {
+            $excludedDays[$excludedDay->toDayNumber()] = true;
+        }
+
+        while (true) {
+            $next = null;
+
+            foreach ($streams as $stream) {
+                if ($stream->valid() && ($next === null || $stream->current() < $next)) {
+                    $next = $stream->current();
+                }
+            }
+
+            if ($next === null || ($to !== null && $next >= $to)) {
+                return;
+            }
+
+            foreach ($streams as $stream) {
+                while ($stream->valid() && $stream->current() <= $next) {
+                    $stream->next();
+                }
+            }
+
+            if ($from !== null && ($next < $from || (!$inclusive && $next === $from))) {
+                continue;
+            }
+
+            if (isset($excludedPositions[$next]) || $this->isExcludedDay($next, $resolver, $excludedDays)) {
+                continue;
+            }
+
+            if (self::isProducedByAny($exclusionStreams, $next)) {
+                continue;
+            }
+
+            yield $next;
+        }
+    }
+
+    /**
+     * @param array<int, true> $excludedDays
+     */
+    private function isExcludedDay(
+        int $position,
+        ?TimeZoneResolver $resolver,
+        array $excludedDays,
+    ): bool
+    {
+        if ($excludedDays === []) {
+            return false;
+        }
+
+        $local = $resolver === null ? $position : $resolver->unixToLocal($position);
+
+        return isset($excludedDays[Civil::floorDiv($local, Civil::SECONDS_PER_DAY)]);
+    }
+
+    /**
+     * @param list<Generator<int, int>> $streams
+     */
+    private static function isProducedByAny(
+        array $streams,
+        int $position,
+    ): bool
+    {
+        foreach ($streams as $stream) {
+            while ($stream->valid() && $stream->current() < $position) {
+                $stream->next();
+            }
+
+            if ($stream->valid() && $stream->current() === $position) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function createRuleStream(
+        RecurrenceRule $rule,
+        int $startLocal,
+        ?TimeZoneResolver $resolver,
+        SearchBudget $budget,
+        bool $startCounts,
+    ): RuleStream
+    {
+        $plan = ExpansionPlan::compile($rule, $startLocal);
+
+        return new RuleStream(
+            new LocalRuleIterator($plan, new DateMatcher($plan), $budget),
+            $resolver,
+            $this->startPosition,
+            $startCounts,
+            $rule->end instanceof Count ? $rule->end->value : null,
+            $rule->end instanceof Until ? self::positionOf($rule->end->value) : null,
+        );
+    }
+
+    /**
+     * @param list<int> $positions sorted
+     * @return Generator<int, int>
+     */
+    private static function listStream(array $positions): Generator
+    {
+        yield from $positions;
+    }
+
+    /**
+     * @param list<T> $values
+     * @return list<int>
+     */
+    private function toSortedPositions(array $values): array
+    {
+        $positionSet = [];
+
+        foreach ($values as $value) {
+            $positionSet[$this->values->toPosition($value)] = true;
+        }
+
+        $positions = array_keys($positionSet);
+        sort($positions);
+
+        return $positions;
+    }
+
+    /**
+     * How far back the first try of {@see self::findLastBefore()} looks: two periods of the longest rule.
+     * Null when a rule has COUNT, because such a rule must be expanded from the start.
+     */
+    private function getInitialWindow(): ?int
+    {
+        $window = Civil::SECONDS_PER_DAY;
+
+        foreach ([...$this->rules, ...$this->exclusionRules] as $rule) {
+            if ($rule->end instanceof Count) {
+                return null;
+            }
+
+            $periodSeconds = match ($rule->frequency) {
+                Frequency::Yearly => 366 * Civil::SECONDS_PER_DAY,
+                Frequency::Monthly => 31 * Civil::SECONDS_PER_DAY,
+                Frequency::Weekly => 7 * Civil::SECONDS_PER_DAY,
+                Frequency::Daily => Civil::SECONDS_PER_DAY,
+                Frequency::Hourly => 3600,
+                Frequency::Minutely => 60,
+                Frequency::Secondly => 1,
+            };
+
+            $window = max($window, 2 * $periodSeconds * $rule->interval);
+        }
+
+        return $window;
+    }
+
+    /**
+     * @return T
+     */
+    private function toValue(int $position): CalendarDate|FloatingDateTime|DateTimeImmutable
+    {
+        return $this->values->fromPosition($position);
+    }
+
+}

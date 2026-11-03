@@ -1,0 +1,130 @@
+{
+  "source": "dateutil",
+  "sourceUrl": "https://github.com/dateutil/dateutil/blob/a78cbd81d5d03b5f126eb36edb92bca78972c804/tests/test_rrule.py",
+  "license": "Apache-2.0 AND BSD-3-Clause",
+  "cases": [
+    {
+      "id": "dateutil-invalid-001",
+      "description": "testHourlyBadRRule: When `byhour` is specified with `freq=HOURLY`, there are certain combinations of `dtstart` and `byhour` which result in an rrule with no valid values.",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;INTERVAL=4;BYHOUR=7,11,15,19",
+      "expectedError": "ValueError",
+      "notes": {
+        "skip": "dateutil rejects this rule because no instance after DTSTART can ever match (BYxxx values never meet the INTERVAL steps). RFC 5545 does not make the rule invalid; an RFC reading gives no further instances."
+      }
+    },
+    {
+      "id": "dateutil-invalid-002",
+      "description": "testMinutelyBadRRule: See :func:`testHourlyBadRRule` for details.",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;INTERVAL=12;BYMINUTE=10,11,25,39,50",
+      "expectedError": "ValueError",
+      "notes": {
+        "skip": "dateutil rejects this rule because no instance after DTSTART can ever match (BYxxx values never meet the INTERVAL steps). RFC 5545 does not make the rule invalid; an RFC reading gives no further instances."
+      }
+    },
+    {
+      "id": "dateutil-invalid-003",
+      "description": "testSecondlyBadRRule: See :func:`testHourlyBadRRule` for details.",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;INTERVAL=10;BYSECOND=2,15,37,42,59",
+      "expectedError": "ValueError",
+      "notes": {
+        "skip": "dateutil rejects this rule because no instance after DTSTART can ever match (BYxxx values never meet the INTERVAL steps). RFC 5545 does not make the rule invalid; an RFC reading gives no further instances."
+      }
+    },
+    {
+      "id": "dateutil-invalid-004",
+      "description": "testMinutelyBadComboRRule: Certain values of :param:`interval` in :class:`rrule`, when combined with certain values of :param:`byhour` create rules which apply to no valid dates. The library should detect this case in the iterator and raise a :exception:`ValueError`.",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;INTERVAL=120;BYHOUR=10,12,14,16;COUNT=2",
+      "expectedError": "ValueError",
+      "notes": {
+        "skip": "dateutil rejects this rule because no instance after DTSTART can ever match (BYxxx values never meet the INTERVAL steps). RFC 5545 does not make the rule invalid; an RFC reading gives no further instances."
+      }
+    },
+    {
+      "id": "dateutil-invalid-005",
+      "description": "testSecondlyBadComboRRule: See :func:`testMinutelyBadComboRRule' for details. (case 1 of 2)",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;INTERVAL=360;BYMINUTE=10,28,49;COUNT=4",
+      "expectedError": "ValueError",
+      "notes": {
+        "skip": "dateutil rejects this rule because no instance after DTSTART can ever match (BYxxx values never meet the INTERVAL steps). RFC 5545 does not make the rule invalid; an RFC reading gives no further instances."
+      }
+    },
+    {
+      "id": "dateutil-invalid-006",
+      "description": "testSecondlyBadComboRRule: See :func:`testMinutelyBadComboRRule' for details. (case 2 of 2)",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;INTERVAL=43200;BYHOUR=2,10,18,23;COUNT=4",
+      "expectedError": "ValueError",
+      "notes": {
+        "skip": "dateutil rejects this rule because no instance after DTSTART can ever match (BYxxx values never meet the INTERVAL steps). RFC 5545 does not make the rule invalid; an RFC reading gives no further instances."
+      }
+    },
+    {
+      "id": "dateutil-invalid-007",
+      "description": "testBadUntilCountRRule: See rfc-5545 3.3.10 - This checks for the deprecation warning, and will eventually check for an error.",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;UNTIL=19970904T090000",
+      "expectedError": "DeprecationWarning",
+      "notes": {
+        "info": "dateutil only warns (DeprecationWarning) and still expands the rule; RFC 5545 forbids COUNT together with UNTIL."
+      }
+    },
+    {
+      "id": "dateutil-invalid-008",
+      "description": "testStrWithConflictingTZID",
+      "recurrence": "DTSTART;TZID=America/New_York:19970902T090000Z\nRRULE:FREQ=YEARLY;COUNT=3",
+      "expectedError": "ValueError",
+      "notes": null
+    },
+    {
+      "id": "dateutil-invalid-009",
+      "description": "testStrMultipleDTStartComma",
+      "recurrence": "DTSTART:19970101T000000,19970202T000000\nRRULE:FREQ=YEARLY;COUNT=1",
+      "expectedError": "ValueError",
+      "notes": null
+    },
+    {
+      "id": "dateutil-invalid-010",
+      "description": "testStrInvalidUntil",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;UNTIL=TheCowsComeHome;BYDAY=1TU,-1TH",
+      "expectedError": "ValueError",
+      "notes": null
+    },
+    {
+      "id": "dateutil-invalid-011",
+      "description": "testStrUntilMustBeUTC",
+      "recurrence": "DTSTART;TZID=America/New_York:19970902T090000\nRRULE:FREQ=YEARLY;UNTIL=19990101T000000;BYDAY=1TU,-1TH",
+      "expectedError": "ValueError",
+      "notes": null
+    },
+    {
+      "id": "dateutil-invalid-012",
+      "description": "testStrEmptyByDay",
+      "rule": "FREQ=WEEKLY;BYDAY=;WKST=SU",
+      "expectedError": "ValueError",
+      "notes": {
+        "info": "The source passes the bare rule value after the line DTSTART:19970902T090000."
+      }
+    },
+    {
+      "id": "dateutil-invalid-013",
+      "description": "testStrInvalidByDay",
+      "rule": "FREQ=WEEKLY;BYDAY=-1OK;WKST=SU",
+      "expectedError": "ValueError",
+      "notes": {
+        "info": "The source passes the bare rule value after the line DTSTART:19970902T090000."
+      }
+    },
+    {
+      "id": "dateutil-invalid-014",
+      "description": "testBadBySetPos",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=1;BYSETPOS=0",
+      "expectedError": "ValueError",
+      "notes": null
+    },
+    {
+      "id": "dateutil-invalid-015",
+      "description": "testBadBySetPosMany",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=1;BYSETPOS=-1,0,1",
+      "expectedError": "ValueError",
+      "notes": null
+    }
+  ]
+}

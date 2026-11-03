@@ -10,13 +10,12 @@ use function max;
 use function min;
 
 /**
- * Converts between local wall-clock time and Unix time for one time zone, as RFC 5545 section 3.3.5 requires.
+ * Converts between local wall-clock time and Unix time for one time zone, as RFC 5545 section 3.3.5 requires:
+ * - a local time that occurs twice (DST overlap) resolves to its first occurrence;
+ * - a local time that does not exist (DST gap) uses the UTC offset from before the gap.
  *
- * - A local time that occurs twice (DST overlap) resolves to its first occurrence.
- * - A local time that does not exist (DST gap) uses the UTC offset from before the gap.
- *
- * PHP itself resolves overlaps inconsistently (the result depends on the zone and on the earlier state of the
- * DateTime object), so this class reads the transitions and resolves the time on its own.
+ * PHP resolves overlaps inconsistently (the result depends on the zone and on the earlier state of the DateTime
+ * object), so this class reads the transitions and resolves the time on its own.
  *
  * @internal
  */
@@ -24,76 +23,74 @@ final class TimeZoneResolver
 {
 
     /**
-     * Transitions are loaded per local year, with this margin on both sides. Offsets are at most 26 hours apart.
+     * Transitions are loaded per year, with this margin on both sides. UTC offsets are less than 26 hours apart.
      */
     private const WINDOW_MARGIN = 3 * Civil::SECONDS_PER_DAY;
 
-    private readonly bool $fixedUtc;
+    /**
+     * The offset of a zone that has no transitions: UTC, or a zone given as an offset (+02:00) or abbreviation (CEST).
+     */
+    private readonly ?int $fixedOffset;
 
     /**
-     * @var array<int, array{list<int>, list<int>}> year => [segment start Unix times, segment offsets]
+     * @var array<int, non-empty-list<array{int, int}>> year => segments [Unix start, UTC offset]
      */
     private array $segmentsByYear = [];
-
-    /**
-     * @var array<int, int> year => largest forward offset jump (gap length) near that year
-     */
-    private array $maxGapByYear = [];
 
     public function __construct(
         private readonly DateTimeZone $zone,
     )
     {
-        $this->fixedUtc = $zone->getName() === 'UTC';
+        $this->fixedOffset = $zone->getName() === 'UTC' || $zone->getLocation() === false
+            ? $zone->getOffset(new DateTimeImmutable('@0'))
+            : null;
     }
 
     public function localToUnix(int $localSeconds): int
     {
-        if ($this->fixedUtc) {
-            return $localSeconds;
+        if ($this->fixedOffset !== null) {
+            return $localSeconds - $this->fixedOffset;
         }
 
-        [$starts, $offsets] = $this->getSegments($localSeconds);
-        $segmentCount = count($starts);
+        $segments = $this->getSegments($localSeconds);
+        $count = count($segments);
         $resolved = null;
+        $previousOffset = null;
+        $gapResolution = null;
 
-        for ($i = 0; $i < $segmentCount; $i++) {
-            $candidate = $localSeconds - $offsets[$i];
+        foreach ($segments as $index => [$start, $offset]) {
+            $end = $index + 1 < $count ? $segments[$index + 1][0] ?? null : null;
+            $candidate = $localSeconds - $offset;
 
-            if ($candidate >= $starts[$i] && ($i + 1 === $segmentCount || $candidate < $starts[$i + 1])) {
+            if ($candidate >= $start && ($end === null || $candidate < $end)) {
                 $resolved = $resolved === null ? $candidate : min($resolved, $candidate);
             }
-        }
 
-        if ($resolved !== null) {
-            return $resolved;
-        }
-
-        // The local time is in a gap: use the offset in force before the transition that created the gap.
-        for ($i = 1; $i < $segmentCount; $i++) {
-            if ($localSeconds >= $starts[$i] + $offsets[$i - 1] && $localSeconds < $starts[$i] + $offsets[$i]) {
-                return $localSeconds - $offsets[$i - 1];
+            if ($previousOffset !== null && $localSeconds >= $start + $previousOffset && $localSeconds < $start + $offset) {
+                $gapResolution = $localSeconds - $previousOffset;
             }
+
+            $previousOffset = $offset;
         }
 
-        throw new LogicException('Local time matches no time zone segment');
+        return $resolved ?? $gapResolution ?? throw new LogicException('Local time matches no time zone segment');
     }
 
     public function unixToLocal(int $unixSeconds): int
     {
-        if ($this->fixedUtc) {
-            return $unixSeconds;
+        if ($this->fixedOffset !== null) {
+            return $unixSeconds + $this->fixedOffset;
         }
 
-        [$starts, $offsets] = $this->getSegments($unixSeconds);
-        $offset = $offsets[0];
+        $segments = $this->getSegments($unixSeconds);
+        $offset = $segments[0][1];
 
-        foreach ($starts as $i => $start) {
+        foreach ($segments as [$start, $segmentOffset]) {
             if ($start > $unixSeconds) {
                 break;
             }
 
-            $offset = $offsets[$i];
+            $offset = $segmentOffset;
         }
 
         return $unixSeconds + $offset;
@@ -104,33 +101,61 @@ final class TimeZoneResolver
      * Resolved Unix times are increasing in local time, except inside a gap, where they can go back by at most
      * this amount.
      */
-    public function getMaxGapNear(int $localSeconds): int
+    public function getMaxGapNear(int $seconds): int
     {
-        if ($this->fixedUtc) {
+        if ($this->fixedOffset !== null) {
             return 0;
         }
 
-        $year = self::yearOf($localSeconds);
+        $maxGap = 0;
 
-        if (!isset($this->maxGapByYear[$year])) {
-            $maxGap = 0;
+        foreach ($this->getNearSegments($seconds) as $segments) {
+            $previousOffset = null;
 
-            foreach ([$year - 1, $year, $year + 1] as $nearYear) {
-                [, $offsets] = $this->getSegmentsOfYear($nearYear);
-
-                for ($i = 1, $count = count($offsets); $i < $count; $i++) {
-                    $maxGap = max($maxGap, $offsets[$i] - $offsets[$i - 1]);
+            foreach ($segments as [, $offset]) {
+                if ($previousOffset !== null) {
+                    $maxGap = max($maxGap, $offset - $previousOffset);
                 }
-            }
 
-            $this->maxGapByYear[$year] = $maxGap;
+                $previousOffset = $offset;
+            }
         }
 
-        return $this->maxGapByYear[$year];
+        return $maxGap;
     }
 
     /**
-     * @return array{list<int>, list<int>}
+     * The difference between the largest and the smallest UTC offset within a year around the given time.
+     */
+    public function getOffsetSpreadNear(int $seconds): int
+    {
+        if ($this->fixedOffset !== null) {
+            return 0;
+        }
+
+        $offsets = [];
+
+        foreach ($this->getNearSegments($seconds) as $segments) {
+            foreach ($segments as [, $offset]) {
+                $offsets[] = $offset;
+            }
+        }
+
+        return $offsets === [] ? 0 : max($offsets) - min($offsets);
+    }
+
+    /**
+     * @return list<non-empty-list<array{int, int}>>
+     */
+    private function getNearSegments(int $seconds): array
+    {
+        $year = self::yearOf($seconds);
+
+        return [$this->getSegmentsOfYear($year - 1), $this->getSegmentsOfYear($year), $this->getSegmentsOfYear($year + 1)];
+    }
+
+    /**
+     * @return non-empty-list<array{int, int}>
      */
     private function getSegments(int $seconds): array
     {
@@ -138,27 +163,23 @@ final class TimeZoneResolver
     }
 
     /**
-     * @return array{list<int>, list<int>}
+     * @return non-empty-list<array{int, int}>
      */
     private function getSegmentsOfYear(int $year): array
     {
         if (!isset($this->segmentsByYear[$year])) {
             $begin = Civil::daysFromCivil($year, 1, 1) * Civil::SECONDS_PER_DAY - self::WINDOW_MARGIN;
             $end = Civil::daysFromCivil($year + 1, 1, 1) * Civil::SECONDS_PER_DAY + self::WINDOW_MARGIN;
-            $starts = [];
-            $offsets = [];
+            $segments = [[$begin, $this->zone->getOffset(new DateTimeImmutable('@' . $begin))]];
+            $transitions = $this->zone->getTransitions($begin, $end);
 
-            foreach ($this->zone->getTransitions($begin, $end) ?: [] as $index => $transition) {
-                $starts[] = $index === 0 ? $begin : $transition['ts'];
-                $offsets[] = $transition['offset'];
+            foreach ($transitions as $index => $transition) {
+                if ($index > 0) {
+                    $segments[] = [$transition['ts'], $transition['offset']];
+                }
             }
 
-            if ($starts === []) {
-                $starts[] = $begin;
-                $offsets[] = $this->zone->getOffset(new DateTimeImmutable('@' . $begin));
-            }
-
-            $this->segmentsByYear[$year] = [$starts, $offsets];
+            $this->segmentsByYear[$year] = $segments;
         }
 
         return $this->segmentsByYear[$year];
