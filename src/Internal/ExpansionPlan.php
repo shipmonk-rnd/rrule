@@ -6,8 +6,8 @@ use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Skip;
 use function array_filter;
+use function array_flip;
 use function array_unique;
-use function array_values;
 use function intdiv;
 use function sort;
 
@@ -25,20 +25,20 @@ final class ExpansionPlan
 {
 
     /**
-     * @param positive-int                 $interval
-     * @param array<int, true>|null        $months
-     * @param array<int, true>|null        $monthDays       positive and negative day-of-month values
-     * @param array<int, true>|null        $yearDays        positive and negative day-of-year values
-     * @param array<int, true>|null        $weekNumbers     positive and negative week numbers
-     * @param array<int, true>             $plainWeekdays   weekday index (0 = Monday) => true
-     * @param array<int, array<int, true>> $ordinalWeekdays weekday index => ordinal => true
-     * @param list<int>                    $monthDayList    the BYMONTHDAY values in rule order, for RFC 7529 SKIP
-     * @param list<int>|null               $hours           sorted
-     * @param list<int>|null               $minutes         sorted
-     * @param list<int>|null               $seconds         sorted, without 60
-     * @param list<int>                    $timesOfDay      sorted seconds of the day, for frequencies of a day or longer
-     * @param list<int>                    $setPositions
-     * @param int<0, 6>                    $weekStart
+     * @param positive-int                $interval
+     * @param array<int, int>|null        $months
+     * @param array<int, int>|null        $monthDays       positive and negative day-of-month values
+     * @param array<int, int>|null        $yearDays        positive and negative day-of-year values
+     * @param array<int, int>|null        $weekNumbers     positive and negative week numbers
+     * @param array<int, int>             $plainWeekdays   weekday index (0 = Monday) => the same index
+     * @param array<int, array<int, int>> $ordinalWeekdays weekday index => ordinal => the same ordinal
+     * @param list<int>                   $monthDayList    the BYMONTHDAY values in rule order, for RFC 7529 SKIP
+     * @param list<int>|null              $hours           sorted
+     * @param list<int>|null              $minutes         sorted
+     * @param list<int>|null              $seconds         sorted, without 60
+     * @param list<int>                   $timesOfDay      sorted seconds of the day, for frequencies of a day or longer
+     * @param list<int>                   $setPositions
+     * @param int<0, 6>                   $weekStart
      */
     private function __construct(
         public readonly Frequency $frequency,
@@ -81,16 +81,16 @@ final class ExpansionPlan
         $byMonthDay = $rule->byMonthDay;
         $byMonth = $rule->byMonth;
         $plainWeekdays = [];
-        /** @var array<int, array<int, true>> $ordinalWeekdays */
+        /** @var array<int, array<int, int>> $ordinalWeekdays */
         $ordinalWeekdays = [];
 
         foreach ($rule->byDay as $weekdayNum) {
             $index = $weekdayNum->weekday->getIsoNumber() - 1;
 
             if ($weekdayNum->ordinal === null) {
-                $plainWeekdays[$index] = true;
+                $plainWeekdays[$index] = $index;
             } else {
-                $ordinalWeekdays[$index][$weekdayNum->ordinal] = true;
+                $ordinalWeekdays[$index][$weekdayNum->ordinal] = $weekdayNum->ordinal;
             }
         }
 
@@ -109,7 +109,7 @@ final class ExpansionPlan
         }
 
         if ($frequency === Frequency::Weekly && !$hasByDay) {
-            $plainWeekdays[$startWeekday] = true;
+            $plainWeekdays[$startWeekday] = $startWeekday;
             $hasByDay = true;
         }
 
@@ -127,21 +127,21 @@ final class ExpansionPlan
             }
 
             if ($rule->byWeekNo !== [] && $byMonthDay === [] && !$hasByDay) {
-                $plainWeekdays[$startWeekday] = true;
+                $plainWeekdays[$startWeekday] = $startWeekday;
                 $hasByDay = true;
             }
         }
 
         $hours = $byHour === [] ? null : self::sortedUnique($byHour);
         $minutes = $byMinute === [] ? null : self::sortedUnique($byMinute);
-        $seconds = $bySecond === [] ? null : self::sortedUnique(array_values(array_filter($bySecond, static fn (int $second): bool => $second !== 60)));
+        $seconds = $bySecond === [] ? null : self::sortedUnique(array_filter($bySecond, static fn (int $second): bool => $second !== 60));
 
         $timesOfDay = [];
 
-        if (self::isAtLeastDaily($frequency) && $hours !== null && $minutes !== null && $seconds !== null) {
-            foreach ($hours as $hour) {
-                foreach ($minutes as $minute) {
-                    foreach ($seconds as $second) {
+        if (self::isAtLeastDaily($frequency)) {
+            foreach ($hours ?? [] as $hour) {
+                foreach ($minutes ?? [] as $minute) {
+                    foreach ($seconds ?? [] as $second) {
                         $timesOfDay[] = $hour * 3600 + $minute * 60 + $second;
                     }
                 }
@@ -179,15 +179,6 @@ final class ExpansionPlan
             || $frequency === Frequency::Yearly;
     }
 
-    public function hasDateFilter(): bool
-    {
-        return $this->months !== null
-            || $this->monthDays !== null
-            || $this->yearDays !== null
-            || $this->weekNumbers !== null
-            || $this->hasByDay;
-    }
-
     /**
      * RFC 7529 SKIP changes invalid dates instead of dropping them. Only BYMONTHDAY can produce an invalid
      * Gregorian date, and only monthly and yearly periods contain more than real days.
@@ -201,30 +192,20 @@ final class ExpansionPlan
 
     /**
      * @param list<int> $values
-     * @return array<int, true>|null
+     * @return array<int, int>|null value => index
      */
     private static function toSet(array $values): ?array
     {
-        if ($values === []) {
-            return null;
-        }
-
-        $set = [];
-
-        foreach ($values as $value) {
-            $set[$value] = true;
-        }
-
-        return $set;
+        return $values === [] ? null : array_flip($values);
     }
 
     /**
-     * @param list<int> $values
+     * @param array<int> $values
      * @return list<int>
      */
     private static function sortedUnique(array $values): array
     {
-        $values = array_values(array_unique($values));
+        $values = array_unique($values);
         sort($values);
 
         return $values;

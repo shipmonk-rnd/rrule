@@ -15,6 +15,9 @@
     "minMsi": 98,
     "minCoveredMsi": 98,
     "mutators": {
-        "@default": true
+        "@default": true,
+        // A LogicException marks a branch that valid states never reach (for example a sub-daily arm in a
+        // daily-only match). Mutating such a branch changes nothing that a test can see.
+        "global-ignoreSourceCodeByRegex": [".*throw new LogicException\\(.*"]
     }
 }

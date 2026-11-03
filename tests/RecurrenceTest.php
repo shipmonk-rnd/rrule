@@ -620,13 +620,93 @@ final class RecurrenceTest extends TestCase
         self::assertSame([$rule], $recurrence->withExclusionRules(...['daily' => $rule])->getExclusionRules());
     }
 
-    public function testSeveralDatesAtOnce(): void
+    public function testAddedAndExcludedDatesInAnyOrder(): void
     {
         $recurrence = Recurrence::of(CalendarDate::of(2026, 1, 1))
-            ->withAddedDates(CalendarDate::of(2026, 1, 3), CalendarDate::of(2026, 1, 5))
-            ->withExcludedDates(CalendarDate::of(2026, 1, 1), CalendarDate::of(2026, 1, 3));
+            ->withAddedDates(CalendarDate::of(2026, 1, 7), CalendarDate::of(2026, 1, 3), CalendarDate::of(2026, 1, 5))
+            ->withExcludedDates(CalendarDate::of(2026, 1, 5), CalendarDate::of(2026, 1, 1));
 
-        self::assertSame(['2026-01-05'], self::formatAll($recurrence));
+        self::assertSame(['2026-01-03', '2026-01-07'], self::formatAll($recurrence));
+    }
+
+    /**
+     * Each case is checked against the naive reference implementation. The start counts only when it matches.
+     *
+     * @param list<string> $expected
+     */
+    #[DataProvider('provideExpansionEdgeCases')]
+    public function testExpansionEdgeCases(
+        string $start,
+        string $rule,
+        array $expected,
+    ): void
+    {
+        $recurrence = Recurrence::fromString("DTSTART:$start\nRRULE:$rule")->withDtStartPolicy(DtStartPolicy::OnlyIfMatching);
+
+        self::assertSame($expected, self::formatAll($recurrence->take(count($expected))));
+    }
+
+    /**
+     * @return iterable<string, array{string, string, list<string>}>
+     */
+    public static function provideExpansionEdgeCases(): iterable
+    {
+        yield 'canEverMatch: hour 0' => ['20260101T000000', 'FREQ=HOURLY;INTERVAL=24', ['2026-01-01T00:00:00', '2026-01-02T00:00:00', '2026-01-03T00:00:00']];
+        yield 'canEverMatch: hour 23' => ['20260101T230000', 'FREQ=HOURLY;INTERVAL=24', ['2026-01-01T23:00:00', '2026-01-02T23:00:00', '2026-01-03T23:00:00']];
+        yield 'canEverMatch: minute 0' => ['20260101T000000', 'FREQ=MINUTELY;INTERVAL=1440', ['2026-01-01T00:00:00', '2026-01-02T00:00:00', '2026-01-03T00:00:00']];
+        yield 'canEverMatch: minute 59' => ['20260101T235900', 'FREQ=MINUTELY;INTERVAL=1440', ['2026-01-01T23:59:00', '2026-01-02T23:59:00', '2026-01-03T23:59:00']];
+        yield 'canEverMatch: second 0' => ['20260101T000000', 'FREQ=SECONDLY;INTERVAL=86400', ['2026-01-01T00:00:00', '2026-01-02T00:00:00', '2026-01-03T00:00:00']];
+        yield 'canEverMatch: second 59' => ['20260101T235959', 'FREQ=SECONDLY;INTERVAL=86400', ['2026-01-01T23:59:59', '2026-01-02T23:59:59', '2026-01-03T23:59:59']];
+        yield 'canEverMatch: second within the day' => ['20260101T000030', 'FREQ=SECONDLY;INTERVAL=86400;BYMINUTE=0;BYSECOND=30', ['2026-01-01T00:00:30', '2026-01-02T00:00:30', '2026-01-03T00:00:30']];
+        yield 'BYSETPOS: day 366 of a leap year' => ['20280101T000000', 'FREQ=YEARLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=366', ['2028-12-31T00:00:00', '2032-12-31T00:00:00']];
+        yield 'BYSETPOS: day -366 of a leap year' => ['20280101T000000', 'FREQ=YEARLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=-366', ['2028-01-01T00:00:00', '2032-01-01T00:00:00']];
+        yield 'BYSETPOS: yearly with two times of day' => ['20280101T000000', 'FREQ=YEARLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYHOUR=0,12;BYSETPOS=200', ['2028-04-09T12:00:00', '2029-04-10T12:00:00']];
+        yield 'BYSETPOS: day 31 of a month' => ['20260101T000000', 'FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=31', ['2026-01-31T00:00:00', '2026-03-31T00:00:00']];
+        yield 'BYSETPOS: monthly with two times of day' => ['20260101T000000', 'FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYHOUR=0,12;BYSETPOS=62', ['2026-01-31T12:00:00', '2026-03-31T12:00:00']];
+        yield 'BYSETPOS: day 7 of a week' => ['20260105T000000', 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=7', ['2026-01-11T00:00:00', '2026-01-18T00:00:00']];
+        yield 'BYSETPOS: weekly with two times of day' => ['20260105T000000', 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYHOUR=0,12;BYSETPOS=14', ['2026-01-11T12:00:00', '2026-01-18T12:00:00']];
+        yield 'BYSETPOS: daily' => ['20260101T000000', 'FREQ=DAILY;BYHOUR=0,12;BYSETPOS=2', ['2026-01-01T12:00:00', '2026-01-02T12:00:00']];
+        yield 'BYSETPOS: hourly' => ['20260101T000000', 'FREQ=HOURLY;BYMINUTE=0,30;BYSECOND=0,30;BYSETPOS=4', ['2026-01-01T00:30:30', '2026-01-01T01:30:30']];
+        yield 'BYSETPOS: minutely' => ['20260101T000000', 'FREQ=MINUTELY;BYSECOND=0,30;BYSETPOS=2', ['2026-01-01T00:00:30', '2026-01-01T00:01:30']];
+        yield 'BYSETPOS: secondly' => ['20260101T000000', 'FREQ=SECONDLY;BYMINUTE=0;BYSETPOS=1', ['2026-01-01T00:00:00', '2026-01-01T00:00:01', '2026-01-01T00:00:02']];
+        yield 'BYSETPOS: duplicate BYHOUR values count once' => ['20260101T000000', 'FREQ=DAILY;BYHOUR=9,9,10;BYSETPOS=2', ['2026-01-01T10:00:00', '2026-01-02T10:00:00']];
+        yield 'jump to January 1 of the next year' => ['20230101T000000', 'FREQ=YEARLY;BYMONTH=1;BYMONTHDAY=1;BYDAY=MO', ['2024-01-01T00:00:00', '2029-01-01T00:00:00']];
+        yield 'jump to the first day of the next week' => ['20270223T000000', 'FREQ=WEEKLY;BYDAY=MO;BYMONTH=3', ['2027-03-01T00:00:00', '2027-03-08T00:00:00']];
+        yield 'weeks of INTERVAL=2 start on WKST' => ['20260105T000000', 'FREQ=WEEKLY;INTERVAL=2;WKST=TH;BYDAY=MO,TH', ['2026-01-05T00:00:00', '2026-01-15T00:00:00', '2026-01-19T00:00:00', '2026-01-29T00:00:00', '2026-02-02T00:00:00']];
+        yield 'jump to the next hour' => ['20260101T090000', 'FREQ=HOURLY;BYHOUR=10,14', ['2026-01-01T10:00:00', '2026-01-01T14:00:00', '2026-01-02T10:00:00']];
+        yield 'jump to the next minute' => ['20260101T092000', 'FREQ=MINUTELY;BYMINUTE=15,45', ['2026-01-01T09:45:00', '2026-01-01T10:15:00', '2026-01-01T10:45:00']];
+        yield 'jump to the next day' => ['20260101T092000', 'FREQ=MINUTELY;BYHOUR=9;BYMINUTE=15', ['2026-01-02T09:15:00', '2026-01-03T09:15:00']];
+        yield 'jump to the next second' => ['20260101T090020', 'FREQ=SECONDLY;BYSECOND=10,40', ['2026-01-01T09:00:40', '2026-01-01T09:01:10', '2026-01-01T09:01:40']];
+        yield 'the last second of an hour' => ['20260101T005959', 'FREQ=SECONDLY;BYHOUR=1', ['2026-01-01T01:00:00', '2026-01-01T01:00:01']];
+        yield 'start time in the last second of an hour' => ['20260101T005959', 'FREQ=DAILY', ['2026-01-01T00:59:59', '2026-01-02T00:59:59']];
+        yield 'the last day of year 9999' => ['99990101T000000', 'FREQ=DAILY;BYMONTH=12;BYMONTHDAY=31', ['9999-12-31T00:00:00']];
+        yield 'SKIP=FORWARD with an ordinal BYDAY in the year' => ['20260201T000000', 'RSCALE=GREGORIAN;FREQ=YEARLY;BYMONTHDAY=30;BYDAY=9MO;SKIP=FORWARD', ['2027-03-01T00:00:00', '2032-03-01T00:00:00']];
+        yield 'SKIP=BACKWARD with a negative ordinal BYDAY in the year' => ['20260201T000000', 'RSCALE=GREGORIAN;FREQ=YEARLY;BYMONTHDAY=30;BYDAY=-44MO;SKIP=BACKWARD', ['2033-02-28T00:00:00', '2039-02-28T00:00:00']];
+        yield 'jump to minute 0 of the next hour' => ['20260101T094000', 'FREQ=MINUTELY;BYMINUTE=0,30', ['2026-01-01T10:00:00', '2026-01-01T10:30:00', '2026-01-01T11:00:00']];
+        yield 'jump to hour 0 of the next day' => ['20260101T130000', 'FREQ=HOURLY;BYHOUR=0,12', ['2026-01-02T00:00:00', '2026-01-02T12:00:00']];
+        yield 'SKIP=FORWARD to day 182 of the year' => ['20260601T000000', 'RSCALE=GREGORIAN;FREQ=YEARLY;BYMONTHDAY=31;BYDAY=26MO;SKIP=FORWARD', ['2030-07-01T00:00:00', '2041-07-01T00:00:00']];
+        yield 'SKIP=FORWARD to day 274 of the year' => ['20260901T000000', 'RSCALE=GREGORIAN;FREQ=YEARLY;BYMONTHDAY=31;BYDAY=40MO;SKIP=FORWARD', ['2029-10-01T00:00:00', '2035-10-01T00:00:00']];
+        yield 'SKIP=BACKWARD to day 120 of the year' => ['20260401T000000', 'RSCALE=GREGORIAN;FREQ=YEARLY;BYMONTHDAY=31;BYDAY=18TH;SKIP=BACKWARD', ['2026-04-30T00:00:00', '2037-04-30T00:00:00']];
+        yield 'SKIP with BYWEEKNO drops the invalid day and keeps the next one' => ['20260101T000000', 'RSCALE=GREGORIAN;FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=30,1;BYWEEKNO=4,5,6;SKIP=FORWARD', ['2026-02-01T00:00:00', '2027-02-01T00:00:00', '2028-02-01T00:00:00']];
+    }
+
+    public function testSearchStepsOfRareRules(): void
+    {
+        $rare = static fn (string $start, string $rule): Recurrence => Recurrence::fromString("DTSTART:$start\nRRULE:$rule")->withDtStartPolicy(DtStartPolicy::OnlyIfMatching);
+
+        // February 30 never exists: the 400-year cycle check ends the search after about 100 leap years
+        self::assertSame([], $rare('20260101T000000', 'FREQ=MONTHLY;BYMONTH=2;BYMONTHDAY=29,30;BYSETPOS=2')->withSearchLimit(150)->take(1));
+        // every 168 hours from a Tuesday never meets a Monday: the cycle check ends the search after 400 years
+        self::assertSame([], $rare('20260106T000000', 'FREQ=HOURLY;INTERVAL=168;BYDAY=MO')->withSearchLimit(30_000)->take(1));
+        // SKIP does not apply to DAILY, so empty periods are skipped in one jump
+        self::assertSame(['2028-02-29T00:00:00'], self::formatAll($rare('20260101T000000', 'RSCALE=GREGORIAN;FREQ=DAILY;BYMONTH=2;BYMONTHDAY=29;SKIP=FORWARD')->withSearchLimit(5)->take(1)));
+        // BYSECOND=60 matches no time, which is known without a search
+        self::assertSame([], $rare('20260101T000000', 'FREQ=HOURLY;BYSECOND=60')->withSearchLimit(1)->take(1));
+
+        $hourly = $rare('20260102T000000', 'FREQ=HOURLY;BYMONTHDAY=1');
+        self::assertSame(['2026-02-01T00:00:00'], self::formatAll($hourly->withSearchLimit(2)->take(1)));
+        $this->expectException(SearchLimitExceededException::class);
+        $hourly->withSearchLimit(1)->take(1);
     }
 
     public function testBetweenBeforeTheStart(): void

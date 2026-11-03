@@ -16,8 +16,6 @@ use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Until;
 use function array_flip;
 use function array_map;
-use function array_unique;
-use function array_values;
 use function max;
 use function sort;
 
@@ -175,7 +173,7 @@ final class RecurrenceEngine
 
             $included = ($from === null || $next >= $from)
                 && !isset($excludedPositions[$next])
-                && !$this->isExcludedDay($next, $resolver, $excludedDays)
+                && !($excludedDays !== [] && $this->isExcludedDay($next, $resolver, $excludedDays))
                 && !self::isProducedByAny($exclusionStreams, $next);
 
             if ($included) {
@@ -200,10 +198,6 @@ final class RecurrenceEngine
         array $excludedDays,
     ): bool
     {
-        if ($excludedDays === []) {
-            return false;
-        }
-
         $local = $resolver === null ? $position : $resolver->unixToLocal($position);
 
         return isset($excludedDays[Civil::floorDiv($local, Civil::SECONDS_PER_DAY)]);
@@ -265,7 +259,7 @@ final class RecurrenceEngine
      */
     private function toSortedPositions(array $values): array
     {
-        $positions = array_values(array_unique(array_map($this->values->toPosition(...), $values)));
+        $positions = array_map($this->values->toPosition(...), $values);
         sort($positions);
 
         return $positions;

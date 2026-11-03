@@ -2,7 +2,6 @@
 
 namespace ShipMonk\RRule\Internal;
 
-use LogicException;
 use function array_key_first;
 use function count;
 use function intdiv;
@@ -22,7 +21,7 @@ final class DateMatcher
     private const CACHED_YEARS = 8;
 
     /**
-     * @var array<int, array{list<int>, array<int, true>}> year => [sorted matching day numbers, day number => true]
+     * @var array<int, array<int, int>> year => matching day numbers in ascending order, as day number => day number
      */
     private array $years = [];
 
@@ -34,11 +33,7 @@ final class DateMatcher
 
     public function matches(int $day): bool
     {
-        if (!$this->plan->hasDateFilter()) {
-            return true;
-        }
-
-        return isset($this->getYear(Civil::civilFromDays($day)[0])[1][$day]);
+        return isset($this->getYear(Civil::civilFromDays($day)[0])[$day]);
     }
 
     /**
@@ -62,23 +57,23 @@ final class DateMatcher
     }
 
     /**
-     * @return list<int> sorted day numbers
+     * @return array<int, int> day numbers in ascending order, as day number => day number
      */
     public function getDaysOfYear(int $year): array
     {
-        return $this->getYear($year)[0];
+        return $this->getYear($year);
     }
 
     /**
-     * The first matching date on or after the given day. The Gregorian calendar repeats after 400 years,
-     * so a search through 401 years without a match proves that no date ever matches.
+     * The first matching date on or after the given day. The Gregorian calendar repeats after 400 years (146097
+     * days), so every 146097 consecutive days contain a match, or no date ever matches.
      */
     public function findNextMatchingDay(int $fromDay): ?int
     {
         $fromYear = Civil::civilFromDays($fromDay)[0];
 
-        for ($year = $fromYear; $year <= $fromYear + 401 && $year <= Civil::MAX_YEAR; $year++) {
-            foreach ($this->getYear($year)[0] as $day) {
+        for ($year = $fromYear; $year <= $fromYear + 400 && $year <= Civil::MAX_YEAR; $year++) {
+            foreach ($this->getYear($year) as $day) {
                 if ($day >= $fromDay) {
                     return $day;
                 }
@@ -89,7 +84,7 @@ final class DateMatcher
     }
 
     /**
-     * @return array{list<int>, array<int, true>}
+     * @return array<int, int>
      */
     private function getYear(int $year): array
     {
@@ -105,16 +100,14 @@ final class DateMatcher
     }
 
     /**
-     * @return array{list<int>, array<int, true>}
+     * @return array<int, int>
      */
     private function computeYear(int $year): array
     {
         $plan = $this->plan;
         $yearStart = Civil::firstDayOfYear($year);
         $daysInYear = Civil::daysInYear($year);
-        $weekYearStarts = $plan->weekNumbers === null ? [] : $this->getWeekYearStarts($year);
         $days = [];
-        $daySet = [];
 
         for ($month = 1; $month <= 12; $month++) {
             if ($plan->months !== null && !isset($plan->months[$month])) {
@@ -145,7 +138,7 @@ final class DateMatcher
                     continue;
                 }
 
-                if ($plan->weekNumbers !== null && !$this->matchesWeekNumber($day, $weekYearStarts)) {
+                if ($plan->weekNumbers !== null && !$this->matchesWeekNumber($day)) {
                     continue;
                 }
 
@@ -153,35 +146,24 @@ final class DateMatcher
                     continue;
                 }
 
-                $days[] = $day;
-                $daySet[$day] = true;
+                $days[$day] = $day;
             }
         }
 
-        return [$days, $daySet];
+        return $days;
     }
 
     /**
-     * @param array<int, int> $weekYearStarts week-numbering year => day number of the first day of its week 1
+     * Week 1 of a week-numbering year is the first week (starting on WKST) with at least four days in that year,
+     * which is the week that contains January 4. So a week belongs to the year of its fourth day.
      */
-    private function matchesWeekNumber(
-        int $day,
-        array $weekYearStarts,
-    ): bool
+    private function matchesWeekNumber(int $day): bool
     {
         $weekStart = $this->getWeekStart($day);
-        $weekYear = null;
-
-        foreach ($weekYearStarts as $candidateYear => $firstWeekStart) {
-            if ($weekStart >= $firstWeekStart) {
-                $weekYear = $candidateYear;
-            }
-        }
-
-        $firstWeekStart = $weekYearStarts[$weekYear ?? 0] ?? throw new LogicException('Week-numbering year not found');
-        $nextFirstWeekStart = $weekYearStarts[($weekYear ?? 0) + 1] ?? throw new LogicException('Week-numbering year not found');
+        $weekYear = Civil::civilFromDays($weekStart + 3)[0];
+        $firstWeekStart = $this->getWeekStart(Civil::daysFromCivil($weekYear, 1, 4));
         $weekNumber = intdiv($weekStart - $firstWeekStart, 7) + 1;
-        $weeksInYear = intdiv($nextFirstWeekStart - $firstWeekStart, 7);
+        $weeksInYear = intdiv($this->getWeekStart(Civil::daysFromCivil($weekYear + 1, 1, 4)) - $firstWeekStart, 7);
 
         return isset($this->plan->weekNumbers[$weekNumber])
             || isset($this->plan->weekNumbers[$weekNumber - $weeksInYear - 1]);
@@ -210,23 +192,6 @@ final class DateMatcher
 
         return isset($ordinals[intdiv($position - 1, 7) + 1])
             || isset($ordinals[-(intdiv($length - $position, 7) + 1)]);
-    }
-
-    /**
-     * Week 1 of a week-numbering year is the first week (starting on WKST) with at least four days in that year,
-     * which is the week that contains January 4.
-     *
-     * @return array<int, int>
-     */
-    private function getWeekYearStarts(int $year): array
-    {
-        $starts = [];
-
-        for ($weekYear = $year - 1; $weekYear <= $year + 2; $weekYear++) {
-            $starts[$weekYear] = $this->getWeekStart(Civil::daysFromCivil($weekYear, 1, 4));
-        }
-
-        return $starts;
     }
 
     private function getWeekStart(int $day): int

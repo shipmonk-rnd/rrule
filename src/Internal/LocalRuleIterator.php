@@ -6,12 +6,11 @@ use Generator;
 use LogicException;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Skip;
+use function abs;
+use function array_filter;
 use function array_flip;
-use function array_keys;
-use function array_values;
 use function count;
 use function intdiv;
-use function ksort;
 use function max;
 use function min;
 use function range;
@@ -58,6 +57,11 @@ final class LocalRuleIterator
      */
     private readonly ?array $secondSet;
 
+    /**
+     * @var array<int, int>|null
+     */
+    private readonly ?array $setPositionSet;
+
     public function __construct(
         private readonly ExpansionPlan $plan,
         private readonly DateMatcher $matcher,
@@ -69,6 +73,7 @@ final class LocalRuleIterator
         $this->hourSet = $plan->hours === null ? null : array_flip($plan->hours);
         $this->minuteSet = $plan->minutes === null ? null : array_flip($plan->minutes);
         $this->secondSet = $plan->seconds === null ? null : array_flip($plan->seconds);
+        $this->setPositionSet = $plan->setPositions === [] ? null : array_flip($plan->setPositions);
     }
 
     /**
@@ -110,8 +115,8 @@ final class LocalRuleIterator
         $maxDay = Civil::floorDiv($this->maxLocal, Civil::SECONDS_PER_DAY);
         $maxPeriod = intdiv($this->getDailyUnit($maxDay) - $startUnit, $interval);
         $upperDay = Civil::floorDiv($upper, Civil::SECONDS_PER_DAY);
-        $cycleDays = $this->getDailyCycleDays($maxDay - $startDay);
-        $period = max(0, Civil::floorDiv($this->getDailyUnit(Civil::floorDiv($lower, Civil::SECONDS_PER_DAY)) - $startUnit, $interval));
+        $cycleDays = $interval > intdiv(PHP_INT_MAX, Civil::DAYS_PER_400_YEARS) ? null : $interval * Civil::DAYS_PER_400_YEARS;
+        $period = Civil::floorDiv($this->getDailyUnit(Civil::floorDiv($lower, Civil::SECONDS_PER_DAY)) - $startUnit, $interval);
         $quietSince = null;
 
         while ($period <= $maxPeriod) {
@@ -150,7 +155,8 @@ final class LocalRuleIterator
                     return;
                 }
 
-                $period = max($period + 1, -Civil::floorDiv($startUnit - $this->getDailyUnit($nextDay), $interval));
+                // the first period that contains the next matching day; it is after this period
+                $period = -Civil::floorDiv($startUnit - $this->getDailyUnit($nextDay), $interval);
                 continue;
             }
 
@@ -190,8 +196,8 @@ final class LocalRuleIterator
         $maxPeriod = intdiv(intdiv($this->maxLocal - $firstPeriodStart, $unit), $interval);
         $cycleSeconds = $interval > intdiv(PHP_INT_MAX, $unit)
             ? null
-            : self::lcm($interval * $unit, Civil::DAYS_PER_400_YEARS * Civil::SECONDS_PER_DAY, $this->maxLocal - $firstPeriodStart);
-        $period = max(0, Civil::floorDiv(Civil::floorDiv($lower - $firstPeriodStart, $unit), $interval));
+            : self::lcm($interval * $unit, Civil::DAYS_PER_400_YEARS * Civil::SECONDS_PER_DAY);
+        $period = Civil::floorDiv(Civil::floorDiv($lower - $firstPeriodStart, $unit), $interval);
         $quietSince = null;
 
         while ($period <= $maxPeriod) {
@@ -212,7 +218,8 @@ final class LocalRuleIterator
                     return;
                 }
 
-                $period = max($period + 1, -Civil::floorDiv(-intdiv($nextCandidateTime - $firstPeriodStart, $unit), $interval));
+                // the next candidate time is aligned to the unit and later than this period start
+                $period = -Civil::floorDiv(-intdiv($nextCandidateTime - $firstPeriodStart, $unit), $interval);
                 continue;
             }
 
@@ -316,7 +323,7 @@ final class LocalRuleIterator
         };
 
         foreach ($plan->setPositions as $position) {
-            if (($position > 0 ? $position : -$position) <= $maxCandidates) {
+            if (abs($position) <= $maxCandidates) {
                 return true;
             }
         }
@@ -339,14 +346,14 @@ final class LocalRuleIterator
     }
 
     /**
-     * @return array{int, int, list<int>} first day, last day and the matching days of the period
+     * @return array{int, int, array<int, int>} first day, last day and the matching days of the period (ascending)
      */
     private function getPeriodDays(int $unit): array
     {
         switch ($this->plan->frequency) {
             case Frequency::Yearly:
                 $firstDay = Civil::firstDayOfYear($unit);
-                $lastDay = Civil::daysFromCivil($unit, 12, 31);
+                $lastDay = Civil::firstDayOfYear($unit + 1) - 1;
 
                 return [$firstDay, $lastDay, $this->plan->usesSkip() ? $this->getSkipDays($unit, null) : $this->matcher->getDaysOfYear($unit)];
 
@@ -360,17 +367,7 @@ final class LocalRuleIterator
                     return [$firstDay, $lastDay, $this->getSkipDays($year, $month)];
                 }
 
-                $days = [];
-
-                foreach ($this->matcher->getDaysOfYear($year) as $day) {
-                    if ($day > $lastDay) {
-                        break;
-                    }
-
-                    if ($day >= $firstDay) {
-                        $days[] = $day;
-                    }
-                }
+                $days = array_filter($this->matcher->getDaysOfYear($year), static fn (int $day): bool => $day >= $firstDay && $day <= $lastDay);
 
                 return [$firstDay, $lastDay, $days];
 
@@ -421,7 +418,7 @@ final class LocalRuleIterator
                     $day = $monthStart + $dayOfMonth - 1;
 
                     if ($this->matcher->matches($day)) {
-                        $daySet[$day] = true;
+                        $daySet[$day] = $day;
                     }
 
                     continue;
@@ -437,15 +434,14 @@ final class LocalRuleIterator
                     : ($forward ? $monthStart : $monthStart - 1);
 
                 if ($this->matcher->matchesByDay($day)) {
-                    $daySet[$day] = true;
+                    $daySet[$day] = $day;
                 }
             }
         }
 
-        $days = array_keys($daySet);
-        sort($days);
+        sort($daySet);
 
-        return $days;
+        return $daySet;
     }
 
     /**
@@ -463,7 +459,7 @@ final class LocalRuleIterator
         $second = $secondOfDay % 60;
 
         if (!$this->matcher->matches($day)) {
-            $nextDay = $this->matcher->findNextMatchingDay($day + 1);
+            $nextDay = $this->matcher->findNextMatchingDay($day);
 
             return $nextDay === null ? null : $nextDay * Civil::SECONDS_PER_DAY;
         }
@@ -520,70 +516,33 @@ final class LocalRuleIterator
      */
     private function selectSetPositions(array $candidates): array
     {
-        if ($this->plan->setPositions === []) {
+        if ($this->setPositionSet === null) {
             return $candidates;
         }
 
         $count = count($candidates);
         $selected = [];
 
-        foreach ($this->plan->setPositions as $position) {
-            $index = $position > 0 ? $position - 1 : $count + $position;
-
-            if ($index >= 0 && isset($candidates[$index])) {
-                $selected[$index] = $candidates[$index];
+        foreach ($candidates as $index => $candidate) {
+            if (isset($this->setPositionSet[$index + 1]) || isset($this->setPositionSet[$index - $count])) {
+                $selected[] = $candidate;
             }
         }
 
-        ksort($selected);
-
-        return array_values($selected);
+        return $selected;
     }
 
     /**
-     * The number of days after which the periods of the rule and their contents repeat, or null when that cycle
-     * does not end before the supported date range does.
-     */
-    private function getDailyCycleDays(int $daysInRange): ?int
-    {
-        $interval = $this->plan->interval;
-
-        return match ($this->plan->frequency) {
-            Frequency::Yearly => self::scale(self::lcm($interval, 400, $daysInRange), Civil::DAYS_PER_400_YEARS, 400, $daysInRange),
-            Frequency::Monthly => self::scale(self::lcm($interval, 4800, $daysInRange), Civil::DAYS_PER_400_YEARS, 4800, $daysInRange),
-            Frequency::Weekly => self::scale(self::lcm($interval, intdiv(Civil::DAYS_PER_400_YEARS, 7), $daysInRange), 7, 1, $daysInRange),
-            Frequency::Daily => self::lcm($interval, Civil::DAYS_PER_400_YEARS, $daysInRange),
-            Frequency::Hourly, Frequency::Minutely, Frequency::Secondly => throw new LogicException('Not a daily or longer frequency'),
-        };
-    }
-
-    private static function scale(
-        ?int $value,
-        int $multiplier,
-        int $divisor,
-        int $limit,
-    ): ?int
-    {
-        if ($value === null || intdiv($value, $divisor) > intdiv($limit, $multiplier)) {
-            return null;
-        }
-
-        return intdiv($value, $divisor) * $multiplier;
-    }
-
-    /**
-     * The least common multiple, or null when it exceeds the limit.
+     * The least common multiple, or null when it does not fit in an integer.
      */
     private static function lcm(
         int $a,
         int $b,
-        int $limit,
     ): ?int
     {
-        $gcd = self::gcd($a, $b);
-        $reduced = intdiv($a, $gcd);
+        $reduced = intdiv($a, self::gcd($a, $b));
 
-        return $reduced > intdiv($limit, $b) ? null : $reduced * $b;
+        return $reduced > intdiv(PHP_INT_MAX, $b) ? null : $reduced * $b;
     }
 
     private static function gcd(
