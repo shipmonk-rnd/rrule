@@ -22,6 +22,8 @@ use ShipMonk\RRule\Weekday;
 use ShipMonk\RRule\WeekdayNum;
 use Throwable;
 use function array_map;
+use function file_get_contents;
+use function range;
 
 #[CoversClass(RecurrenceRule::class)]
 #[CoversClass(InvalidRecurrenceRuleException::class)]
@@ -56,6 +58,59 @@ final class RecurrenceRuleTest extends TestCase
 
         self::assertSame(Frequency::Monthly, $rule->frequency);
         self::assertSame('FREQ=MONTHLY;COUNT=3;BYDAY=-1FR', $rule->toString());
+    }
+
+    #[DataProvider('provideReadmeRules')]
+    public function testReadmeRule(
+        string $text,
+        string $code,
+        RecurrenceRule $rule,
+    ): void
+    {
+        $readme = file_get_contents(__DIR__ . '/../README.md');
+        self::assertIsString($readme);
+        self::assertStringContainsString("| `$text` |", $readme);
+        self::assertStringContainsString("\n$code\n", $readme);
+        self::assertSame($text, $rule->toString());
+        self::assertTrue($rule->equals(RecurrenceRule::fromString($text)));
+    }
+
+    /**
+     * The section "Common rules" of the README: the text, the code line and the rule that the code line builds.
+     *
+     * @return array<string, array{string, string, RecurrenceRule}>
+     */
+    public static function provideReadmeRules(): array
+    {
+        $workdays = array_map(WeekdayNum::every(...), [Weekday::Monday, Weekday::Tuesday, Weekday::Wednesday, Weekday::Thursday, Weekday::Friday]);
+
+        return [
+            'every other Monday' => [
+                'FREQ=WEEKLY;INTERVAL=2;BYDAY=MO',
+                'new RecurrenceRule(Frequency::Weekly, interval: 2, byDay: [WeekdayNum::every(Weekday::Monday)]);',
+                new RecurrenceRule(Frequency::Weekly, interval: 2, byDay: [WeekdayNum::every(Weekday::Monday)]),
+            ],
+            '2nd Tuesday' => [
+                'FREQ=MONTHLY;BYDAY=2TU',
+                'new RecurrenceRule(Frequency::Monthly, byDay: [WeekdayNum::of(Weekday::Tuesday, 2)]);',
+                new RecurrenceRule(Frequency::Monthly, byDay: [WeekdayNum::of(Weekday::Tuesday, 2)]),
+            ],
+            'last day of the month' => [
+                'FREQ=MONTHLY;BYMONTHDAY=-1',
+                'new RecurrenceRule(Frequency::Monthly, byMonthDay: [-1]);',
+                new RecurrenceRule(Frequency::Monthly, byMonthDay: [-1]),
+            ],
+            'every 15 minutes on workdays' => [
+                'FREQ=MINUTELY;INTERVAL=15;BYHOUR=9,10,11,12,13,14,15,16;BYDAY=MO,TU,WE,TH,FR',
+                'new RecurrenceRule(Frequency::Minutely, interval: 15, byHour: range(9, 16), byDay: $workdays);',
+                new RecurrenceRule(Frequency::Minutely, interval: 15, byHour: range(9, 16), byDay: $workdays),
+            ],
+            'the 31st or the last day' => [
+                'FREQ=MONTHLY;RSCALE=GREGORIAN;BYMONTHDAY=31;SKIP=BACKWARD',
+                'new RecurrenceRule(Frequency::Monthly, byMonthDay: [31], calendarScale: CalendarScale::Gregorian, skip: Skip::Backward);',
+                new RecurrenceRule(Frequency::Monthly, byMonthDay: [31], calendarScale: CalendarScale::Gregorian, skip: Skip::Backward),
+            ],
+        ];
     }
 
     public function testEquals(): void

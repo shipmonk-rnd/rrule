@@ -59,6 +59,37 @@ echo $recurrence->toString();
 // RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1
 ```
 
+## Common rules
+
+| Need | RRULE |
+|---|---|
+| Every other Monday | `FREQ=WEEKLY;INTERVAL=2;BYDAY=MO` |
+| The 2nd Tuesday of the month | `FREQ=MONTHLY;BYDAY=2TU` |
+| The last day of the month | `FREQ=MONTHLY;BYMONTHDAY=-1` |
+| Every 15 minutes from 9:00 to 16:45 on workdays | `FREQ=MINUTELY;INTERVAL=15;BYHOUR=9,10,11,12,13,14,15,16;BYDAY=MO,TU,WE,TH,FR` |
+| The 31st, or the last day of a shorter month | `FREQ=MONTHLY;RSCALE=GREGORIAN;BYMONTHDAY=31;SKIP=BACKWARD` |
+
+The same rules in code:
+
+```php
+use ShipMonk\RRule\CalendarScale;
+use ShipMonk\RRule\Frequency;
+use ShipMonk\RRule\RecurrenceRule;
+use ShipMonk\RRule\Skip;
+use ShipMonk\RRule\Weekday;
+use ShipMonk\RRule\WeekdayNum;
+
+$workdays = array_map(WeekdayNum::every(...), [Weekday::Monday, Weekday::Tuesday, Weekday::Wednesday, Weekday::Thursday, Weekday::Friday]);
+
+new RecurrenceRule(Frequency::Weekly, interval: 2, byDay: [WeekdayNum::every(Weekday::Monday)]);
+new RecurrenceRule(Frequency::Monthly, byDay: [WeekdayNum::of(Weekday::Tuesday, 2)]);
+new RecurrenceRule(Frequency::Monthly, byMonthDay: [-1]);
+new RecurrenceRule(Frequency::Minutely, interval: 15, byHour: range(9, 16), byDay: $workdays);
+new RecurrenceRule(Frequency::Monthly, byMonthDay: [31], calendarScale: CalendarScale::Gregorian, skip: Skip::Backward);
+```
+
+The start (DTSTART) gives the values that the rule does not set, for example the time of day. The 15-minute rule counts from the start, so start at 9:00 to get 9:00, 9:15, 9:30 and so on. A negative `BYMONTHDAY` counts from the end of the month. Without `SKIP`, `BYMONTHDAY=31` skips the months that have no 31st day.
+
 ## Start types
 
 The type of the start (DTSTART) decides the type of every occurrence. PHPStan knows it: `Recurrence::of($dateTimeImmutable)` is a `Recurrence<DateTimeImmutable>`, and its iteration, `first()`, `firstAfter()` and so on return `DateTimeImmutable`.
