@@ -1,0 +1,1616 @@
+{
+  "source": "sabre",
+  "sourceUrl": "https://github.com/sabre-io/vobject/blob/5e2f338811916c03927398bb24e527989de63194/tests/VObject/Recur/RRuleIteratorTest.php",
+  "license": "BSD-3-Clause",
+  "dtStartPolicy": "Always",
+  "cases": [
+    {
+      "id": "sabre-001",
+      "description": "testHourly",
+      "recurrence": "DTSTART:20111007T120000Z\nRRULE:FREQ=HOURLY;INTERVAL=3;COUNT=12",
+      "startAt": null,
+      "expected": [
+        "20111007T120000Z",
+        "20111007T150000Z",
+        "20111007T180000Z",
+        "20111007T210000Z",
+        "20111008T000000Z",
+        "20111008T030000Z",
+        "20111008T060000Z",
+        "20111008T090000Z",
+        "20111008T120000Z",
+        "20111008T150000Z",
+        "20111008T180000Z",
+        "20111008T210000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-002",
+      "description": "test2HourlyOnDstTransition: On transition start",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230326T000000\nRRULE:FREQ=HOURLY;INTERVAL=2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230326T000000",
+        "20230326T030000",
+        "20230326T040000",
+        "20230326T060000",
+        "20230326T080000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "HOURLY counts wall-clock hours; an instance in the DST gap moves forward by the gap length. RFC 5545 does not say whether HOURLY counts wall-clock or elapsed hours."
+      }
+    },
+    {
+      "id": "sabre-003",
+      "description": "test2HourlyOnDstTransition: During transition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230326T001500\nRRULE:FREQ=HOURLY;INTERVAL=2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230326T001500",
+        "20230326T031500",
+        "20230326T041500",
+        "20230326T061500",
+        "20230326T081500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "HOURLY counts wall-clock hours; an instance in the DST gap moves forward by the gap length. RFC 5545 does not say whether HOURLY counts wall-clock or elapsed hours."
+      }
+    },
+    {
+      "id": "sabre-004",
+      "description": "test2HourlyOnDstTransition: On transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230326T010000\nRRULE:FREQ=HOURLY;INTERVAL=2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230326T010000",
+        "20230326T030000",
+        "20230326T050000",
+        "20230326T070000",
+        "20230326T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "HOURLY counts wall-clock hours; an instance in the DST gap moves forward by the gap length. RFC 5545 does not say whether HOURLY counts wall-clock or elapsed hours."
+      }
+    },
+    {
+      "id": "sabre-005",
+      "description": "test2HourlyOnDstTransition: After transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230326T011500\nRRULE:FREQ=HOURLY;INTERVAL=2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230326T011500",
+        "20230326T031500",
+        "20230326T051500",
+        "20230326T071500",
+        "20230326T091500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "HOURLY counts wall-clock hours; an instance in the DST gap moves forward by the gap length. RFC 5545 does not say whether HOURLY counts wall-clock or elapsed hours."
+      }
+    },
+    {
+      "id": "sabre-006",
+      "description": "testHourlyOnDstTransition: On transition start",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230325T200000\nRRULE:FREQ=HOURLY;INTERVAL=6;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230325T200000",
+        "20230326T030000",
+        "20230326T080000",
+        "20230326T140000",
+        "20230326T200000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "HOURLY counts wall-clock hours; an instance in the DST gap moves forward by the gap length. RFC 5545 does not say whether HOURLY counts wall-clock or elapsed hours."
+      }
+    },
+    {
+      "id": "sabre-007",
+      "description": "testHourlyOnDstTransition: During transition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230325T201500\nRRULE:FREQ=HOURLY;INTERVAL=6;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230325T201500",
+        "20230326T031500",
+        "20230326T081500",
+        "20230326T141500",
+        "20230326T201500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "HOURLY counts wall-clock hours; an instance in the DST gap moves forward by the gap length. RFC 5545 does not say whether HOURLY counts wall-clock or elapsed hours."
+      }
+    },
+    {
+      "id": "sabre-008",
+      "description": "testHourlyOnDstTransition: On transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230325T210000\nRRULE:FREQ=HOURLY;INTERVAL=6;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230325T210000",
+        "20230326T030000",
+        "20230326T090000",
+        "20230326T150000",
+        "20230326T210000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "HOURLY counts wall-clock hours; an instance in the DST gap moves forward by the gap length. RFC 5545 does not say whether HOURLY counts wall-clock or elapsed hours."
+      }
+    },
+    {
+      "id": "sabre-009",
+      "description": "testHourlyOnDstTransition: After transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230325T211500\nRRULE:FREQ=HOURLY;INTERVAL=6;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230325T211500",
+        "20230326T031500",
+        "20230326T091500",
+        "20230326T151500",
+        "20230326T211500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "HOURLY counts wall-clock hours; an instance in the DST gap moves forward by the gap length. RFC 5545 does not say whether HOURLY counts wall-clock or elapsed hours."
+      }
+    },
+    {
+      "id": "sabre-010",
+      "description": "testDaily",
+      "recurrence": "DTSTART:20111007T000000Z\nRRULE:FREQ=DAILY;INTERVAL=3;UNTIL=20111025T000000Z",
+      "startAt": null,
+      "expected": [
+        "20111007T000000Z",
+        "20111010T000000Z",
+        "20111013T000000Z",
+        "20111016T000000Z",
+        "20111019T000000Z",
+        "20111022T000000Z",
+        "20111025T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-011",
+      "description": "testDailyByDayByHour",
+      "recurrence": "DTSTART:20111008T060000Z\nRRULE:FREQ=DAILY;BYDAY=SA,SU;BYHOUR=6,7",
+      "startAt": null,
+      "expected": [
+        "20111008T060000Z",
+        "20111008T070000Z",
+        "20111009T060000Z",
+        "20111009T070000Z",
+        "20111015T060000Z",
+        "20111015T070000Z",
+        "20111016T060000Z",
+        "20111016T070000Z",
+        "20111022T060000Z",
+        "20111022T070000Z",
+        "20111023T060000Z",
+        "20111023T070000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-012",
+      "description": "testDailyByHour",
+      "recurrence": "DTSTART:20121011T120000Z\nRRULE:FREQ=DAILY;INTERVAL=2;BYHOUR=10,11,12,13,14,15",
+      "startAt": null,
+      "expected": [
+        "20121011T120000Z",
+        "20121011T130000Z",
+        "20121011T140000Z",
+        "20121011T150000Z",
+        "20121013T100000Z",
+        "20121013T110000Z",
+        "20121013T120000Z",
+        "20121013T130000Z",
+        "20121013T140000Z",
+        "20121013T150000Z",
+        "20121015T100000Z",
+        "20121015T110000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-013",
+      "description": "testDailyByDay",
+      "recurrence": "DTSTART:20111007T120000Z\nRRULE:FREQ=DAILY;INTERVAL=2;BYDAY=TU,WE,FR",
+      "startAt": null,
+      "expected": [
+        "20111007T120000Z",
+        "20111011T120000Z",
+        "20111019T120000Z",
+        "20111021T120000Z",
+        "20111025T120000Z",
+        "20111102T120000Z",
+        "20111104T120000Z",
+        "20111108T120000Z",
+        "20111116T120000Z",
+        "20111118T120000Z",
+        "20111122T120000Z",
+        "20111130T120000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-014",
+      "description": "testDailyCount",
+      "recurrence": "DTSTART:20140801T180300Z\nRRULE:FREQ=DAILY;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20140801T180300Z",
+        "20140802T180300Z",
+        "20140803T180300Z",
+        "20140804T180300Z",
+        "20140805T180300Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-015",
+      "description": "testDailyByMonth",
+      "recurrence": "DTSTART:20071004T160000Z\nRRULE:FREQ=DAILY;BYMONTH=9,10;BYDAY=SU",
+      "startAt": "20130928T000000Z",
+      "expected": [
+        "20130929T160000Z",
+        "20131006T160000Z",
+        "20131013T160000Z",
+        "20131020T160000Z",
+        "20131027T160000Z",
+        "20140907T160000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "sabre fastForward: expected lists only the instances at or after startAt; the source does not list the earlier instances."
+      }
+    },
+    {
+      "id": "sabre-016",
+      "description": "testDailyBySetPosLoop",
+      "recurrence": "DTSTART:20220315T000000Z\nRRULE:FREQ=DAILY;INTERVAL=7;BYDAY=MO",
+      "startAt": "20220501T000000Z",
+      "expected": [],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "sabre fastForward: expected lists only the instances at or after startAt; the source does not list the earlier instances. The rule has no instance (every 7 days from a Tuesday, BYDAY=MO); sabre ends the iteration."
+      }
+    },
+    {
+      "id": "sabre-017",
+      "description": "testDailyOnDstTransition: On transition start",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230324T020000\nRRULE:FREQ=DAILY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230324T020000",
+        "20230325T020000",
+        "20230326T030000",
+        "20230327T020000",
+        "20230328T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-018",
+      "description": "testDailyOnDstTransition: During transition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230324T021500\nRRULE:FREQ=DAILY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230324T021500",
+        "20230325T021500",
+        "20230326T031500",
+        "20230327T021500",
+        "20230328T021500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-019",
+      "description": "testDailyOnDstTransition: On transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230324T030000\nRRULE:FREQ=DAILY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230324T030000",
+        "20230325T030000",
+        "20230326T030000",
+        "20230327T030000",
+        "20230328T030000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-020",
+      "description": "testDailyOnDstTransition: After transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230324T031500\nRRULE:FREQ=DAILY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230324T031500",
+        "20230325T031500",
+        "20230326T031500",
+        "20230327T031500",
+        "20230328T031500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-021",
+      "description": "testWeekly",
+      "recurrence": "DTSTART:20111007T000000Z\nRRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=10",
+      "startAt": null,
+      "expected": [
+        "20111007T000000Z",
+        "20111021T000000Z",
+        "20111104T000000Z",
+        "20111118T000000Z",
+        "20111202T000000Z",
+        "20111216T000000Z",
+        "20111230T000000Z",
+        "20120113T000000Z",
+        "20120127T000000Z",
+        "20120210T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-022",
+      "description": "testWeeklyByDay",
+      "recurrence": "DTSTART:20140801T000000Z\nRRULE:FREQ=WEEKLY;INTERVAL=1;COUNT=4;BYDAY=MO;WKST=SA",
+      "startAt": null,
+      "expected": [
+        "20140801T000000Z",
+        "20140804T000000Z",
+        "20140811T000000Z",
+        "20140818T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-023",
+      "description": "testWeeklyByDay2",
+      "recurrence": "DTSTART:20111007T000000Z\nRRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,WE,FR;WKST=SU",
+      "startAt": null,
+      "expected": [
+        "20111007T000000Z",
+        "20111018T000000Z",
+        "20111019T000000Z",
+        "20111021T000000Z",
+        "20111101T000000Z",
+        "20111102T000000Z",
+        "20111104T000000Z",
+        "20111115T000000Z",
+        "20111116T000000Z",
+        "20111118T000000Z",
+        "20111129T000000Z",
+        "20111130T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-024",
+      "description": "testWeeklyByDayByHour",
+      "recurrence": "DTSTART:20111007T080000Z\nRRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,WE,FR;WKST=MO;BYHOUR=8,9,10",
+      "startAt": null,
+      "expected": [
+        "20111007T080000Z",
+        "20111007T090000Z",
+        "20111007T100000Z",
+        "20111018T080000Z",
+        "20111018T090000Z",
+        "20111018T100000Z",
+        "20111019T080000Z",
+        "20111019T090000Z",
+        "20111019T100000Z",
+        "20111021T080000Z",
+        "20111021T090000Z",
+        "20111021T100000Z",
+        "20111101T080000Z",
+        "20111101T090000Z",
+        "20111101T100000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-025",
+      "description": "testWeeklyByDaySpecificHour",
+      "recurrence": "DTSTART:20111007T180000Z\nRRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,WE,FR;WKST=SU",
+      "startAt": null,
+      "expected": [
+        "20111007T180000Z",
+        "20111018T180000Z",
+        "20111019T180000Z",
+        "20111021T180000Z",
+        "20111101T180000Z",
+        "20111102T180000Z",
+        "20111104T180000Z",
+        "20111115T180000Z",
+        "20111116T180000Z",
+        "20111118T180000Z",
+        "20111129T180000Z",
+        "20111130T180000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-026",
+      "description": "testWeeklyByDaySpecificHourOnDstTransition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230311T023000\nRRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=SA,SU",
+      "startAt": null,
+      "expected": [
+        "20230311T023000",
+        "20230312T023000",
+        "20230325T023000",
+        "20230326T033000",
+        "20230408T023000",
+        "20230409T023000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-027",
+      "description": "testWeeklyByDayByHourOnDstTransition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230311T020000\nRRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=SA,SU;WKST=MO;BYHOUR=2,14",
+      "startAt": null,
+      "expected": [
+        "20230311T020000",
+        "20230311T140000",
+        "20230312T020000",
+        "20230312T140000",
+        "20230325T020000",
+        "20230325T140000",
+        "20230326T140000",
+        "20230408T020000",
+        "20230408T140000",
+        "20230409T020000",
+        "20230409T140000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "suspicious": "sabre drops the 02:00 instance on 2023-03-26 (inside the DST gap). RFC 5545 section 3.3.5 (erratum 4271) moves a nonexistent local time forward, which gives 03:00."
+      }
+    },
+    {
+      "id": "sabre-028",
+      "description": "testWeeklyOnDstTransition: On transition start",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230312T020000\nRRULE:FREQ=WEEKLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230312T020000",
+        "20230319T020000",
+        "20230326T030000",
+        "20230402T020000",
+        "20230409T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-029",
+      "description": "testWeeklyOnDstTransition: During transition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230312T021500\nRRULE:FREQ=WEEKLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230312T021500",
+        "20230319T021500",
+        "20230326T031500",
+        "20230402T021500",
+        "20230409T021500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-030",
+      "description": "testWeeklyOnDstTransition: On transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230312T030000\nRRULE:FREQ=WEEKLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230312T030000",
+        "20230319T030000",
+        "20230326T030000",
+        "20230402T030000",
+        "20230409T030000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-031",
+      "description": "testWeeklyOnDstTransition: After transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230312T031500\nRRULE:FREQ=WEEKLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230312T031500",
+        "20230319T031500",
+        "20230326T031500",
+        "20230402T031500",
+        "20230409T031500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-032",
+      "description": "testMonthly",
+      "recurrence": "DTSTART:20111205T000000Z\nRRULE:FREQ=MONTHLY;INTERVAL=3;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20111205T000000Z",
+        "20120305T000000Z",
+        "20120605T000000Z",
+        "20120905T000000Z",
+        "20121205T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-033",
+      "description": "testMonthlyEndOfMonth",
+      "recurrence": "DTSTART:20111231T000000Z\nRRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=12",
+      "startAt": null,
+      "expected": [
+        "20111231T000000Z",
+        "20120831T000000Z",
+        "20121031T000000Z",
+        "20121231T000000Z",
+        "20130831T000000Z",
+        "20131031T000000Z",
+        "20131231T000000Z",
+        "20140831T000000Z",
+        "20141031T000000Z",
+        "20141231T000000Z",
+        "20150831T000000Z",
+        "20151031T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-034",
+      "description": "testMonthlyByMonthDay",
+      "recurrence": "DTSTART:20110101T000000Z\nRRULE:FREQ=MONTHLY;INTERVAL=5;COUNT=9;BYMONTHDAY=1,31,-7",
+      "startAt": null,
+      "expected": [
+        "20110101T000000Z",
+        "20110125T000000Z",
+        "20110131T000000Z",
+        "20110601T000000Z",
+        "20110624T000000Z",
+        "20111101T000000Z",
+        "20111124T000000Z",
+        "20120401T000000Z",
+        "20120424T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-035",
+      "description": "testMonthlyByMonthDayDstTransition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230101T021500\nRRULE:FREQ=MONTHLY;INTERVAL=1;COUNT=8;BYMONTHDAY=1,26",
+      "startAt": null,
+      "expected": [
+        "20230101T021500",
+        "20230126T021500",
+        "20230201T021500",
+        "20230226T021500",
+        "20230301T021500",
+        "20230326T031500",
+        "20230401T021500",
+        "20230426T021500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-036",
+      "description": "testMonthlyByDay",
+      "recurrence": "DTSTART:20110103T000000Z\nRRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=16;BYDAY=MO,-2TU,+1WE,3TH",
+      "startAt": null,
+      "expected": [
+        "20110103T000000Z",
+        "20110105T000000Z",
+        "20110110T000000Z",
+        "20110117T000000Z",
+        "20110118T000000Z",
+        "20110120T000000Z",
+        "20110124T000000Z",
+        "20110131T000000Z",
+        "20110302T000000Z",
+        "20110307T000000Z",
+        "20110314T000000Z",
+        "20110317T000000Z",
+        "20110321T000000Z",
+        "20110322T000000Z",
+        "20110328T000000Z",
+        "20110502T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-037",
+      "description": "testMonthlyByDayUntil",
+      "recurrence": "DTSTART:20210210T000000Z\nRRULE:FREQ=MONTHLY;INTERVAL=1;BYDAY=WE;WKST=WE;UNTIL=20210317T000000Z",
+      "startAt": null,
+      "expected": [
+        "20210210T000000Z",
+        "20210217T000000Z",
+        "20210224T000000Z",
+        "20210303T000000Z",
+        "20210310T000000Z",
+        "20210317T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-038",
+      "description": "testMonthlyByDayOnDstTransition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230101T023000\nRRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=13;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "20230101T023000",
+        "20230108T023000",
+        "20230115T023000",
+        "20230122T023000",
+        "20230129T023000",
+        "20230305T023000",
+        "20230312T023000",
+        "20230319T023000",
+        "20230326T033000",
+        "20230507T023000",
+        "20230514T023000",
+        "20230521T023000",
+        "20230528T023000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-039",
+      "description": "testMonthlyByDayUntilWithImpossibleNextOccurrence",
+      "recurrence": "DTSTART:20210210T000000Z\nRRULE:FREQ=MONTHLY;INTERVAL=1;BYDAY=2WE;BYMONTHDAY=2;WKST=WE;UNTIL=20210317T000000Z",
+      "startAt": null,
+      "expected": [
+        "20210210T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-040",
+      "description": "testMonthlyByDayByMonthDay",
+      "recurrence": "DTSTART:20110801T000000Z\nRRULE:FREQ=MONTHLY;COUNT=10;BYDAY=MO;BYMONTHDAY=1",
+      "startAt": null,
+      "expected": [
+        "20110801T000000Z",
+        "20121001T000000Z",
+        "20130401T000000Z",
+        "20130701T000000Z",
+        "20140901T000000Z",
+        "20141201T000000Z",
+        "20150601T000000Z",
+        "20160201T000000Z",
+        "20160801T000000Z",
+        "20170501T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-041",
+      "description": "testMonthlyByDayBySetPos",
+      "recurrence": "DTSTART:20110103T000000Z\nRRULE:FREQ=MONTHLY;COUNT=10;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1,-1",
+      "startAt": null,
+      "expected": [
+        "20110103T000000Z",
+        "20110131T000000Z",
+        "20110201T000000Z",
+        "20110228T000000Z",
+        "20110301T000000Z",
+        "20110331T000000Z",
+        "20110401T000000Z",
+        "20110429T000000Z",
+        "20110502T000000Z",
+        "20110531T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-042",
+      "description": "testMonthlyOnDstTransition: On transition start",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230126T020000\nRRULE:FREQ=MONTHLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230126T020000",
+        "20230226T020000",
+        "20230326T030000",
+        "20230426T020000",
+        "20230526T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-043",
+      "description": "testMonthlyOnDstTransition: During transition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230126T021500\nRRULE:FREQ=MONTHLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230126T021500",
+        "20230226T021500",
+        "20230326T031500",
+        "20230426T021500",
+        "20230526T021500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-044",
+      "description": "testMonthlyOnDstTransition: On transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230126T030000\nRRULE:FREQ=MONTHLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230126T030000",
+        "20230226T030000",
+        "20230326T030000",
+        "20230426T030000",
+        "20230526T030000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-045",
+      "description": "testMonthlyOnDstTransition: After transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20230126T031500\nRRULE:FREQ=MONTHLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20230126T031500",
+        "20230226T031500",
+        "20230326T031500",
+        "20230426T031500",
+        "20230526T031500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-046",
+      "description": "testMonthlyOnDstTransition: During transition on 31st day of month",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20240131T021500\nRRULE:FREQ=MONTHLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20240131T021500",
+        "20240331T031500",
+        "20240531T021500",
+        "20240731T021500",
+        "20240831T021500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-047",
+      "description": "testYearly",
+      "recurrence": "DTSTART:20110101T000000Z\nRRULE:FREQ=YEARLY;COUNT=10;INTERVAL=3",
+      "startAt": null,
+      "expected": [
+        "20110101T000000Z",
+        "20140101T000000Z",
+        "20170101T000000Z",
+        "20200101T000000Z",
+        "20230101T000000Z",
+        "20260101T000000Z",
+        "20290101T000000Z",
+        "20320101T000000Z",
+        "20350101T000000Z",
+        "20380101T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-048",
+      "description": "testYearlyLeapYear",
+      "recurrence": "DTSTART:20120229T000000Z\nRRULE:FREQ=YEARLY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20120229T000000Z",
+        "20160229T000000Z",
+        "20200229T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-049",
+      "description": "testYearlyByMonth",
+      "recurrence": "DTSTART:20110407T000000Z\nRRULE:FREQ=YEARLY;COUNT=8;INTERVAL=4;BYMONTH=4,10",
+      "startAt": null,
+      "expected": [
+        "20110407T000000Z",
+        "20111007T000000Z",
+        "20150407T000000Z",
+        "20151007T000000Z",
+        "20190407T000000Z",
+        "20191007T000000Z",
+        "20230407T000000Z",
+        "20231007T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-050",
+      "description": "testYearlyByMonthOnDstTransition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20190326T023000\nRRULE:FREQ=YEARLY;COUNT=8;INTERVAL=2;BYMONTH=3,9",
+      "startAt": null,
+      "expected": [
+        "20190326T023000",
+        "20190926T023000",
+        "20210326T023000",
+        "20210926T023000",
+        "20230326T033000",
+        "20230926T023000",
+        "20250326T023000",
+        "20250926T023000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-051",
+      "description": "testYearlyByMonthInvalidValue1",
+      "recurrence": "DTSTART:20110407T000000Z\nRRULE:FREQ=YEARLY;COUNT=6;BYMONTHDAY=24;BYMONTH=0",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-052",
+      "description": "testYearlyByMonthInvalidValue2",
+      "recurrence": "DTSTART:20110407T000000Z\nRRULE:FREQ=YEARLY;COUNT=6;BYMONTHDAY=24;BYMONTH=bla",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-053",
+      "description": "testYearlyByMonthManyInvalidValues",
+      "recurrence": "DTSTART:20110407T000000Z\nRRULE:FREQ=YEARLY;COUNT=6;BYMONTHDAY=24;BYMONTH=0,bla",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-054",
+      "description": "testYearlyByMonthEmptyValue",
+      "recurrence": "DTSTART:20110407T000000Z\nRRULE:FREQ=YEARLY;COUNT=6;BYMONTHDAY=24;BYMONTH=",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-055",
+      "description": "testYearlyByMonthByDay",
+      "recurrence": "DTSTART:20110404T000000Z\nRRULE:FREQ=YEARLY;COUNT=8;INTERVAL=5;BYMONTH=4,10;BYDAY=1MO,-1SU",
+      "startAt": null,
+      "expected": [
+        "20110404T000000Z",
+        "20110424T000000Z",
+        "20111003T000000Z",
+        "20111030T000000Z",
+        "20160404T000000Z",
+        "20160424T000000Z",
+        "20161003T000000Z",
+        "20161030T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-056",
+      "description": "testYearlyByMonthByDayOnDstTransition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20210307T023000\nRRULE:FREQ=YEARLY;COUNT=13;INTERVAL=2;BYMONTH=3;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "20210307T023000",
+        "20210314T023000",
+        "20210321T023000",
+        "20210328T033000",
+        "20230305T023000",
+        "20230312T023000",
+        "20230319T023000",
+        "20230326T033000",
+        "20250302T023000",
+        "20250309T023000",
+        "20250316T023000",
+        "20250323T023000",
+        "20250330T033000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-057",
+      "description": "testYearlyNewYearsDay",
+      "recurrence": "DTSTART:20110101T030700Z\nRRULE:FREQ=YEARLY;COUNT=7;INTERVAL=2;BYYEARDAY=1",
+      "startAt": null,
+      "expected": [
+        "20110101T030700Z",
+        "20130101T030700Z",
+        "20150101T030700Z",
+        "20170101T030700Z",
+        "20190101T030700Z",
+        "20210101T030700Z",
+        "20230101T030700Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-058",
+      "description": "testYearlyByYearDay",
+      "recurrence": "DTSTART:20110709T030700Z\nRRULE:FREQ=YEARLY;COUNT=7;INTERVAL=2;BYYEARDAY=190",
+      "startAt": null,
+      "expected": [
+        "20110709T030700Z",
+        "20130709T030700Z",
+        "20150709T030700Z",
+        "20170709T030700Z",
+        "20190709T030700Z",
+        "20210709T030700Z",
+        "20230709T030700Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-059",
+      "description": "testYearlyByYearDayMultiple",
+      "recurrence": "DTSTART:20110710T145311Z\nRRULE:FREQ=YEARLY;COUNT=8;INTERVAL=3;BYYEARDAY=190,301",
+      "startAt": null,
+      "expected": [
+        "20110710T145311Z",
+        "20111028T145311Z",
+        "20140709T145311Z",
+        "20141028T145311Z",
+        "20170709T145311Z",
+        "20171028T145311Z",
+        "20200708T145311Z",
+        "20201027T145311Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-060",
+      "description": "testYearlyByYearDayByDay",
+      "recurrence": "DTSTART:20010407T145311Z\nRRULE:FREQ=YEARLY;COUNT=6;BYYEARDAY=97;BYDAY=SA",
+      "startAt": null,
+      "expected": [
+        "20010407T145311Z",
+        "20070407T145311Z",
+        "20180407T145311Z",
+        "20240406T145311Z",
+        "20290407T145311Z",
+        "20350407T145311Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-061",
+      "description": "testYearlyByYearDayNegative",
+      "recurrence": "DTSTART:20010926T145311Z\nRRULE:FREQ=YEARLY;COUNT=8;BYYEARDAY=-97,-5",
+      "startAt": null,
+      "expected": [
+        "20010926T145311Z",
+        "20011227T145311Z",
+        "20020926T145311Z",
+        "20021227T145311Z",
+        "20030926T145311Z",
+        "20031227T145311Z",
+        "20040926T145311Z",
+        "20041227T145311Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-062",
+      "description": "testYearlyByYearDayLargeNegative",
+      "recurrence": "DTSTART:20010101T145311Z\nRRULE:FREQ=YEARLY;COUNT=8;BYYEARDAY=-365",
+      "startAt": null,
+      "expected": [
+        "20010101T145311Z",
+        "20020101T145311Z",
+        "20030101T145311Z",
+        "20040102T145311Z",
+        "20050101T145311Z",
+        "20060101T145311Z",
+        "20070101T145311Z",
+        "20080102T145311Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-063",
+      "description": "testYearlyByYearDayMaxNegative",
+      "recurrence": "DTSTART:20010101T145311Z\nRRULE:FREQ=YEARLY;COUNT=8;BYYEARDAY=-366",
+      "startAt": null,
+      "expected": [
+        "20010101T145311Z",
+        "20011231T145311Z",
+        "20021231T145311Z",
+        "20040101T145311Z",
+        "20041231T145311Z",
+        "20051231T145311Z",
+        "20061231T145311Z",
+        "20080101T145311Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "sabre returns December 31 for BYYEARDAY=-366 in years with 365 days. In RFC 5545 day -366 exists only in leap years (January 1)."
+      }
+    },
+    {
+      "id": "sabre-064",
+      "description": "testYearlyByYearDayInvalid390",
+      "recurrence": "DTSTART:20110407T000000Z\nRRULE:FREQ=YEARLY;COUNT=8;INTERVAL=4;BYYEARDAY=390",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-065",
+      "description": "testYearlyByYearDayInvalid0",
+      "recurrence": "DTSTART:20110407T000000Z\nRRULE:FREQ=YEARLY;COUNT=8;INTERVAL=4;BYYEARDAY=0",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-066",
+      "description": "testYearlyByDayByWeekNo",
+      "recurrence": "DTSTART:20210101T000000Z\nRRULE:FREQ=YEARLY;COUNT=3;BYDAY=MO;BYWEEKNO=13,15,50",
+      "startAt": null,
+      "expected": [
+        "20210101T000000Z",
+        "20210329T000000Z",
+        "20210412T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-067",
+      "description": "testYearlyOnDstTransition: On transition start",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20210326T020000\nRRULE:FREQ=YEARLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20210326T020000",
+        "20220326T020000",
+        "20230326T030000",
+        "20240326T020000",
+        "20250326T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-068",
+      "description": "testYearlyOnDstTransition: During transition",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20210326T021500\nRRULE:FREQ=YEARLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20210326T021500",
+        "20220326T021500",
+        "20230326T031500",
+        "20240326T021500",
+        "20250326T021500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-069",
+      "description": "testYearlyOnDstTransition: On transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20210326T030000\nRRULE:FREQ=YEARLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20210326T030000",
+        "20220326T030000",
+        "20230326T030000",
+        "20240326T030000",
+        "20250326T030000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-070",
+      "description": "testYearlyOnDstTransition: After transition end",
+      "recurrence": "DTSTART;TZID=Europe/Zurich:20210326T031500\nRRULE:FREQ=YEARLY;INTERVAL=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20210326T031500",
+        "20220326T031500",
+        "20230326T031500",
+        "20240326T031500",
+        "20250326T031500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-071",
+      "description": "testFastForward",
+      "recurrence": "DTSTART:20110404T000000Z\nRRULE:FREQ=YEARLY;COUNT=8;INTERVAL=5;BYMONTH=4,10;BYDAY=1MO,-1SU",
+      "startAt": "20200505T000000Z",
+      "expected": [],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "sabre fastForward: expected lists only the instances at or after startAt; the source does not list the earlier instances."
+      }
+    },
+    {
+      "id": "sabre-072",
+      "description": "testFifthTuesdayProblem",
+      "recurrence": "DTSTART:20071004T144642Z\nRRULE:FREQ=MONTHLY;INTERVAL=1;UNTIL=20071030T035959Z;BYDAY=5TU",
+      "startAt": null,
+      "expected": [
+        "20071004T144642Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-073",
+      "description": "testFastForwardTooFar",
+      "recurrence": "DTSTART:20090420T180000Z\nRRULE:FREQ=WEEKLY;BYDAY=MO;UNTIL=20090704T205959Z;INTERVAL=1",
+      "startAt": null,
+      "expected": [
+        "20090420T180000Z",
+        "20090427T180000Z",
+        "20090504T180000Z",
+        "20090511T180000Z",
+        "20090518T180000Z",
+        "20090525T180000Z",
+        "20090601T180000Z",
+        "20090608T180000Z",
+        "20090615T180000Z",
+        "20090622T180000Z",
+        "20090629T180000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-074",
+      "description": "testValidByWeekNo",
+      "recurrence": "DTSTART:20110207T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=20;BYDAY=TU",
+      "startAt": null,
+      "expected": [
+        "20110207T000000Z",
+        "20110517T000000Z",
+        "20120515T000000Z",
+        "20130514T000000Z",
+        "20140513T000000Z",
+        "20150512T000000Z",
+        "20160517T000000Z",
+        "20170516T000000Z",
+        "20180515T000000Z",
+        "20190514T000000Z",
+        "20200512T000000Z",
+        "20210518T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-075",
+      "description": "testNegativeValidByWeekNo",
+      "recurrence": "DTSTART:20110902T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=-20;BYDAY=TU,FR",
+      "startAt": null,
+      "expected": [
+        "20110902T000000Z",
+        "20120807T000000Z",
+        "20120810T000000Z",
+        "20130806T000000Z",
+        "20130809T000000Z",
+        "20140805T000000Z",
+        "20140808T000000Z",
+        "20150811T000000Z",
+        "20150814T000000Z",
+        "20160809T000000Z",
+        "20160812T000000Z",
+        "20170808T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "suspicious": "sabre puts BYWEEKNO=-20 one week too early (2012-08-07; ISO week 33 of 2012, the 20th week from the end, starts on 2012-08-13)."
+      }
+    },
+    {
+      "id": "sabre-076",
+      "description": "testTwoValidByWeekNo",
+      "recurrence": "DTSTART:20110907T090000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=20;BYDAY=TU,FR",
+      "startAt": null,
+      "expected": [
+        "20110907T090000Z",
+        "20120515T090000Z",
+        "20120518T090000Z",
+        "20130514T090000Z",
+        "20130517T090000Z",
+        "20140513T090000Z",
+        "20140516T090000Z",
+        "20150512T090000Z",
+        "20150515T090000Z",
+        "20160517T090000Z",
+        "20160520T090000Z",
+        "20170516T090000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-077",
+      "description": "testValidByWeekNoByDayDefault",
+      "recurrence": "DTSTART:20110516T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=20",
+      "startAt": null,
+      "expected": [
+        "20110516T000000Z",
+        "20120514T000000Z",
+        "20130513T000000Z",
+        "20140512T000000Z",
+        "20150511T000000Z",
+        "20160516T000000Z",
+        "20170515T000000Z",
+        "20180514T000000Z",
+        "20190513T000000Z",
+        "20200511T000000Z",
+        "20210517T000000Z",
+        "20220516T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "BYWEEKNO without BYDAY: sabre keeps the weekday of DTSTART (as libical does); dateutil returns every day of the week. RFC 5545 does not say which."
+      }
+    },
+    {
+      "id": "sabre-078",
+      "description": "testMultipleValidByWeekNo",
+      "recurrence": "DTSTART:20110116T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=20,50;BYDAY=TU,FR",
+      "startAt": null,
+      "expected": [
+        "20110116T000000Z",
+        "20110517T000000Z",
+        "20110520T000000Z",
+        "20111213T000000Z",
+        "20111216T000000Z",
+        "20120515T000000Z",
+        "20120518T000000Z",
+        "20121211T000000Z",
+        "20121214T000000Z",
+        "20130514T000000Z",
+        "20130517T000000Z",
+        "20131210T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "sabre-079",
+      "description": "testInvalidByWeekNo",
+      "recurrence": "DTSTART:20110516T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=54",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-080",
+      "description": "testYearlyByMonthLoop",
+      "recurrence": "DTSTART:20120101T154500Z\nRRULE:FREQ=YEARLY;INTERVAL=1;UNTIL=20120203T225959Z;BYMONTH=2;BYSETPOS=1;BYDAY=SU,MO,TU,WE,TH,FR,SA",
+      "startAt": "20120129T230000Z",
+      "expected": [
+        "20120201T154500Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "sabre fastForward: expected lists only the instances at or after startAt; the source does not list the earlier instances."
+      }
+    },
+    {
+      "id": "sabre-081",
+      "description": "testYearlyBySetPosLoop",
+      "recurrence": "DTSTART:20220303T154500Z\nRRULE:FREQ=YEARLY;BYMONTH=5;BYSETPOS=3;BYMONTHDAY=3",
+      "startAt": "20220501T000000Z",
+      "expected": [],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "sabre fastForward: expected lists only the instances at or after startAt; the source does not list the earlier instances. The rule has no instance (BYSETPOS=3 of a one-day set); sabre ends the iteration."
+      }
+    },
+    {
+      "id": "sabre-082",
+      "description": "testYearlyStartDateNotOnRRuleList: #1",
+      "recurrence": "DTSTART:20230901T120000Z\nRRULE:FREQ=YEARLY;BYMONTH=6;BYDAY=-1FR;UNTIL=20250901T000000Z",
+      "startAt": null,
+      "expected": [
+        "20230901T120000Z",
+        "20240628T120000Z",
+        "20250627T120000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-083",
+      "description": "testYearlyStartDateNotOnRRuleList: #2",
+      "recurrence": "DTSTART:20230601T120000Z\nRRULE:FREQ=YEARLY;BYMONTH=6;BYDAY=-1FR;UNTIL=20250901T000000Z",
+      "startAt": null,
+      "expected": [
+        "20230601T120000Z",
+        "20230630T120000Z",
+        "20240628T120000Z",
+        "20250627T120000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-084",
+      "description": "testYearlyStartDateNotOnRRuleList: #3",
+      "recurrence": "DTSTART:20230501T120000Z\nRRULE:FREQ=YEARLY;BYMONTH=6;BYDAY=-1FR;UNTIL=20250901T000000Z",
+      "startAt": null,
+      "expected": [
+        "20230501T120000Z",
+        "20230630T120000Z",
+        "20240628T120000Z",
+        "20250627T120000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-085",
+      "description": "testZeroInterval",
+      "recurrence": "DTSTART:20120824T145700Z\nRRULE:FREQ=YEARLY;INTERVAL=0",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-086",
+      "description": "testInvalidFreq",
+      "recurrence": "DTSTART:20111007T000000Z\nRRULE:FREQ=SMONTHLY;INTERVAL=3;UNTIL=20111025T000000Z",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-087",
+      "description": "testByDayBadOffset",
+      "recurrence": "DTSTART:20140801T000000Z\nRRULE:FREQ=WEEKLY;INTERVAL=1;COUNT=4;BYDAY=0MO;WKST=SA",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-088",
+      "description": "testUntilBeginHasTimezone",
+      "recurrence": "DTSTART;TZID=America/New_York:20130923T183000\nRRULE:FREQ=WEEKLY;UNTIL=20131118T183000",
+      "startAt": null,
+      "expected": [
+        "20130923T183000",
+        "20130930T183000",
+        "20131007T183000",
+        "20131014T183000",
+        "20131021T183000",
+        "20131028T183000",
+        "20131104T183000",
+        "20131111T183000",
+        "20131118T183000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "UNTIL is a local time while DTSTART has a TZID; RFC 5545 requires a UTC UNTIL here."
+      }
+    },
+    {
+      "id": "sabre-089",
+      "description": "testUntilBeforeDtStart",
+      "recurrence": "DTSTART:20140802T001500Z\nRRULE:FREQ=DAILY;UNTIL=20140101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20140802T001500Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "UNTIL is before DTSTART; sabre still returns DTSTART."
+      }
+    },
+    {
+      "id": "sabre-090",
+      "description": "testIgnoredStuff",
+      "recurrence": "DTSTART:20140802T001500Z\nRRULE:FREQ=DAILY;BYSECOND=1;BYMINUTE=1;BYYEARDAY=1;BYWEEKNO=1;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20140802T001500Z",
+        "20140803T001500Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "sabre ignores BYSECOND, BYMINUTE, BYYEARDAY and BYWEEKNO for FREQ=DAILY. RFC 5545 does not allow BYYEARDAY or BYWEEKNO with FREQ=DAILY, and BYSECOND/BYMINUTE would change the times."
+      }
+    },
+    {
+      "id": "sabre-091",
+      "description": "testMinusFifthThursday",
+      "recurrence": "DTSTART:20150101T001500Z\nRRULE:FREQ=MONTHLY;BYDAY=-4TH,-5TH;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20150101T001500Z",
+        "20150108T001500Z",
+        "20150205T001500Z",
+        "20150305T001500Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "sabre-092",
+      "description": "testNeverEnding",
+      "recurrence": "DTSTART:20150101T001500Z\nRRULE:FREQ=MONTHLY;BYDAY=2TU;BYSETPOS=2",
+      "startAt": null,
+      "expected": [
+        "20150101T001500Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "The rule has no instance (BYSETPOS=2 of a one-day set); sabre returns DTSTART only and ends."
+      }
+    },
+    {
+      "id": "sabre-093",
+      "description": "testUnsupportedPart",
+      "recurrence": "DTSTART:20140802T001500Z\nRRULE:FREQ=DAILY;BYWODAN=1",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "Sabre\\VObject\\InvalidDataException",
+      "truncated": false,
+      "notes": null
+    }
+  ]
+}

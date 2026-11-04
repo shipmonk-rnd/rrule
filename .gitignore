@@ -1,0 +1,6 @@
+/cache/*
+!/cache/.gitkeep
+/composer.lock
+/tools/*/vendor
+/tools/*/composer.lock
+/vendor

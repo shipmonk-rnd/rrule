@@ -1,0 +1,3583 @@
+{
+  "source": "dateutil",
+  "sourceUrl": "https://github.com/dateutil/dateutil/blob/a78cbd81d5d03b5f126eb36edb92bca78972c804/tests/test_rrule.py",
+  "license": "Apache-2.0 AND BSD-3-Clause",
+  "dtStartPolicy": "OnlyIfMatching",
+  "cases": [
+    {
+      "id": "dateutil-001",
+      "description": "testYearly",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19980902T090000",
+        "19990902T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-002",
+      "description": "testYearlyInterval",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19990902T090000",
+        "20010902T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-003",
+      "description": "testYearlyIntervalLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;INTERVAL=100",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "20970902T090000",
+        "21970902T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-004",
+      "description": "testYearlyByMonth",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTH=1,3",
+      "startAt": null,
+      "expected": [
+        "19980102T090000",
+        "19980302T090000",
+        "19990102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-005",
+      "description": "testYearlyByMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTHDAY=1,3",
+      "startAt": null,
+      "expected": [
+        "19970903T090000",
+        "19971001T090000",
+        "19971003T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "YEARLY with BYMONTHDAY and no BYMONTH: dateutil expands BYMONTHDAY in every month; libical keeps the DTSTART month."
+      }
+    },
+    {
+      "id": "dateutil-006",
+      "description": "testYearlyByMonthAndMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=5,7",
+      "startAt": null,
+      "expected": [
+        "19980105T090000",
+        "19980107T090000",
+        "19980305T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-007",
+      "description": "testYearlyByWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-008",
+      "description": "testYearlyByNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19971225T090000",
+        "19980106T090000",
+        "19981231T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-009",
+      "description": "testYearlyByNWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYDAY=3TU,-3TH",
+      "startAt": null,
+      "expected": [
+        "19971211T090000",
+        "19980120T090000",
+        "19981217T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-010",
+      "description": "testYearlyByMonthAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTH=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980106T090000",
+        "19980108T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-011",
+      "description": "testYearlyByMonthAndNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTH=1,3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19980106T090000",
+        "19980129T090000",
+        "19980303T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-012",
+      "description": "testYearlyByMonthAndNWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTH=1,3;BYDAY=3TU,-3TH",
+      "startAt": null,
+      "expected": [
+        "19980115T090000",
+        "19980120T090000",
+        "19980312T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-013",
+      "description": "testYearlyByMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980203T090000",
+        "19980303T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "YEARLY with BYMONTHDAY and no BYMONTH: dateutil expands BYMONTHDAY in every month; libical keeps the DTSTART month."
+      }
+    },
+    {
+      "id": "dateutil-014",
+      "description": "testYearlyByMonthAndMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980303T090000",
+        "20010301T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-015",
+      "description": "testYearlyByYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=4;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19971231T090000",
+        "19980101T090000",
+        "19980410T090000",
+        "19980719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-016",
+      "description": "testYearlyByYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=4;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19971231T090000",
+        "19980101T090000",
+        "19980410T090000",
+        "19980719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-017",
+      "description": "testYearlyByMonthAndYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=4;BYMONTH=4,7;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19980410T090000",
+        "19980719T090000",
+        "19990410T090000",
+        "19990719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-018",
+      "description": "testYearlyByMonthAndYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=4;BYMONTH=4,7;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19980410T090000",
+        "19980719T090000",
+        "19990410T090000",
+        "19990719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-019",
+      "description": "testYearlyByWeekNo",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYWEEKNO=20",
+      "startAt": null,
+      "expected": [
+        "19980511T090000",
+        "19980512T090000",
+        "19980513T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "BYWEEKNO without BYDAY: dateutil expands to all days of the week; other libraries (libical) keep only the DTSTART weekday. RFC 5545 does not say."
+      }
+    },
+    {
+      "id": "dateutil-020",
+      "description": "testYearlyByWeekNoAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYWEEKNO=1;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19971229T090000",
+        "19990104T090000",
+        "20000103T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-021",
+      "description": "testYearlyByWeekNoAndWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYWEEKNO=52;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T090000",
+        "19981227T090000",
+        "20000102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-022",
+      "description": "testYearlyByWeekNoAndWeekDayLast",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYWEEKNO=-1;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T090000",
+        "19990103T090000",
+        "20000102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-023",
+      "description": "testYearlyByWeekNoAndWeekDay53",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYWEEKNO=53;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19981228T090000",
+        "20041227T090000",
+        "20091228T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-024",
+      "description": "testYearlyByHour",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYHOUR=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180000",
+        "19980902T060000",
+        "19980902T180000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-025",
+      "description": "testYearlyByMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090600",
+        "19970902T091800",
+        "19980902T090600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-026",
+      "description": "testYearlyBySecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090006",
+        "19970902T090018",
+        "19980902T090006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-027",
+      "description": "testYearlyByHourAndMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180600",
+        "19970902T181800",
+        "19980902T060600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-028",
+      "description": "testYearlyByHourAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYHOUR=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180006",
+        "19970902T180018",
+        "19980902T060006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-029",
+      "description": "testYearlyByMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090606",
+        "19970902T090618",
+        "19970902T091806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-030",
+      "description": "testYearlyByHourAndMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180606",
+        "19970902T180618",
+        "19970902T181806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-031",
+      "description": "testYearlyBySetPos",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTHDAY=15;BYHOUR=6,18;BYSETPOS=3,-3",
+      "startAt": null,
+      "expected": [
+        "19971115T180000",
+        "19980215T060000",
+        "19981115T180000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "YEARLY with BYMONTHDAY and no BYMONTH: dateutil expands BYMONTHDAY in every month; libical keeps the DTSTART month."
+      }
+    },
+    {
+      "id": "dateutil-032",
+      "description": "testMonthly",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19971002T090000",
+        "19971102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-033",
+      "description": "testMonthlyInterval",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19971102T090000",
+        "19980102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-034",
+      "description": "testMonthlyIntervalLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;INTERVAL=18",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19990302T090000",
+        "20000902T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-035",
+      "description": "testMonthlyByMonth",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTH=1,3",
+      "startAt": null,
+      "expected": [
+        "19980102T090000",
+        "19980302T090000",
+        "19990102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-036",
+      "description": "testMonthlyByMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTHDAY=1,3",
+      "startAt": null,
+      "expected": [
+        "19970903T090000",
+        "19971001T090000",
+        "19971003T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-037",
+      "description": "testMonthlyByMonthAndMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=5,7",
+      "startAt": null,
+      "expected": [
+        "19980105T090000",
+        "19980107T090000",
+        "19980305T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-038",
+      "description": "testMonthlyByWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-039",
+      "description": "testMonthlyByNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970925T090000",
+        "19971007T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-040",
+      "description": "testMonthlyByNWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYDAY=3TU,-3TH",
+      "startAt": null,
+      "expected": [
+        "19970911T090000",
+        "19970916T090000",
+        "19971016T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-041",
+      "description": "testMonthlyByMonthAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTH=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980106T090000",
+        "19980108T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-042",
+      "description": "testMonthlyByMonthAndNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTH=1,3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19980106T090000",
+        "19980129T090000",
+        "19980303T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-043",
+      "description": "testMonthlyByMonthAndNWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTH=1,3;BYDAY=3TU,-3TH",
+      "startAt": null,
+      "expected": [
+        "19980115T090000",
+        "19980120T090000",
+        "19980312T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-044",
+      "description": "testMonthlyByMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980203T090000",
+        "19980303T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-045",
+      "description": "testMonthlyByMonthAndMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980303T090000",
+        "20010301T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-046",
+      "description": "testMonthlyByYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=4;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19971231T090000",
+        "19980101T090000",
+        "19980410T090000",
+        "19980719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=MONTHLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-047",
+      "description": "testMonthlyByYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=4;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19971231T090000",
+        "19980101T090000",
+        "19980410T090000",
+        "19980719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=MONTHLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-048",
+      "description": "testMonthlyByMonthAndYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=4;BYMONTH=4,7;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19980410T090000",
+        "19980719T090000",
+        "19990410T090000",
+        "19990719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=MONTHLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-049",
+      "description": "testMonthlyByMonthAndYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=4;BYMONTH=4,7;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19980410T090000",
+        "19980719T090000",
+        "19990410T090000",
+        "19990719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=MONTHLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-050",
+      "description": "testMonthlyByWeekNo",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYWEEKNO=20",
+      "startAt": null,
+      "expected": [
+        "19980511T090000",
+        "19980512T090000",
+        "19980513T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-051",
+      "description": "testMonthlyByWeekNoAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYWEEKNO=1;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19971229T090000",
+        "19990104T090000",
+        "20000103T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-052",
+      "description": "testMonthlyByWeekNoAndWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYWEEKNO=52;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T090000",
+        "19981227T090000",
+        "20000102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-053",
+      "description": "testMonthlyByWeekNoAndWeekDayLast",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYWEEKNO=-1;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T090000",
+        "19990103T090000",
+        "20000102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-054",
+      "description": "testMonthlyByWeekNoAndWeekDay53",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYWEEKNO=53;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19981228T090000",
+        "20041227T090000",
+        "20091228T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-055",
+      "description": "testMonthlyByHour",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYHOUR=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180000",
+        "19971002T060000",
+        "19971002T180000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-056",
+      "description": "testMonthlyByMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090600",
+        "19970902T091800",
+        "19971002T090600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-057",
+      "description": "testMonthlyBySecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090006",
+        "19970902T090018",
+        "19971002T090006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-058",
+      "description": "testMonthlyByHourAndMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180600",
+        "19970902T181800",
+        "19971002T060600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-059",
+      "description": "testMonthlyByHourAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYHOUR=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180006",
+        "19970902T180018",
+        "19971002T060006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-060",
+      "description": "testMonthlyByMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090606",
+        "19970902T090618",
+        "19970902T091806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-061",
+      "description": "testMonthlyByHourAndMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180606",
+        "19970902T180618",
+        "19970902T181806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-062",
+      "description": "testMonthlyBySetPos",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYMONTHDAY=13,17;BYHOUR=6,18;BYSETPOS=3,-3",
+      "startAt": null,
+      "expected": [
+        "19970913T180000",
+        "19970917T060000",
+        "19971013T180000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-063",
+      "description": "testWeekly",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-064",
+      "description": "testWeeklyInterval",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970916T090000",
+        "19970930T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-065",
+      "description": "testWeeklyIntervalLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;INTERVAL=20",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19980120T090000",
+        "19980609T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-066",
+      "description": "testWeeklyByMonth",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYMONTH=1,3",
+      "startAt": null,
+      "expected": [
+        "19980106T090000",
+        "19980113T090000",
+        "19980120T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-067",
+      "description": "testWeeklyByMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYMONTHDAY=1,3",
+      "startAt": null,
+      "expected": [
+        "19970903T090000",
+        "19971001T090000",
+        "19971003T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYMONTHDAY with FREQ=WEEKLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-068",
+      "description": "testWeeklyByMonthAndMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=5,7",
+      "startAt": null,
+      "expected": [
+        "19980105T090000",
+        "19980107T090000",
+        "19980305T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYMONTHDAY with FREQ=WEEKLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-069",
+      "description": "testWeeklyByWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-070",
+      "description": "testWeeklyByNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=WEEKLY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-071",
+      "description": "testWeeklyByMonthAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYMONTH=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980106T090000",
+        "19980108T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-072",
+      "description": "testWeeklyByMonthAndNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYMONTH=1,3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980106T090000",
+        "19980108T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=WEEKLY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-073",
+      "description": "testWeeklyByMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980203T090000",
+        "19980303T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYMONTHDAY with FREQ=WEEKLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-074",
+      "description": "testWeeklyByMonthAndMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980303T090000",
+        "20010301T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYMONTHDAY with FREQ=WEEKLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-075",
+      "description": "testWeeklyByYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=4;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19971231T090000",
+        "19980101T090000",
+        "19980410T090000",
+        "19980719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=WEEKLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-076",
+      "description": "testWeeklyByYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=4;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19971231T090000",
+        "19980101T090000",
+        "19980410T090000",
+        "19980719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=WEEKLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-077",
+      "description": "testWeeklyByMonthAndYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=4;BYMONTH=1,7;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980719T090000",
+        "19990101T090000",
+        "19990719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=WEEKLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-078",
+      "description": "testWeeklyByMonthAndYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=4;BYMONTH=1,7;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980719T090000",
+        "19990101T090000",
+        "19990719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=WEEKLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-079",
+      "description": "testWeeklyByWeekNo",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYWEEKNO=20",
+      "startAt": null,
+      "expected": [
+        "19980511T090000",
+        "19980512T090000",
+        "19980513T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-080",
+      "description": "testWeeklyByWeekNoAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYWEEKNO=1;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19971229T090000",
+        "19990104T090000",
+        "20000103T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-081",
+      "description": "testWeeklyByWeekNoAndWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYWEEKNO=52;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T090000",
+        "19981227T090000",
+        "20000102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-082",
+      "description": "testWeeklyByWeekNoAndWeekDayLast",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYWEEKNO=-1;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T090000",
+        "19990103T090000",
+        "20000102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-083",
+      "description": "testWeeklyByWeekNoAndWeekDay53",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYWEEKNO=53;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19981228T090000",
+        "20041227T090000",
+        "20091228T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-084",
+      "description": "testWeeklyByHour",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYHOUR=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180000",
+        "19970909T060000",
+        "19970909T180000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-085",
+      "description": "testWeeklyByMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090600",
+        "19970902T091800",
+        "19970909T090600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-086",
+      "description": "testWeeklyBySecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090006",
+        "19970902T090018",
+        "19970909T090006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-087",
+      "description": "testWeeklyByHourAndMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180600",
+        "19970902T181800",
+        "19970909T060600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-088",
+      "description": "testWeeklyByHourAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYHOUR=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180006",
+        "19970902T180018",
+        "19970909T060006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-089",
+      "description": "testWeeklyByMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090606",
+        "19970902T090618",
+        "19970902T091806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-090",
+      "description": "testWeeklyByHourAndMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180606",
+        "19970902T180618",
+        "19970902T181806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-091",
+      "description": "testWeeklyBySetPos",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;BYDAY=TU,TH;BYHOUR=6,18;BYSETPOS=3,-3",
+      "startAt": null,
+      "expected": [
+        "19970902T180000",
+        "19970904T060000",
+        "19970909T180000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-092",
+      "description": "testDaily",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970903T090000",
+        "19970904T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-093",
+      "description": "testDailyInterval",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970906T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-094",
+      "description": "testDailyIntervalLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;INTERVAL=92",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19971203T090000",
+        "19980305T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-095",
+      "description": "testDailyByMonth",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYMONTH=1,3",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980102T090000",
+        "19980103T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-096",
+      "description": "testDailyByMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYMONTHDAY=1,3",
+      "startAt": null,
+      "expected": [
+        "19970903T090000",
+        "19971001T090000",
+        "19971003T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-097",
+      "description": "testDailyByMonthAndMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=5,7",
+      "startAt": null,
+      "expected": [
+        "19980105T090000",
+        "19980107T090000",
+        "19980305T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-098",
+      "description": "testDailyByWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-099",
+      "description": "testDailyByNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=DAILY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-100",
+      "description": "testDailyByMonthAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYMONTH=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980106T090000",
+        "19980108T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-101",
+      "description": "testDailyByMonthAndNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYMONTH=1,3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980106T090000",
+        "19980108T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=DAILY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-102",
+      "description": "testDailyByMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980203T090000",
+        "19980303T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-103",
+      "description": "testDailyByMonthAndMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980303T090000",
+        "20010301T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-104",
+      "description": "testDailyByYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=4;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19971231T090000",
+        "19980101T090000",
+        "19980410T090000",
+        "19980719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=DAILY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-105",
+      "description": "testDailyByYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=4;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19971231T090000",
+        "19980101T090000",
+        "19980410T090000",
+        "19980719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=DAILY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-106",
+      "description": "testDailyByMonthAndYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=4;BYMONTH=1,7;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980719T090000",
+        "19990101T090000",
+        "19990719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=DAILY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-107",
+      "description": "testDailyByMonthAndYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=4;BYMONTH=1,7;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980719T090000",
+        "19990101T090000",
+        "19990719T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids BYYEARDAY with FREQ=DAILY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-108",
+      "description": "testDailyByWeekNo",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYWEEKNO=20",
+      "startAt": null,
+      "expected": [
+        "19980511T090000",
+        "19980512T090000",
+        "19980513T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-109",
+      "description": "testDailyByWeekNoAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYWEEKNO=1;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19971229T090000",
+        "19990104T090000",
+        "20000103T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-110",
+      "description": "testDailyByWeekNoAndWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYWEEKNO=52;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T090000",
+        "19981227T090000",
+        "20000102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-111",
+      "description": "testDailyByWeekNoAndWeekDayLast",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYWEEKNO=-1;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T090000",
+        "19990103T090000",
+        "20000102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-112",
+      "description": "testDailyByWeekNoAndWeekDay53",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYWEEKNO=53;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19981228T090000",
+        "20041227T090000",
+        "20091228T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-113",
+      "description": "testDailyByHour",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYHOUR=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180000",
+        "19970903T060000",
+        "19970903T180000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-114",
+      "description": "testDailyByMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090600",
+        "19970902T091800",
+        "19970903T090600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-115",
+      "description": "testDailyBySecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090006",
+        "19970902T090018",
+        "19970903T090006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-116",
+      "description": "testDailyByHourAndMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180600",
+        "19970902T181800",
+        "19970903T060600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-117",
+      "description": "testDailyByHourAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYHOUR=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180006",
+        "19970902T180018",
+        "19970903T060006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-118",
+      "description": "testDailyByMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090606",
+        "19970902T090618",
+        "19970902T091806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-119",
+      "description": "testDailyByHourAndMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180606",
+        "19970902T180618",
+        "19970902T181806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-120",
+      "description": "testDailyBySetPos",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3;BYHOUR=6,18;BYMINUTE=15,45;BYSETPOS=3,-3",
+      "startAt": null,
+      "expected": [
+        "19970902T181500",
+        "19970903T064500",
+        "19970903T181500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-121",
+      "description": "testHourly",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T100000",
+        "19970902T110000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-122",
+      "description": "testHourlyInterval",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T110000",
+        "19970902T130000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-123",
+      "description": "testHourlyIntervalLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;INTERVAL=769",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19971004T100000",
+        "19971105T110000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-124",
+      "description": "testHourlyByMonth",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMONTH=1,3",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T010000",
+        "19980101T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-125",
+      "description": "testHourlyByMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMONTHDAY=1,3",
+      "startAt": null,
+      "expected": [
+        "19970903T000000",
+        "19970903T010000",
+        "19970903T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-126",
+      "description": "testHourlyByMonthAndMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=5,7",
+      "startAt": null,
+      "expected": [
+        "19980105T000000",
+        "19980105T010000",
+        "19980105T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-127",
+      "description": "testHourlyByWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T100000",
+        "19970902T110000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-128",
+      "description": "testHourlyByNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T100000",
+        "19970902T110000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=HOURLY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-129",
+      "description": "testHourlyByMonthAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMONTH=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T010000",
+        "19980101T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-130",
+      "description": "testHourlyByMonthAndNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMONTH=1,3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T010000",
+        "19980101T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=HOURLY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-131",
+      "description": "testHourlyByMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T010000",
+        "19980101T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-132",
+      "description": "testHourlyByMonthAndMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T010000",
+        "19980101T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-133",
+      "description": "testHourlyByYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=4;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19971231T000000",
+        "19971231T010000",
+        "19971231T020000",
+        "19971231T030000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-134",
+      "description": "testHourlyByYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=4;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19971231T000000",
+        "19971231T010000",
+        "19971231T020000",
+        "19971231T030000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-135",
+      "description": "testHourlyByMonthAndYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=4;BYMONTH=4,7;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19980410T000000",
+        "19980410T010000",
+        "19980410T020000",
+        "19980410T030000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-136",
+      "description": "testHourlyByMonthAndYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=4;BYMONTH=4,7;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19980410T000000",
+        "19980410T010000",
+        "19980410T020000",
+        "19980410T030000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-137",
+      "description": "testHourlyByWeekNo",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYWEEKNO=20",
+      "startAt": null,
+      "expected": [
+        "19980511T000000",
+        "19980511T010000",
+        "19980511T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-138",
+      "description": "testHourlyByWeekNoAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYWEEKNO=1;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19971229T000000",
+        "19971229T010000",
+        "19971229T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-139",
+      "description": "testHourlyByWeekNoAndWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYWEEKNO=52;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T000000",
+        "19971228T010000",
+        "19971228T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-140",
+      "description": "testHourlyByWeekNoAndWeekDayLast",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYWEEKNO=-1;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T000000",
+        "19971228T010000",
+        "19971228T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-141",
+      "description": "testHourlyByWeekNoAndWeekDay53",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYWEEKNO=53;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19981228T000000",
+        "19981228T010000",
+        "19981228T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-142",
+      "description": "testHourlyByHour",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYHOUR=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180000",
+        "19970903T060000",
+        "19970903T180000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-143",
+      "description": "testHourlyByMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090600",
+        "19970902T091800",
+        "19970902T100600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-144",
+      "description": "testHourlyBySecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090006",
+        "19970902T090018",
+        "19970902T100006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-145",
+      "description": "testHourlyByHourAndMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180600",
+        "19970902T181800",
+        "19970903T060600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-146",
+      "description": "testHourlyByHourAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYHOUR=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180006",
+        "19970902T180018",
+        "19970903T060006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-147",
+      "description": "testHourlyByMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090606",
+        "19970902T090618",
+        "19970902T091806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-148",
+      "description": "testHourlyByHourAndMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180606",
+        "19970902T180618",
+        "19970902T181806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-149",
+      "description": "testHourlyBySetPos",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;COUNT=3;BYMINUTE=15,45;BYSECOND=15,45;BYSETPOS=3,-3",
+      "startAt": null,
+      "expected": [
+        "19970902T091545",
+        "19970902T094515",
+        "19970902T101545"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-150",
+      "description": "testMinutely",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T090100",
+        "19970902T090200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-151",
+      "description": "testMinutelyInterval",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T090200",
+        "19970902T090400"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-152",
+      "description": "testMinutelyIntervalLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;INTERVAL=1501",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970903T100100",
+        "19970904T110200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-153",
+      "description": "testMinutelyByMonth",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYMONTH=1,3",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000100",
+        "19980101T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-154",
+      "description": "testMinutelyByMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYMONTHDAY=1,3",
+      "startAt": null,
+      "expected": [
+        "19970903T000000",
+        "19970903T000100",
+        "19970903T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-155",
+      "description": "testMinutelyByMonthAndMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=5,7",
+      "startAt": null,
+      "expected": [
+        "19980105T000000",
+        "19980105T000100",
+        "19980105T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-156",
+      "description": "testMinutelyByWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T090100",
+        "19970902T090200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-157",
+      "description": "testMinutelyByNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T090100",
+        "19970902T090200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=MINUTELY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-158",
+      "description": "testMinutelyByMonthAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYMONTH=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000100",
+        "19980101T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-159",
+      "description": "testMinutelyByMonthAndNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYMONTH=1,3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000100",
+        "19980101T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=MINUTELY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-160",
+      "description": "testMinutelyByMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000100",
+        "19980101T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-161",
+      "description": "testMinutelyByMonthAndMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000100",
+        "19980101T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-162",
+      "description": "testMinutelyByYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=4;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19971231T000000",
+        "19971231T000100",
+        "19971231T000200",
+        "19971231T000300"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-163",
+      "description": "testMinutelyByYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=4;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19971231T000000",
+        "19971231T000100",
+        "19971231T000200",
+        "19971231T000300"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-164",
+      "description": "testMinutelyByMonthAndYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=4;BYMONTH=4,7;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19980410T000000",
+        "19980410T000100",
+        "19980410T000200",
+        "19980410T000300"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-165",
+      "description": "testMinutelyByMonthAndYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=4;BYMONTH=4,7;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19980410T000000",
+        "19980410T000100",
+        "19980410T000200",
+        "19980410T000300"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-166",
+      "description": "testMinutelyByWeekNo",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYWEEKNO=20",
+      "startAt": null,
+      "expected": [
+        "19980511T000000",
+        "19980511T000100",
+        "19980511T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-167",
+      "description": "testMinutelyByWeekNoAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYWEEKNO=1;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19971229T000000",
+        "19971229T000100",
+        "19971229T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-168",
+      "description": "testMinutelyByWeekNoAndWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYWEEKNO=52;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T000000",
+        "19971228T000100",
+        "19971228T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-169",
+      "description": "testMinutelyByWeekNoAndWeekDayLast",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYWEEKNO=-1;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T000000",
+        "19971228T000100",
+        "19971228T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-170",
+      "description": "testMinutelyByWeekNoAndWeekDay53",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYWEEKNO=53;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19981228T000000",
+        "19981228T000100",
+        "19981228T000200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-171",
+      "description": "testMinutelyByHour",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYHOUR=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180000",
+        "19970902T180100",
+        "19970902T180200"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-172",
+      "description": "testMinutelyByMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090600",
+        "19970902T091800",
+        "19970902T100600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-173",
+      "description": "testMinutelyBySecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090006",
+        "19970902T090018",
+        "19970902T090106"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-174",
+      "description": "testMinutelyByHourAndMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180600",
+        "19970902T181800",
+        "19970903T060600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-175",
+      "description": "testMinutelyByHourAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYHOUR=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180006",
+        "19970902T180018",
+        "19970902T180106"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-176",
+      "description": "testMinutelyByMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090606",
+        "19970902T090618",
+        "19970902T091806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-177",
+      "description": "testMinutelyByHourAndMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180606",
+        "19970902T180618",
+        "19970902T181806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-178",
+      "description": "testMinutelyBySetPos",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;COUNT=3;BYSECOND=15,30,45;BYSETPOS=3,-3",
+      "startAt": null,
+      "expected": [
+        "19970902T090015",
+        "19970902T090045",
+        "19970902T090115"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-179",
+      "description": "testSecondly",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T090001",
+        "19970902T090002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-180",
+      "description": "testSecondlyInterval",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T090002",
+        "19970902T090004"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-181",
+      "description": "testSecondlyIntervalLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;INTERVAL=90061",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970903T100101",
+        "19970904T110202"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-182",
+      "description": "testSecondlyByMonth",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYMONTH=1,3",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000001",
+        "19980101T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-183",
+      "description": "testSecondlyByMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYMONTHDAY=1,3",
+      "startAt": null,
+      "expected": [
+        "19970903T000000",
+        "19970903T000001",
+        "19970903T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-184",
+      "description": "testSecondlyByMonthAndMonthDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=5,7",
+      "startAt": null,
+      "expected": [
+        "19980105T000000",
+        "19980105T000001",
+        "19980105T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-185",
+      "description": "testSecondlyByWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T090001",
+        "19970902T090002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-186",
+      "description": "testSecondlyByNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T090001",
+        "19970902T090002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=SECONDLY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-187",
+      "description": "testSecondlyByMonthAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYMONTH=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000001",
+        "19980101T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-188",
+      "description": "testSecondlyByMonthAndNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYMONTH=1,3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000001",
+        "19980101T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 forbids a numeric BYDAY with FREQ=SECONDLY; dateutil ignores the number."
+      }
+    },
+    {
+      "id": "dateutil-189",
+      "description": "testSecondlyByMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000001",
+        "19980101T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-190",
+      "description": "testSecondlyByMonthAndMonthDayAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYMONTH=1,3;BYMONTHDAY=1,3;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19980101T000000",
+        "19980101T000001",
+        "19980101T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-191",
+      "description": "testSecondlyByYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=4;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19971231T000000",
+        "19971231T000001",
+        "19971231T000002",
+        "19971231T000003"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-192",
+      "description": "testSecondlyByYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=4;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19971231T000000",
+        "19971231T000001",
+        "19971231T000002",
+        "19971231T000003"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-193",
+      "description": "testSecondlyByMonthAndYearDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=4;BYMONTH=4,7;BYYEARDAY=1,100,200,365",
+      "startAt": null,
+      "expected": [
+        "19980410T000000",
+        "19980410T000001",
+        "19980410T000002",
+        "19980410T000003"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-194",
+      "description": "testSecondlyByMonthAndYearDayNeg",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=4;BYMONTH=4,7;BYYEARDAY=-365,-266,-166,-1",
+      "startAt": null,
+      "expected": [
+        "19980410T000000",
+        "19980410T000001",
+        "19980410T000002",
+        "19980410T000003"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-195",
+      "description": "testSecondlyByWeekNo",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYWEEKNO=20",
+      "startAt": null,
+      "expected": [
+        "19980511T000000",
+        "19980511T000001",
+        "19980511T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-196",
+      "description": "testSecondlyByWeekNoAndWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYWEEKNO=1;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19971229T000000",
+        "19971229T000001",
+        "19971229T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-197",
+      "description": "testSecondlyByWeekNoAndWeekDayLarge",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYWEEKNO=52;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T000000",
+        "19971228T000001",
+        "19971228T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-198",
+      "description": "testSecondlyByWeekNoAndWeekDayLast",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYWEEKNO=-1;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19971228T000000",
+        "19971228T000001",
+        "19971228T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-199",
+      "description": "testSecondlyByWeekNoAndWeekDay53",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYWEEKNO=53;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "19981228T000000",
+        "19981228T000001",
+        "19981228T000002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "RFC 5545 allows BYWEEKNO only with FREQ=YEARLY; dateutil accepts it."
+      }
+    },
+    {
+      "id": "dateutil-200",
+      "description": "testSecondlyByHour",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYHOUR=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180000",
+        "19970902T180001",
+        "19970902T180002"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-201",
+      "description": "testSecondlyByMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090600",
+        "19970902T090601",
+        "19970902T090602"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-202",
+      "description": "testSecondlyBySecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090006",
+        "19970902T090018",
+        "19970902T090106"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-203",
+      "description": "testSecondlyByHourAndMinute",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180600",
+        "19970902T180601",
+        "19970902T180602"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-204",
+      "description": "testSecondlyByHourAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYHOUR=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180006",
+        "19970902T180018",
+        "19970902T180106"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-205",
+      "description": "testSecondlyByMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T090606",
+        "19970902T090618",
+        "19970902T091806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-206",
+      "description": "testSecondlyByHourAndMinuteAndSecond",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=SECONDLY;COUNT=3;BYHOUR=6,18;BYMINUTE=6,18;BYSECOND=6,18",
+      "startAt": null,
+      "expected": [
+        "19970902T180606",
+        "19970902T180618",
+        "19970902T181806"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-207",
+      "description": "testSecondlyByHourAndMinuteAndSecondBug",
+      "recurrence": "DTSTART:20100322T120100\nRRULE:FREQ=SECONDLY;COUNT=3;BYSECOND=0;BYMINUTE=1",
+      "startAt": null,
+      "expected": [
+        "20100322T120100",
+        "20100322T130100",
+        "20100322T140100"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-208",
+      "description": "testUntilNotMatching",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;UNTIL=19970905T080000",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970903T090000",
+        "19970904T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-209",
+      "description": "testUntilMatching",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;UNTIL=19970904T090000",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970903T090000",
+        "19970904T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-210",
+      "description": "testUntilSingle",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;UNTIL=19970902T090000",
+      "startAt": null,
+      "expected": [
+        "19970902T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-211",
+      "description": "testUntilEmpty",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;UNTIL=19970901T090000",
+      "startAt": null,
+      "expected": [],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "UNTIL is before DTSTART. dateutil gives no instance; RFC 5545 says DTSTART defines the first instance."
+      }
+    },
+    {
+      "id": "dateutil-212",
+      "description": "testUntilWithDate",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;UNTIL=19970905",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970903T090000",
+        "19970904T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "UNTIL and DTSTART have different value types (RFC 5545 requires the same type); dateutil compares a DATE UNTIL as midnight."
+      }
+    },
+    {
+      "id": "dateutil-213",
+      "description": "testWkStIntervalMO",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;INTERVAL=2;BYDAY=TU,SU;WKST=MO",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970907T090000",
+        "19970916T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-214",
+      "description": "testWkStIntervalSU",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=3;INTERVAL=2;BYDAY=TU,SU;WKST=SU",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970914T090000",
+        "19970916T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-215",
+      "description": "testDTStartIsDate",
+      "recurrence": "DTSTART;VALUE=DATE:19970902\nRRULE:FREQ=DAILY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902",
+        "19970903",
+        "19970904"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "dateutil returns midnight datetimes for a DATE DTSTART; the tool writes them as DATE values."
+      }
+    },
+    {
+      "id": "dateutil-216",
+      "description": "testMaxYear",
+      "recurrence": "DTSTART:99970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYMONTH=2;BYMONTHDAY=31",
+      "startAt": null,
+      "expected": [],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "No instance exists; dateutil stops the search at year 9999 (datetime.MAXYEAR)."
+      }
+    },
+    {
+      "id": "dateutil-217",
+      "description": "testGetItemSliceEmpty",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970903T090000",
+        "19970904T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-218",
+      "description": "testStr",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19980902T090000",
+        "19990902T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-219",
+      "description": "testStrWithTZID",
+      "recurrence": "DTSTART;TZID=America/New_York:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19980902T090000",
+        "19990902T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-220",
+      "description": "testStrSpacesAndLines",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19980902T090000",
+        "19990902T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-221",
+      "description": "testStrSet",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=2;BYDAY=TU\nRRULE:FREQ=YEARLY;COUNT=1;BYDAY=TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-222",
+      "description": "testStrSetDate",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=1;BYDAY=TU\nRDATE:19970904T090000\nRDATE:19970909T090000",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-223",
+      "description": "testStrSetExRule",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH\nEXRULE:FREQ=YEARLY;COUNT=3;BYDAY=TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-224",
+      "description": "testStrSetExDate",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH\nEXDATE:19970904T090000\nEXDATE:19970911T090000\nEXDATE:19970918T090000",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-225",
+      "description": "testStrSetExDateMultiple",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH\nEXDATE:19970904T090000,19970911T090000,19970918T090000",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-226",
+      "description": "testStrSetExDateWithTZID",
+      "recurrence": "DTSTART;TZID=Europe/Brussels:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH\nEXDATE;TZID=Europe/Brussels:19970904T090000\nEXDATE;TZID=Europe/Brussels:19970911T090000\nEXDATE;TZID=Europe/Brussels:19970918T090000",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-227",
+      "description": "testStrSetExDateValueDateTimeNoTZID",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=4;BYDAY=TU,TH\nEXDATE;VALUE=DATE-TIME:19970902T090000\nEXDATE;VALUE=DATE-TIME:19970909T090000",
+      "startAt": null,
+      "expected": [
+        "19970904T090000",
+        "19970911T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-228",
+      "description": "testStrSetExDateValueMixDateTimeNoTZID",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=4;BYDAY=TU,TH\nEXDATE;VALUE=DATE-TIME:19970902T090000\nEXDATE:19970909T090000",
+      "startAt": null,
+      "expected": [
+        "19970904T090000",
+        "19970911T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-229",
+      "description": "testStrSetExDateValueDateTimeWithTZID",
+      "recurrence": "DTSTART;TZID=Europe/Brussels:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=4;BYDAY=TU,TH\nEXDATE;VALUE=DATE-TIME;TZID=Europe/Brussels:19970902T090000\nEXDATE;VALUE=DATE-TIME;TZID=Europe/Brussels:19970909T090000",
+      "startAt": null,
+      "expected": [
+        "19970904T090000",
+        "19970911T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "The source writes DTSTART;VALUE=DATE-TIME; the tool drops the default VALUE parameter."
+      }
+    },
+    {
+      "id": "dateutil-230",
+      "description": "testStrSetExDateValueDate",
+      "recurrence": "DTSTART;VALUE=DATE:19970902\nRRULE:FREQ=YEARLY;COUNT=4;BYDAY=TU,TH\nEXDATE;VALUE=DATE:19970902\nEXDATE;VALUE=DATE:19970909",
+      "startAt": null,
+      "expected": [
+        "19970904",
+        "19970911"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "dateutil returns midnight datetimes for a DATE DTSTART; the tool writes them as DATE values."
+      }
+    },
+    {
+      "id": "dateutil-231",
+      "description": "testStrNWeekDay",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=3;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19971225T090000",
+        "19980106T090000",
+        "19981231T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-232",
+      "description": "testStrUntil",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;UNTIL=19990101T000000;BYDAY=1TU,-1TH",
+      "startAt": null,
+      "expected": [
+        "19971225T090000",
+        "19980106T090000",
+        "19981231T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-233",
+      "description": "testStrValueDatetime",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19980902T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "The source writes DTSTART;VALUE=DATE-TIME; the tool drops the default VALUE parameter."
+      }
+    },
+    {
+      "id": "dateutil-234",
+      "description": "testStrValueDate",
+      "recurrence": "DTSTART;VALUE=DATE:19970902\nRRULE:FREQ=YEARLY;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "19970902",
+        "19980902"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "dateutil returns midnight datetimes for a DATE DTSTART; the tool writes them as DATE values."
+      }
+    },
+    {
+      "id": "dateutil-235",
+      "description": "testStrUntilWithTZ",
+      "recurrence": "DTSTART;TZID=America/New_York:19970101T000000\nRRULE:FREQ=YEARLY;UNTIL=19990101T000000Z",
+      "startAt": null,
+      "expected": [
+        "19970101T000000",
+        "19980101T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-236",
+      "description": "testReplaceIfSet (case 1 of 2)",
+      "recurrence": "DTSTART:19970101T000000\nRRULE:FREQ=YEARLY;COUNT=1;BYMONTHDAY=5",
+      "startAt": null,
+      "expected": [
+        "19970105T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "YEARLY with BYMONTHDAY and no BYMONTH: dateutil expands BYMONTHDAY in every month; libical keeps the DTSTART month."
+      }
+    },
+    {
+      "id": "dateutil-237",
+      "description": "testReplaceIfSet (case 2 of 2)",
+      "recurrence": "DTSTART:19970101T000000\nRRULE:FREQ=YEARLY;COUNT=1;BYMONTHDAY=6",
+      "startAt": null,
+      "expected": [
+        "19970106T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "YEARLY with BYMONTHDAY and no BYMONTH: dateutil expands BYMONTHDAY in every month; libical keeps the DTSTART month."
+      }
+    },
+    {
+      "id": "dateutil-238",
+      "description": "testReplaceIfNotSet (case 1 of 2)",
+      "recurrence": "DTSTART:19970101T000000\nRRULE:FREQ=YEARLY;COUNT=1",
+      "startAt": null,
+      "expected": [
+        "19970101T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-239",
+      "description": "testReplaceIfNotSet (case 2 of 2)",
+      "recurrence": "DTSTART:19970101T000000\nRRULE:FREQ=YEARLY;COUNT=1;BYMONTHDAY=6",
+      "startAt": null,
+      "expected": [
+        "19970106T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "YEARLY with BYMONTHDAY and no BYMONTH: dateutil expands BYMONTHDAY in every month; libical keeps the DTSTART month."
+      }
+    },
+    {
+      "id": "dateutil-240",
+      "description": "testSet",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=2;BYDAY=TU\nRRULE:FREQ=YEARLY;COUNT=1;BYDAY=TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-241",
+      "description": "testSetDate",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=1;BYDAY=TU\nRDATE:19970904T090000\nRDATE:19970909T090000",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-242",
+      "description": "testSetExRule",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH\nEXRULE:FREQ=YEARLY;COUNT=3;BYDAY=TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-243",
+      "description": "testSetExDate",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=6;BYDAY=TU,TH\nEXDATE:19970904T090000\nEXDATE:19970911T090000\nEXDATE:19970918T090000",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-244",
+      "description": "testSetExDateRevOrder",
+      "recurrence": "DTSTART:20040101T090000\nRRULE:FREQ=MONTHLY;COUNT=5;BYMONTHDAY=10\nEXDATE:20040410T090000\nEXDATE:20040210T090000",
+      "startAt": null,
+      "expected": [
+        "20040110T090000",
+        "20040310T090000",
+        "20040510T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "dateutil-245",
+      "description": "testSetCachePre",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=YEARLY;COUNT=2;BYDAY=TU\nRRULE:FREQ=YEARLY;COUNT=1;BYDAY=TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    }
+  ]
+}

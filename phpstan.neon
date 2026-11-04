@@ -1,0 +1,50 @@
+includes:
+  - phar://phpstan.phar/conf/bleedingEdge.neon
+  - vendor/phpstan/phpstan-phpunit/extension.neon
+  - vendor/phpstan/phpstan-phpunit/rules.neon
+  - vendor/phpstan/phpstan-strict-rules/rules.neon
+  - vendor/shipmonk/dead-code-detector/rules.neon
+  - vendor/shipmonk/phpstan-rules/rules.neon
+
+parameters:
+  level: max
+  tmpDir: cache/phpstan
+  checkUninitializedProperties: true
+  checkMissingCallableSignature: true
+  checkTooWideReturnTypesInProtectedAndPublicMethods: true
+  checkBenevolentUnionTypes: true
+  reportAnyTypeWideningInVarTag: true
+  reportPossiblyNonexistentConstantArrayOffset: true
+  reportPossiblyNonexistentGeneralArrayOffset: true
+
+  phpVersion:
+    min: 80100
+    max: 80599
+
+  paths:
+    - coverage-guard.php
+    - composer-dependency-analyser.php
+    - src
+    - tests
+
+  exceptions:
+    check:
+      missingCheckedExceptionInThrows: true
+      tooWideThrowType: true
+      throwTypeCovariance: true
+    implicitThrows: false
+    checkedExceptionClasses:
+      - RuntimeException
+
+  shipmonkDeadCode:
+    usageExcluders:
+      tests:
+        enabled: true
+
+  ignoreErrors:
+    # PHPUnit calls the test methods and the data providers, and it catches every exception
+    - identifier: missingType.checkedException
+      path: tests/*Test.php
+    # a test method calls its closures (many come from a data provider), and PHPUnit catches what they throw
+    - identifier: shipmonk.checkedExceptionInCallable
+      path: tests/*Test.php

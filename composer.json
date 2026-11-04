@@ -1,0 +1,85 @@
+{
+    "name": "shipmonk/rrule",
+    "description": "Strictly typed iCalendar recurrence (RFC 5545 RRULE, RDATE, EXDATE and RFC 7529 SKIP) for PHP with zero dependencies",
+    "license": "MIT",
+    "keywords": [
+        "calendar",
+        "icalendar",
+        "recurrence",
+        "rfc5545",
+        "rfc7529",
+        "rrule",
+        "schedule"
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "editorconfig-checker/editorconfig-checker": "^10.7.0",
+        "ergebnis/composer-normalize": "^2.54.0",
+        "phpstan/phpstan": "^2.3.5",
+        "phpstan/phpstan-phpunit": "^2.1.1",
+        "phpstan/phpstan-strict-rules": "^2.1.1",
+        "phpunit/phpunit": "^10.5.66",
+        "shipmonk/coding-standard": "^0.3.0",
+        "shipmonk/composer-dependency-analyser": "^1.8.4",
+        "shipmonk/coverage-guard": "^1.2.0",
+        "shipmonk/dead-code-detector": "^1.4.2",
+        "shipmonk/name-collision-detector": "^2.1.1",
+        "shipmonk/phpstan-rules": "^4.4.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "ShipMonk\\RRule\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ShipMonk\\RRuleTests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "check": [
+            "@check:composer",
+            "@check:ec",
+            "@check:cs",
+            "@check:types",
+            "@check:coverage",
+            "@check:dependencies",
+            "@check:collisions"
+        ],
+        "check:collisions": "detect-collisions src tests",
+        "check:composer": [
+            "composer normalize --dry-run --no-check-lock --no-update-lock",
+            "composer validate --strict"
+        ],
+        "check:coverage": [
+            "XDEBUG_MODE=coverage phpunit --testsuite default --coverage-clover cache/clover.xml",
+            "coverage-guard check cache/clover.xml"
+        ],
+        "check:cs": "phpcs",
+        "check:dependencies": "composer-dependency-analyser",
+        "check:differential": [
+            "Composer\\Config::disableProcessTimeout",
+            "docker/differential/run.sh"
+        ],
+        "check:ec": "ec src tests",
+        "check:mutations": [
+            "Composer\\Config::disableProcessTimeout",
+            "composer --working-dir=tools/infection install --no-interaction --no-progress",
+            "XDEBUG_MODE=coverage tools/infection/vendor/bin/infection --threads=max --no-interaction"
+        ],
+        "check:reference": "phpunit --testsuite reference",
+        "check:tests": "phpunit --testsuite default",
+        "check:types": "phpstan analyse -vv --ansi",
+        "fix:cs": "phpcbf",
+        "update:reference-snapshot": "php tests/Reference/update-snapshot.php"
+    }
+}

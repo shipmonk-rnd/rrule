@@ -1,0 +1,23 @@
+tests/Corpus/data/ical.js/cases.json contains test vectors derived from
+ical.js (https://github.com/kewisch/ical.js), commit
+7bc16367692451cea30b2751f4ed5532d709d402, file test/recur_iterator_test.js:
+https://github.com/kewisch/ical.js/blob/7bc16367692451cea30b2751f4ed5532d709d402/test/recur_iterator_test.js
+
+ical.js is subject to the Mozilla Public License, version 2.0 (MPL-2.0).
+cases.json is a derived file ("Covered Software" in MPL-2.0 terms). It stays
+under MPL-2.0. The other files of this project are a "Larger Work" (MPL-2.0
+section 3.3) and are not affected; they keep their own licence.
+
+tools/extract_icaljs.py converted the testRRULE() calls to JSON. It copied the
+rules, the start times and the expected instances, and changed only the time
+format (ISO 8601 extended to iCalendar basic format). It added the ids, the
+notes and the JSON structure.
+
+MPL-2.0 Exhibit A notice, which applies to cases.json:
+
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+The full licence text is in the LICENSE file of ical.js and at
+https://www.mozilla.org/en-US/MPL/2.0/.

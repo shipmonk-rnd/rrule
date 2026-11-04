@@ -1,0 +1,20 @@
+PyCalendar recurrence examples
+
+Source: ccs-pycalendar, https://github.com/apple/ccs-pycalendar
+Commit: a12dd4e1ce8822b022d4abf2cfe6cc93902ff03f
+File: src/pycalendar/icalendar/tests/rrule_examples.json
+Copyright (c) 2005-2017 Apple Inc. All rights reserved. (README)
+Copyright (c) 2007-2013 Cyrus Daboo. All rights reserved. (source headers)
+Licence: Apache License, Version 2.0. The full text is in LICENSE-Apache-2.0.txt
+in this directory (a copy of LICENSE.txt from the commit above). The
+repository has no NOTICE file.
+
+Statement of changes (Apache-2.0 section 4(b)): cases.json is a modified
+form of rrule_examples.json. The shipmonk/rrule authors made these changes in
+2026:
+- Each entry became one case with DTSTART and RRULE lines; "results" became
+  "expected", and the period end moved to "notes".
+- The cases are marked "truncated", because the rules have no end.
+- Entry 2 (start 20140140T120000, not a valid date) was removed.
+tools/extract_pycalendar.py makes the file. cases.json stays under
+Apache-2.0.

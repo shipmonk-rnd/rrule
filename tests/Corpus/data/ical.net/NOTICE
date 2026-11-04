@@ -1,0 +1,38 @@
+Ical.Net recurrence test cases
+
+Source: Ical.Net, https://github.com/ical-org/ical.net
+Commit: b7cd9063576825fd52b26839d1e16f7187d2e023
+File: Ical.Net.Tests/Calendars/Recurrence/RecurrenceTestCases.txt
+Licence: MIT (license.md of the commit above)
+
+cases.json and invalid.json contain the test cases of that file in the
+format of tests/Corpus. tools/extract_icalnet.py makes them. Changes: each
+block becomes one case; the comment becomes "description"; a DATE value of
+DTSTART gets ";VALUE=DATE"; "EXCEPTION:" becomes "expectedError"; the RRULE
+that Ical.Net rejects at parse time goes to invalid.json; the cases that
+test the Ical.Net year-9999 limit are not copied.
+
+The MIT License (MIT)
+
+Copyright © `Douglas Day`, `Rian Stockbower`, `ical-org Project`
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.

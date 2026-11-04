@@ -1,0 +1,1921 @@
+{
+  "source": "ical.js",
+  "sourceUrl": "https://github.com/kewisch/ical.js/blob/7bc16367692451cea30b2751f4ed5532d709d402/test/recur_iterator_test.js",
+  "license": "MPL-2.0",
+  "dtStartPolicy": "OnlyIfMatching",
+  "cases": [
+    {
+      "id": "ical.js-001",
+      "description": "Simple secondly",
+      "recurrence": "DTSTART:20150430T080000\nRRULE:FREQ=SECONDLY;INTERVAL=3;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20150430T080000",
+        "20150430T080003",
+        "20150430T080006"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-002",
+      "description": "Simple minutely",
+      "recurrence": "DTSTART:20150430T080000\nRRULE:FREQ=MINUTELY;INTERVAL=3;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20150430T080000",
+        "20150430T080300",
+        "20150430T080600"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-003",
+      "description": "simple hourly",
+      "recurrence": "DTSTART:20150430T080000\nRRULE:FREQ=HOURLY;INTERVAL=3;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20150430T080000",
+        "20150430T110000",
+        "20150430T140000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-004",
+      "description": "daily for 10 occurrences",
+      "recurrence": "DTSTART:20120901T090000\nRRULE:FREQ=DAILY;COUNT=10",
+      "startAt": null,
+      "expected": [
+        "20120901T090000",
+        "20120902T090000",
+        "20120903T090000",
+        "20120904T090000",
+        "20120905T090000",
+        "20120906T090000",
+        "20120907T090000",
+        "20120908T090000",
+        "20120909T090000",
+        "20120910T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-005",
+      "description": "every other day - forever",
+      "recurrence": "DTSTART:20120901T090000\nRRULE:FREQ=DAILY;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "20120901T090000",
+        "20120903T090000",
+        "20120905T090000",
+        "20120907T090000",
+        "20120909T090000",
+        "20120911T090000",
+        "20120913T090000",
+        "20120915T090000",
+        "20120917T090000",
+        "20120919T090000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-006",
+      "description": "every 10 days, 5 occurrences",
+      "recurrence": "DTSTART:20120901T090000\nRRULE:FREQ=DAILY;INTERVAL=10;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20120901T090000",
+        "20120911T090000",
+        "20120921T090000",
+        "20121001T090000",
+        "20121011T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-007",
+      "description": "daily on weekdays",
+      "recurrence": "DTSTART:20120102T090000\nRRULE:FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR",
+      "startAt": null,
+      "expected": [
+        "20120102T090000",
+        "20120103T090000",
+        "20120104T090000",
+        "20120105T090000",
+        "20120106T090000",
+        "20120109T090000",
+        "20120110T090000",
+        "20120111T090000",
+        "20120112T090000",
+        "20120113T090000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-008",
+      "description": "weekly until",
+      "recurrence": "DTSTART:20120410T090000\nRRULE:FREQ=WEEKLY;UNTIL=20120424T065959Z;BYDAY=TU",
+      "startAt": null,
+      "expected": [
+        "20120410T090000",
+        "20120417T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-009",
+      "description": "weekly for 10 occurrences",
+      "recurrence": "DTSTART:20120105T090000\nRRULE:FREQ=WEEKLY;COUNT=10",
+      "startAt": null,
+      "expected": [
+        "20120105T090000",
+        "20120112T090000",
+        "20120119T090000",
+        "20120126T090000",
+        "20120202T090000",
+        "20120209T090000",
+        "20120216T090000",
+        "20120223T090000",
+        "20120301T090000",
+        "20120308T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-010",
+      "description": "Weekly until December 24, 2012",
+      "recurrence": "DTSTART:20121115T000000\nRRULE:FREQ=WEEKLY;UNTIL=20121224T000000Z",
+      "startAt": null,
+      "expected": [
+        "20121115T000000",
+        "20121122T000000",
+        "20121129T000000",
+        "20121206T000000",
+        "20121213T000000",
+        "20121220T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-011",
+      "description": "every other week forever",
+      "recurrence": "DTSTART:20120115T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;WKST=SU",
+      "startAt": null,
+      "expected": [
+        "20120115T090000",
+        "20120129T090000",
+        "20120212T090000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-012",
+      "description": "weekly on tuesday and thursday for five weeks",
+      "recurrence": "DTSTART:20120101T090000\nRRULE:FREQ=WEEKLY;COUNT=4;WKST=SU;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "20120103T090000",
+        "20120105T090000",
+        "20120110T090000",
+        "20120112T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-013",
+      "description": "every other week on mo,we,fi until dec 24th 1997",
+      "recurrence": "DTSTART:19970901T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;UNTIL=19971224T090000Z;WKST=SU;BYDAY=MO,WE,FR",
+      "startAt": null,
+      "expected": [
+        "19970901T090000",
+        "19970903T090000",
+        "19970905T090000",
+        "19970915T090000",
+        "19970917T090000",
+        "19970919T090000",
+        "19970929T090000",
+        "19971001T090000",
+        "19971003T090000",
+        "19971013T090000",
+        "19971015T090000",
+        "19971017T090000",
+        "19971027T090000",
+        "19971029T090000",
+        "19971031T090000",
+        "19971110T090000",
+        "19971112T090000",
+        "19971114T090000",
+        "19971124T090000",
+        "19971126T090000",
+        "19971128T090000",
+        "19971208T090000",
+        "19971210T090000",
+        "19971212T090000",
+        "19971222T090000",
+        "19971224T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-014",
+      "description": "weekly WKST changes output' MO",
+      "recurrence": "DTSTART:19970805T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=MO",
+      "startAt": null,
+      "expected": [
+        "19970805T090000",
+        "19970810T090000",
+        "19970819T090000",
+        "19970824T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-015",
+      "description": "weekly WKST changes output' SU",
+      "recurrence": "DTSTART:19970805T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU",
+      "startAt": null,
+      "expected": [
+        "19970805T090000",
+        "19970817T090000",
+        "19970819T090000",
+        "19970831T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-016",
+      "description": "weekly on tuesday",
+      "recurrence": "DTSTART:20120911T090000\nRRULE:FREQ=WEEKLY;BYDAY=TU",
+      "startAt": null,
+      "expected": [
+        "20120911T090000",
+        "20120918T090000",
+        "20120925T090000",
+        "20121002T090000",
+        "20121009T090000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-017",
+      "description": "buisness days for 31 occurances",
+      "recurrence": "DTSTART:20120102T090000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR",
+      "startAt": null,
+      "expected": [
+        "20120102T090000",
+        "20120103T090000",
+        "20120104T090000",
+        "20120105T090000",
+        "20120106T090000",
+        "20120109T090000",
+        "20120110T090000",
+        "20120111T090000",
+        "20120112T090000",
+        "20120113T090000",
+        "20120116T090000",
+        "20120117T090000",
+        "20120118T090000",
+        "20120119T090000",
+        "20120120T090000",
+        "20120123T090000",
+        "20120124T090000",
+        "20120125T090000",
+        "20120126T090000",
+        "20120127T090000",
+        "20120130T090000",
+        "20120131T090000",
+        "20120201T090000",
+        "20120202T090000",
+        "20120203T090000",
+        "20120206T090000",
+        "20120207T090000",
+        "20120208T090000",
+        "20120209T090000",
+        "20120210T090000",
+        "20120213T090000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-018",
+      "description": "monthly on first friday for 10 occurrences",
+      "recurrence": "DTSTART:20120107T000000\nRRULE:FREQ=MONTHLY;COUNT=10;BYDAY=1FR",
+      "startAt": null,
+      "expected": [
+        "20120203T000000",
+        "20120302T000000",
+        "20120406T000000",
+        "20120504T000000",
+        "20120601T000000",
+        "20120706T000000",
+        "20120803T000000",
+        "20120907T000000",
+        "20121005T000000",
+        "20121102T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-019",
+      "description": "every thursday 31th forever",
+      "recurrence": "DTSTART:20120131T090000\nRRULE:FREQ=MONTHLY;BYDAY=TH;BYMONTHDAY=31",
+      "startAt": null,
+      "expected": [
+        "20120531T090000",
+        "20130131T090000",
+        "20131031T090000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-020",
+      "description": "every other month; first and last sunday for 4 occurrences",
+      "recurrence": "DTSTART:20121101T090000\nRRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=4;BYDAY=1SU,-1SU",
+      "startAt": null,
+      "expected": [
+        "20121104T090000",
+        "20121125T090000",
+        "20130106T090000",
+        "20130127T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-021",
+      "description": "monthly third to last day of month forever",
+      "recurrence": "DTSTART:20120101T090000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-3",
+      "startAt": null,
+      "expected": [
+        "20120129T090000",
+        "20120227T090000",
+        "20120329T090000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-022",
+      "description": "monthly, the third instance of tu,we,th",
+      "recurrence": "DTSTART:19970904T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYDAY=TU,WE,TH;BYSETPOS=3",
+      "startAt": null,
+      "expected": [
+        "19970904T090000",
+        "19971007T090000",
+        "19971106T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-023",
+      "description": "monthly, each month last day that is monday",
+      "recurrence": "DTSTART:20120101T090000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-1;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "20120430T090000",
+        "20121231T090000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-024",
+      "description": "every friday 13th forever",
+      "recurrence": "DTSTART:20120401T090000\nRRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13",
+      "startAt": null,
+      "expected": [
+        "20120413T090000",
+        "20120713T090000",
+        "20130913T090000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-025",
+      "description": "Every 11th & 31st every month",
+      "recurrence": "DTSTART:20130401T080000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=11,31",
+      "startAt": null,
+      "expected": [
+        "20130411T080000",
+        "20130511T080000",
+        "20130531T080000",
+        "20130611T080000",
+        "20130711T080000",
+        "20130731T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-026",
+      "description": "Every WE & SA the 6th, 20th & 31st every month",
+      "recurrence": "DTSTART:20130701T080000\nRRULE:FREQ=MONTHLY;BYDAY=WE,SA;BYMONTHDAY=6,20,31",
+      "startAt": null,
+      "expected": [
+        "20130706T080000",
+        "20130720T080000",
+        "20130731T080000",
+        "20130831T080000",
+        "20131106T080000",
+        "20131120T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-027",
+      "description": "monthly, on the 3rd, BYMONTHDAY not set",
+      "recurrence": "DTSTART:20130403T080000\nRRULE:FREQ=MONTHLY",
+      "startAt": null,
+      "expected": [
+        "20130403T080000",
+        "20130503T080000",
+        "20130603T080000",
+        "20130703T080000",
+        "20130803T080000",
+        "20130903T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-028",
+      "description": "monthly, on the 31st, BYMONTHDAY not set",
+      "recurrence": "DTSTART:20130131T080000\nRRULE:FREQ=MONTHLY",
+      "startAt": null,
+      "expected": [
+        "20130131T080000",
+        "20130331T080000",
+        "20130531T080000",
+        "20130731T080000",
+        "20130831T080000",
+        "20131031T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-029",
+      "description": "Repeat Monthly every Wednesday, Friday and the third Monday",
+      "recurrence": "DTSTART:20150102T080000\nRRULE:FREQ=MONTHLY;BYDAY=3MO,WE,FR",
+      "startAt": null,
+      "expected": [
+        "20150102T080000",
+        "20150107T080000",
+        "20150109T080000",
+        "20150114T080000",
+        "20150116T080000",
+        "20150119T080000",
+        "20150121T080000",
+        "20150123T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-030",
+      "description": "Repeat Monthly, the fifth Saturday (BYDAY=5SA)",
+      "recurrence": "DTSTART:20150204T080000\nRRULE:FREQ=MONTHLY;BYDAY=5SA",
+      "startAt": null,
+      "expected": [
+        "20150530T080000",
+        "20150829T080000",
+        "20151031T080000",
+        "20160130T080000",
+        "20160430T080000",
+        "20160730T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-031",
+      "description": "Repeat Monthly, the fifth Wednesday every two months (BYDAY=5WE)",
+      "recurrence": "DTSTART:20150101T080000\nRRULE:FREQ=MONTHLY;INTERVAL=2;BYDAY=5WE",
+      "startAt": null,
+      "expected": [
+        "20150729T080000",
+        "20150930T080000",
+        "20160330T080000",
+        "20161130T080000",
+        "20170329T080000",
+        "20170531T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-032",
+      "description": "Repeat Monthly, the 2nd Monday, 5th Wednesday and the 5th to last Saturday every month",
+      "recurrence": "DTSTART:20150401T080000\nRRULE:FREQ=MONTHLY;BYDAY=2MO,-5WE,5SA",
+      "startAt": null,
+      "expected": [
+        "20150401T080000",
+        "20150413T080000",
+        "20150511T080000",
+        "20150530T080000",
+        "20150608T080000",
+        "20150701T080000",
+        "20150713T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-033",
+      "description": "from rfc -> the last work day of the month",
+      "recurrence": "DTSTART:20150630T080000\nRRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
+      "startAt": null,
+      "expected": [
+        "20150630T080000",
+        "20150731T080000",
+        "20150831T080000",
+        "20150930T080000",
+        "20151030T080000",
+        "20151130T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-034",
+      "description": "BYMONTHDAY",
+      "recurrence": "DTSTART:20150101T080000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=1",
+      "startAt": null,
+      "expected": [
+        "20150101T080000",
+        "20150201T080000",
+        "20150301T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-035",
+      "description": "Last day and 31st day of the month. The last day could be the 31st, and this shouldn't throw an error.",
+      "recurrence": "DTSTART:20220101T080000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-1,31",
+      "startAt": null,
+      "expected": [
+        "20220131T080000",
+        "20220228T080000",
+        "20220331T080000",
+        "20220430T080000",
+        "20220531T080000",
+        "20220630T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-036",
+      "description": "31st day of the month, specified more than once. The repeated values should be collapsed to one.",
+      "recurrence": "DTSTART:20220101T080000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=31,31,31,31",
+      "startAt": null,
+      "expected": [
+        "20220131T080000",
+        "20220331T080000",
+        "20220531T080000",
+        "20220731T080000",
+        "20220831T080000",
+        "20221031T080000",
+        "20221231T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-037",
+      "description": "Weirdly ordered BYMONTHDAY. Occurrences should be in chronological order.",
+      "recurrence": "DTSTART:20220101T080000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=28,-4,11",
+      "startAt": null,
+      "expected": [
+        "20220111T080000",
+        "20220128T080000",
+        "20220211T080000",
+        "20220225T080000",
+        "20220228T080000",
+        "20220311T080000",
+        "20220328T080000",
+        "20220411T080000",
+        "20220427T080000",
+        "20220428T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-038",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=-4,28,11",
+      "recurrence": "DTSTART:20220101T080000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-4,28,11",
+      "startAt": null,
+      "expected": [
+        "20220111T080000",
+        "20220128T080000",
+        "20220211T080000",
+        "20220225T080000",
+        "20220228T080000",
+        "20220311T080000",
+        "20220328T080000",
+        "20220411T080000",
+        "20220427T080000",
+        "20220428T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-039",
+      "description": "Multiple BYMONTHDAYs, checks that we start on the right one.",
+      "recurrence": "DTSTART:20240403T010000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=6,12,18,24",
+      "startAt": null,
+      "expected": [
+        "20240406T010000",
+        "20240412T010000",
+        "20240418T010000",
+        "20240424T010000",
+        "20240506T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-040",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=6,12,18,24",
+      "recurrence": "DTSTART:20240409T010000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=6,12,18,24",
+      "startAt": null,
+      "expected": [
+        "20240412T010000",
+        "20240418T010000",
+        "20240424T010000",
+        "20240506T010000",
+        "20240512T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-041",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=6,12,18,24",
+      "recurrence": "DTSTART:20240415T010000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=6,12,18,24",
+      "startAt": null,
+      "expected": [
+        "20240418T010000",
+        "20240424T010000",
+        "20240506T010000",
+        "20240512T010000",
+        "20240518T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-042",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=6,12,18,24",
+      "recurrence": "DTSTART:20240421T010000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=6,12,18,24",
+      "startAt": null,
+      "expected": [
+        "20240424T010000",
+        "20240506T010000",
+        "20240512T010000",
+        "20240518T010000",
+        "20240524T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-043",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=6,12,18,24",
+      "recurrence": "DTSTART:20240427T010000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=6,12,18,24",
+      "startAt": null,
+      "expected": [
+        "20240506T010000",
+        "20240512T010000",
+        "20240518T010000",
+        "20240524T010000",
+        "20240606T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-044",
+      "description": "Last day of the month, monthly.",
+      "recurrence": "DTSTART:20150101T080000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-1",
+      "startAt": null,
+      "expected": [
+        "20150131T080000",
+        "20150228T080000",
+        "20150331T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-045",
+      "description": "Last day of the month, every 3 months.",
+      "recurrence": "DTSTART:20220601T080000\nRRULE:FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=-1",
+      "startAt": null,
+      "expected": [
+        "20220630T080000",
+        "20220930T080000",
+        "20221231T080000",
+        "20230331T080000",
+        "20230630T080000",
+        "20230930T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-046",
+      "description": "Second-to-last day of the month, every 3 months.",
+      "recurrence": "DTSTART:20220601T080000\nRRULE:FREQ=MONTHLY;INTERVAL=3;BYMONTHDAY=-2",
+      "startAt": null,
+      "expected": [
+        "20220629T080000",
+        "20220929T080000",
+        "20221230T080000",
+        "20230330T080000",
+        "20230629T080000",
+        "20230929T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-047",
+      "description": "31st day of the month, every two months. Starting on a month that has 31 days.",
+      "recurrence": "DTSTART:20220701T080000\nRRULE:FREQ=MONTHLY;INTERVAL=2;BYMONTHDAY=31",
+      "startAt": null,
+      "expected": [
+        "20220731T080000",
+        "20230131T080000",
+        "20230331T080000",
+        "20230531T080000",
+        "20230731T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-048",
+      "description": "31st day of the month, every two months. Starting on a month that has 30 days.",
+      "recurrence": "DTSTART:20220601T080000\nRRULE:FREQ=MONTHLY;INTERVAL=2;BYMONTHDAY=31",
+      "startAt": null,
+      "expected": [
+        "20220831T080000",
+        "20221031T080000",
+        "20221231T080000",
+        "20230831T080000",
+        "20231031T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-049",
+      "description": "31st day of the month, every two months. Starting with three invalid months.",
+      "recurrence": "DTSTART:20220201T080000\nRRULE:FREQ=MONTHLY;INTERVAL=2;BYMONTHDAY=31",
+      "startAt": null,
+      "expected": [
+        "20220831T080000",
+        "20221031T080000",
+        "20221231T080000",
+        "20230831T080000",
+        "20231031T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-050",
+      "description": "Invalid rule. There's never a 31st of Feburary, check that this fails.",
+      "recurrence": "DTSTART:20220201T080000\nRRULE:FREQ=MONTHLY;INTERVAL=12;BYMONTHDAY=31",
+      "startAt": null,
+      "expected": [],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "ical.js returns no instance for this rule. The rule is unbounded, so an engine needs a search limit to end."
+      }
+    },
+    {
+      "id": "ical.js-051",
+      "description": "monthly + by month",
+      "recurrence": "DTSTART:20150101T080000\nRRULE:FREQ=MONTHLY;BYMONTH=1,3,6,9,12",
+      "startAt": null,
+      "expected": [
+        "20150101T080000",
+        "20150301T080000",
+        "20150601T080000",
+        "20150901T080000",
+        "20151201T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-052",
+      "description": "FREQ=MONTHLY;BYDAY=MO,FR;BYMONTHDAY=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31;COUNT=4",
+      "recurrence": "DTSTART:20150301T080000Z\nRRULE:FREQ=MONTHLY;BYDAY=MO,FR;BYMONTHDAY=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20150309T080000Z",
+        "20150313T080000Z",
+        "20150323T080000Z",
+        "20150327T080000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-053",
+      "description": "FREQ=MONTHLY;BYDAY=MO,FR;BYMONTHDAY=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31;COUNT=4",
+      "recurrence": "DTSTART:20150401T080000Z\nRRULE:FREQ=MONTHLY;BYDAY=MO,FR;BYMONTHDAY=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20150403T080000Z",
+        "20150413T080000Z",
+        "20150417T080000Z",
+        "20150427T080000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-054",
+      "description": "FREQ=MONTHLY;BYDAY=MO,SA;BYMONTHDAY=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31;COUNT=4",
+      "recurrence": "DTSTART:20150401T080000Z\nRRULE:FREQ=MONTHLY;BYDAY=MO,SA;BYMONTHDAY=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20150411T080000Z",
+        "20150413T080000Z",
+        "20150425T080000Z",
+        "20150427T080000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-055",
+      "description": "FREQ=MONTHLY;BYDAY=SU,FR;BYMONTHDAY=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31;COUNT=9",
+      "recurrence": "DTSTART:20150228T080000Z\nRRULE:FREQ=MONTHLY;BYDAY=SU,FR;BYMONTHDAY=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31;COUNT=9",
+      "startAt": null,
+      "expected": [
+        "20150301T080000Z",
+        "20150313T080000Z",
+        "20150315T080000Z",
+        "20150327T080000Z",
+        "20150329T080000Z",
+        "20150403T080000Z",
+        "20150405T080000Z",
+        "20150417T080000Z",
+        "20150419T080000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-056",
+      "description": "yearly & by month with one by day",
+      "recurrence": "DTSTART:19700308T020000\nRRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=TU",
+      "startAt": null,
+      "expected": [
+        "19700310T020000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-057",
+      "description": "every monday in January, for 3 years",
+      "recurrence": "DTSTART:20120501T090000\nRRULE:FREQ=YEARLY;UNTIL=20150131T090000Z;BYMONTH=1;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "20130107T090000",
+        "20130114T090000",
+        "20130121T090000",
+        "20130128T090000",
+        "20140106T090000",
+        "20140113T090000",
+        "20140120T090000",
+        "20140127T090000",
+        "20150105T090000",
+        "20150112T090000",
+        "20150119T090000",
+        "20150126T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-058",
+      "description": "Every year the last day of February (rule with BYMONTH)",
+      "recurrence": "DTSTART:20140228T080000\nRRULE:FREQ=YEARLY;BYMONTHDAY=-1;BYMONTH=2",
+      "startAt": null,
+      "expected": [
+        "20140228T080000",
+        "20150228T080000",
+        "20160229T080000",
+        "20170228T080000",
+        "20180228T080000",
+        "20190228T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-059",
+      "description": "Every year the last day of April (rule without BYMONTH)",
+      "recurrence": "DTSTART:20140430T080000\nRRULE:FREQ=YEARLY;BYMONTHDAY=-1",
+      "startAt": null,
+      "expected": [
+        "20140430T080000",
+        "20150430T080000",
+        "20160430T080000",
+        "20170430T080000",
+        "20180430T080000",
+        "20190430T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "YEARLY with BYMONTHDAY and no BYMONTH: ical.js keeps the month of DTSTART, as libical and Ical.Net do. dateutil expands BYMONTHDAY over every month. RFC 5545 does not settle this."
+      }
+    },
+    {
+      "id": "ical.js-060",
+      "description": "Yearly, every WE and FR of January and March (more BYMONTH and more BYDAY)",
+      "recurrence": "DTSTART:20140101T080000\nRRULE:FREQ=YEARLY;BYMONTH=1,3;BYDAY=WE,FR",
+      "startAt": null,
+      "expected": [
+        "20140101T080000",
+        "20140103T080000",
+        "20140108T080000",
+        "20140110T080000",
+        "20140115T080000",
+        "20140117T080000",
+        "20140122T080000",
+        "20140124T080000",
+        "20140129T080000",
+        "20140131T080000",
+        "20140305T080000",
+        "20140307T080000",
+        "20140312T080000",
+        "20140314T080000",
+        "20140319T080000",
+        "20140321T080000",
+        "20140326T080000",
+        "20140328T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-061",
+      "description": "Yearly, every day of January (one BYMONTH and more BYDAY",
+      "recurrence": "DTSTART:20140101T080000\nRRULE:FREQ=YEARLY;BYMONTH=1;BYDAY=SU,MO,TU,WE,TH,FR,SA",
+      "startAt": null,
+      "expected": [
+        "20140101T080000",
+        "20140102T080000",
+        "20140103T080000",
+        "20140104T080000",
+        "20140105T080000",
+        "20140106T080000",
+        "20140107T080000",
+        "20140108T080000",
+        "20140109T080000",
+        "20140110T080000",
+        "20140111T080000",
+        "20140112T080000",
+        "20140113T080000",
+        "20140114T080000",
+        "20140115T080000",
+        "20140116T080000",
+        "20140117T080000",
+        "20140118T080000",
+        "20140119T080000",
+        "20140120T080000",
+        "20140121T080000",
+        "20140122T080000",
+        "20140123T080000",
+        "20140124T080000",
+        "20140125T080000",
+        "20140126T080000",
+        "20140127T080000",
+        "20140128T080000",
+        "20140129T080000",
+        "20140130T080000",
+        "20140131T080000",
+        "20150101T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-062",
+      "description": "Weekly Sunday, Monday, Tuesday with count=3",
+      "recurrence": "DTSTART;VALUE=DATE:20170730\nRRULE:FREQ=WEEKLY;COUNT=3;BYDAY=MO,SU,TU",
+      "startAt": null,
+      "expected": [
+        "20170730",
+        "20170731",
+        "20170801"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-063",
+      "description": "Weekly Sunday, Wednesday with count=5",
+      "recurrence": "DTSTART;VALUE=DATE:20170423\nRRULE:FREQ=WEEKLY;COUNT=5;BYDAY=SU,WE",
+      "startAt": null,
+      "expected": [
+        "20170423",
+        "20170426",
+        "20170430",
+        "20170503",
+        "20170507"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-064",
+      "description": "yearly, byDay,byMonthday",
+      "recurrence": "DTSTART:20150101T080000\nRRULE:FREQ=YEARLY;BYDAY=+1MO;BYMONTHDAY=7",
+      "startAt": null,
+      "expected": [
+        "20190107T080000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-065",
+      "description": "Invalid recurrence rule. The first Monday can never fall later than the 7th.",
+      "recurrence": "DTSTART:20150101T080000\nRRULE:FREQ=YEARLY;BYMONTHDAY=15,16,17,18,19,20,21;BYDAY=1MO",
+      "startAt": null,
+      "expected": [],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "ical.js returns no instance for this rule. The rule is unbounded, so an engine needs a search limit to end."
+      }
+    },
+    {
+      "id": "ical.js-066",
+      "description": "1st day of the year.",
+      "recurrence": "DTSTART:20250101T000000\nRRULE:FREQ=YEARLY;BYYEARDAY=1",
+      "startAt": null,
+      "expected": [
+        "20250101T000000",
+        "20260101T000000",
+        "20270101T000000",
+        "20280101T000000",
+        "20290101T000000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-067",
+      "description": "365th day of the year.",
+      "recurrence": "DTSTART:20250101T000000\nRRULE:FREQ=YEARLY;BYYEARDAY=365",
+      "startAt": null,
+      "expected": [
+        "20251231T000000",
+        "20261231T000000",
+        "20271231T000000",
+        "20281230T000000",
+        "20291231T000000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-068",
+      "description": "366th day of the year. Only in leap years.",
+      "recurrence": "DTSTART:20250101T000000\nRRULE:FREQ=YEARLY;BYYEARDAY=366",
+      "startAt": null,
+      "expected": [
+        "20281231T000000",
+        "20321231T000000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-069",
+      "description": "Last day of the year.",
+      "recurrence": "DTSTART:20250101T000000\nRRULE:FREQ=YEARLY;BYYEARDAY=-1",
+      "startAt": null,
+      "expected": [
+        "20251231T000000",
+        "20261231T000000",
+        "20271231T000000",
+        "20281231T000000",
+        "20291231T000000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-070",
+      "description": "365th-to-last day of the year.",
+      "recurrence": "DTSTART:20250101T000000\nRRULE:FREQ=YEARLY;BYYEARDAY=-365",
+      "startAt": null,
+      "expected": [
+        "20250101T000000",
+        "20260101T000000",
+        "20270101T000000",
+        "20280102T000000",
+        "20290101T000000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-071",
+      "description": "366th-to-last day of the year. Only in leap years.",
+      "recurrence": "DTSTART:20250101T000000\nRRULE:FREQ=YEARLY;BYYEARDAY=-366",
+      "startAt": null,
+      "expected": [
+        "20280101T000000",
+        "20320101T000000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-072",
+      "description": "Tycho brahe days - yearly, byYearDay with negative offsets",
+      "recurrence": "DTSTART;VALUE=DATE:20150101\nRRULE:FREQ=YEARLY;BYYEARDAY=1,2,4,6,11,12,20,42,48,49,-306,-303,-293,-292,-266,-259,-258,-239,-228,-209,-168,-164,-134,-133,-113,-105,-87,-56,-44,-26,-21,-14",
+      "startAt": null,
+      "expected": [
+        "20150101",
+        "20150102",
+        "20150104",
+        "20150106",
+        "20150111",
+        "20150112",
+        "20150120",
+        "20150211",
+        "20150217",
+        "20150218",
+        "20150301",
+        "20150304",
+        "20150314",
+        "20150315",
+        "20150410",
+        "20150417",
+        "20150418",
+        "20150507",
+        "20150518",
+        "20150606",
+        "20150717",
+        "20150721",
+        "20150820",
+        "20150821",
+        "20150910",
+        "20150918",
+        "20151006",
+        "20151106",
+        "20151118",
+        "20151206",
+        "20151211",
+        "20151218"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-073",
+      "description": "Leap year - yearly, byYearDay with negative offsets",
+      "recurrence": "DTSTART;VALUE=DATE:20120101\nRRULE:FREQ=YEARLY;BYYEARDAY=-308,-307,-306",
+      "startAt": null,
+      "expected": [
+        "20120228",
+        "20120229",
+        "20120301"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-074",
+      "description": "Non-leap year - yearly, byYearDay with negative offsets",
+      "recurrence": "DTSTART;VALUE=DATE:20130101\nRRULE:FREQ=YEARLY;BYYEARDAY=-307,-306,-305",
+      "startAt": null,
+      "expected": [
+        "20130228",
+        "20130301",
+        "20130302"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-075",
+      "description": "BYYEARDAY with positive and negative rules. Occurrences should be in chronological order.",
+      "recurrence": "DTSTART;VALUE=DATE:20240101\nRRULE:FREQ=YEARLY;BYYEARDAY=359,-7",
+      "startAt": null,
+      "expected": [
+        "20241224",
+        "20241225",
+        "20251225",
+        "20261225",
+        "20271225",
+        "20281224",
+        "20281225"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-076",
+      "description": "BYYEARDAY with negative and positive rules. Occurrences should be in chronological order.",
+      "recurrence": "DTSTART;VALUE=DATE:20240101\nRRULE:FREQ=YEARLY;BYYEARDAY=-7,359",
+      "startAt": null,
+      "expected": [
+        "20241224",
+        "20241225",
+        "20251225",
+        "20261225",
+        "20271225",
+        "20281224",
+        "20281225"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-077",
+      "description": "FREQ=DAILY;INTERVAL=2;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20130101\nRRULE:FREQ=DAILY;INTERVAL=2;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20130101",
+        "20130103",
+        "20130105"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-078",
+      "description": "FREQ=DAILY;INTERVAL=321;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20130101\nRRULE:FREQ=DAILY;INTERVAL=321;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20130101",
+        "20131118",
+        "20141005"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-079",
+      "description": "FREQ=DAILY;INTERVAL=366",
+      "recurrence": "DTSTART;VALUE=DATE:20130101\nRRULE:FREQ=DAILY;INTERVAL=366",
+      "startAt": null,
+      "expected": [
+        "20130101",
+        "20140102",
+        "20150103",
+        "20160104"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-080",
+      "description": "FREQ=DAILY;INTERVAL=366;UNTIL=20160104",
+      "recurrence": "DTSTART;VALUE=DATE:20130101\nRRULE:FREQ=DAILY;INTERVAL=366;UNTIL=20160104",
+      "startAt": null,
+      "expected": [
+        "20130101",
+        "20140102",
+        "20150103",
+        "20160104"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-081",
+      "description": "FREQ=DAILY;INTERVAL=1;UNTIL=20160101",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=DAILY;INTERVAL=1;UNTIL=20160101",
+      "startAt": null,
+      "expected": [
+        "20160101"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-082",
+      "description": "FREQ=DAILY;INTERVAL=1;UNTIL=20160102",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=DAILY;INTERVAL=1;UNTIL=20160102",
+      "startAt": null,
+      "expected": [
+        "20160101",
+        "20160102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-083",
+      "description": "FREQ=WEEKLY;INTERVAL=2;BYDAY=SU;UNTIL=20160301",
+      "recurrence": "DTSTART;VALUE=DATE:20160103\nRRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=SU;UNTIL=20160301",
+      "startAt": null,
+      "expected": [
+        "20160103",
+        "20160117",
+        "20160131",
+        "20160214",
+        "20160228"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-084",
+      "description": "FREQ=WEEKLY;INTERVAL=2;BYDAY=SU;UNTIL=20160103",
+      "recurrence": "DTSTART;VALUE=DATE:20160103\nRRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=SU;UNTIL=20160103",
+      "startAt": null,
+      "expected": [
+        "20160103"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-085",
+      "description": "FREQ=WEEKLY;INTERVAL=2;BYDAY=FR;COUNT=2",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=FR;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20160101",
+        "20160115"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-086",
+      "description": "FREQ=WEEKLY;INTERVAL=1;BYDAY=SU,MO,TU,WE,TH,FR,SA;UNTIL=20160107",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=SU,MO,TU,WE,TH,FR,SA;UNTIL=20160107",
+      "startAt": null,
+      "expected": [
+        "20160101",
+        "20160102",
+        "20160103",
+        "20160104",
+        "20160105",
+        "20160106",
+        "20160107"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-087",
+      "description": "FREQ=WEEKLY;INTERVAL=2;BYDAY=FR,SA;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=FR,SA;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20160101",
+        "20160102",
+        "20160115"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-088",
+      "description": "FREQ=WEEKLY;INTERVAL=53;BYDAY=FR,SA;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=WEEKLY;INTERVAL=53;BYDAY=FR,SA;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20160101",
+        "20160102",
+        "20170106"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-089",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=1,2,3;INTERVAL=1;COUNT=7",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYMONTHDAY=1,2,3;INTERVAL=1;COUNT=7",
+      "startAt": null,
+      "expected": [
+        "20160101",
+        "20160102",
+        "20160103",
+        "20160201",
+        "20160202",
+        "20160203",
+        "20160301"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-090",
+      "description": "FREQ=MONTHLY;INTERVAL=1;BYDAY=SU;BYSETPOS=3;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20170715\nRRULE:FREQ=MONTHLY;INTERVAL=1;BYDAY=SU;BYSETPOS=3;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20170716",
+        "20170820",
+        "20170917"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-091",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=1,3;INTERVAL=2;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYMONTHDAY=1,3;INTERVAL=2;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20160101",
+        "20160103",
+        "20160301"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-092",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=3,4;INTERVAL=2;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYMONTHDAY=3,4;INTERVAL=2;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20160103",
+        "20160104",
+        "20160303"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-093",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=3,4;INTERVAL=2;UNTIL=20160303",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYMONTHDAY=3,4;INTERVAL=2;UNTIL=20160303",
+      "startAt": null,
+      "expected": [
+        "20160103",
+        "20160104",
+        "20160303"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-094",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=31;INTERVAL=1;UNTIL=20161231",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYMONTHDAY=31;INTERVAL=1;UNTIL=20161231",
+      "startAt": null,
+      "expected": [
+        "20160131",
+        "20160331",
+        "20160531",
+        "20160731",
+        "20160831",
+        "20161031",
+        "20161231"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-095",
+      "description": "FREQ=MONTHLY;BYMONTHDAY=29;INTERVAL=1;UNTIL=20160630",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYMONTHDAY=29;INTERVAL=1;UNTIL=20160630",
+      "startAt": null,
+      "expected": [
+        "20160129",
+        "20160229",
+        "20160329",
+        "20160429",
+        "20160529",
+        "20160629"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-096",
+      "description": "FREQ=MONTHLY;BYSETPOS=-1;BYDAY=SU,MO,TU,WE,TH,FR,SA;INTERVAL=1;COUNT=4",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYSETPOS=-1;BYDAY=SU,MO,TU,WE,TH,FR,SA;INTERVAL=1;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20160101",
+        "20160131",
+        "20160229",
+        "20160331"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "ical.js returns this DTSTART although it does not match the rule, and counts it in COUNT."
+      },
+      "dtStartPolicy": "Always"
+    },
+    {
+      "id": "ical.js-097",
+      "description": "FREQ=MONTHLY;BYSETPOS=2;BYDAY=SU,MO,TU,WE,TH,FR,SA;INTERVAL=1;COUNT=4",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYSETPOS=2;BYDAY=SU,MO,TU,WE,TH,FR,SA;INTERVAL=1;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20160101",
+        "20160102",
+        "20160202",
+        "20160302"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "ical.js returns this DTSTART although it does not match the rule, and counts it in COUNT."
+      },
+      "dtStartPolicy": "Always"
+    },
+    {
+      "id": "ical.js-098",
+      "description": "FREQ=MONTHLY;BYSETPOS=1;BYDAY=SU;INTERVAL=1;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYSETPOS=1;BYDAY=SU;INTERVAL=1;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20160103",
+        "20160207",
+        "20160306"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-099",
+      "description": "FREQ=MONTHLY;BYSETPOS=1;BYDAY=SU;INTERVAL=1;UNTIL=20160306",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=MONTHLY;BYSETPOS=1;BYDAY=SU;INTERVAL=1;UNTIL=20160306",
+      "startAt": null,
+      "expected": [
+        "20160103",
+        "20160207",
+        "20160306"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-100",
+      "description": "Invalid recurrence rule. There can't be a second first Thursday.",
+      "recurrence": "DTSTART:20150111T080000\nRRULE:FREQ=MONTHLY;BYDAY=1TH;BYSETPOS=2",
+      "startAt": null,
+      "expected": [],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "ical.js returns no instance for this rule. The rule is unbounded, so an engine needs a search limit to end."
+      }
+    },
+    {
+      "id": "ical.js-101",
+      "description": "Invalid recurrence rule. There can't be a 24th weekday in a month.",
+      "recurrence": "DTSTART:20250718T000000\nRRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=24",
+      "startAt": null,
+      "expected": [],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "info": "ical.js returns no instance for this rule. The rule is unbounded, so an engine needs a search limit to end."
+      }
+    },
+    {
+      "id": "ical.js-102",
+      "description": "FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=21;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=21;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20160221",
+        "20170221",
+        "20180221"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-103",
+      "description": "FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=21;UNTIL=20180220",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=21;UNTIL=20180220",
+      "startAt": null,
+      "expected": [
+        "20160221",
+        "20170221"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-104",
+      "description": "FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=21;UNTIL=20180221",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=21;UNTIL=20180221",
+      "startAt": null,
+      "expected": [
+        "20160221",
+        "20170221",
+        "20180221"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-105",
+      "description": "FREQ=YEARLY;BYDAY=SU;BYSETPOS=1;BYMONTH=1;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=YEARLY;BYDAY=SU;BYSETPOS=1;BYMONTH=1;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20160103",
+        "20170101",
+        "20180107"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-106",
+      "description": "FREQ=YEARLY;BYDAY=SA;BYSETPOS=-1;BYMONTH=3;COUNT=3",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=YEARLY;BYDAY=SA;BYSETPOS=-1;BYMONTH=3;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20160326",
+        "20170325",
+        "20180331"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-107",
+      "description": "FREQ=YEARLY;BYDAY=SA;BYSETPOS=-1;BYMONTH=3;COUNT=3;INTERVAL=2",
+      "recurrence": "DTSTART;VALUE=DATE:20160101\nRRULE:FREQ=YEARLY;BYDAY=SA;BYSETPOS=-1;BYMONTH=3;COUNT=3;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "20160326",
+        "20180331",
+        "20200328"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-108",
+      "description": "FREQ=YEARLY;BYDAY=SU;BYSETPOS=-1;BYMONTH=3;COUNT=3;INTERVAL=2",
+      "recurrence": "DTSTART;VALUE=DATE:20160327\nRRULE:FREQ=YEARLY;BYDAY=SU;BYSETPOS=-1;BYMONTH=3;COUNT=3;INTERVAL=2",
+      "startAt": null,
+      "expected": [
+        "20160327",
+        "20180325",
+        "20200329"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-109",
+      "description": "FREQ=YEARLY;BYDAY=SU;BYSETPOS=-1;BYMONTH=3;INTERVAL=2;UNTIL=20200329",
+      "recurrence": "DTSTART;VALUE=DATE:20160327\nRRULE:FREQ=YEARLY;BYDAY=SU;BYSETPOS=-1;BYMONTH=3;INTERVAL=2;UNTIL=20200329",
+      "startAt": null,
+      "expected": [
+        "20160327",
+        "20180325",
+        "20200329"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "ical.js-110",
+      "description": "Multiple BYYEARDAYs, checks that we start on the right one.",
+      "recurrence": "DTSTART:20240206T010000\nRRULE:FREQ=YEARLY;BYYEARDAY=73,146,219,292",
+      "startAt": null,
+      "expected": [
+        "20240313T010000",
+        "20240525T010000",
+        "20240806T010000",
+        "20241018T010000",
+        "20250314T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-111",
+      "description": "FREQ=YEARLY;BYYEARDAY=73,146,219,292",
+      "recurrence": "DTSTART:20240419T010000\nRRULE:FREQ=YEARLY;BYYEARDAY=73,146,219,292",
+      "startAt": null,
+      "expected": [
+        "20240525T010000",
+        "20240806T010000",
+        "20241018T010000",
+        "20250314T010000",
+        "20250526T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-112",
+      "description": "FREQ=YEARLY;BYYEARDAY=73,146,219,292",
+      "recurrence": "DTSTART:20240701T010000\nRRULE:FREQ=YEARLY;BYYEARDAY=73,146,219,292",
+      "startAt": null,
+      "expected": [
+        "20240806T010000",
+        "20241018T010000",
+        "20250314T010000",
+        "20250526T010000",
+        "20250807T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-113",
+      "description": "FREQ=YEARLY;BYYEARDAY=73,146,219,292",
+      "recurrence": "DTSTART:20240912T010000\nRRULE:FREQ=YEARLY;BYYEARDAY=73,146,219,292",
+      "startAt": null,
+      "expected": [
+        "20241018T010000",
+        "20250314T010000",
+        "20250526T010000",
+        "20250807T010000",
+        "20251019T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-114",
+      "description": "FREQ=YEARLY;BYYEARDAY=73,146,219,292",
+      "recurrence": "DTSTART:20241124T010000\nRRULE:FREQ=YEARLY;BYYEARDAY=73,146,219,292",
+      "startAt": null,
+      "expected": [
+        "20250314T010000",
+        "20250526T010000",
+        "20250807T010000",
+        "20251019T010000",
+        "20260314T010000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    },
+    {
+      "id": "ical.js-115",
+      "description": "FREQ=YEARLY;BYYEARDAY=-275,-276,-277,-278,-279,-280,-281;BYDAY=MO",
+      "recurrence": "DTSTART:20140331T030000\nRRULE:FREQ=YEARLY;BYYEARDAY=-275,-276,-277,-278,-279,-280,-281;BYDAY=MO",
+      "startAt": null,
+      "expected": [
+        "20140331T030000",
+        "20150330T030000",
+        "20160328T030000"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    }
+  ]
+}

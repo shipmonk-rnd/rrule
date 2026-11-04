@@ -1,0 +1,475 @@
+{
+  "source": "php-rrule",
+  "sourceUrl": "https://github.com/rlanvin/php-rrule/blob/93a083db12dcb6f58e4840392a22e158ce96f1ff/tests/RRuleTest.php",
+  "license": "MIT",
+  "cases": [
+    {
+      "id": "php-rrule-invalid-001",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-002",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FOOBAR=DAILY",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-003",
+      "description": "invalid string freq",
+      "rule": "FREQ=foobar",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-004",
+      "description": "Invalid integer frequency",
+      "rule": "FREQ=42",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-005",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;INTERVAL=-1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-006",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;INTERVAL=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-007",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;UNTIL=foobar",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-008",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;COUNT=-1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-009",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;COUNT=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-010",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;UNTIL=20150701;COUNT=1",
+      "expectedError": "InvalidArgumentException",
+      "notes": {
+        "info": "php-rrule takes UNTIL as a PHP date string; the source value is 2015-07-01."
+      }
+    },
+    {
+      "id": "php-rrule-invalid-011",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=YEARLY;BYDAY=1MO,X",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-012",
+      "description": "The BYDAY rule part MUST NOT be specified with a numeric value when the FREQ rule part is not set to MONTHLY or YEARLY.",
+      "rule": "FREQ=DAILY;BYDAY=1MO",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-013",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;BYDAY=1.5MO",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-014",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=WEEKLY;BYDAY=1MO",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-015",
+      "description": "The BYDAY rule part MUST NOT be specified with a numeric value with the FREQ rule part set to YEARLY when the BYWEEKNO rule part is specified.",
+      "rule": "FREQ=YEARLY;BYDAY=1MO;BYWEEKNO=20",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-016",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;BYMONTHDAY=0",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-017",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;BYMONTHDAY=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-018",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;BYMONTHDAY=32",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-019",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;BYMONTHDAY=-32",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-020",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;BYMONTHDAY=1,A",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-021",
+      "description": "The BYMONTHDAY rule part MUST NOT be specified when the FREQ rule part is set to WEEKLY.",
+      "rule": "FREQ=WEEKLY;BYMONTHDAY=1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-022",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=YEARLY;BYYEARDAY=0",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-023",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=YEARLY;BYYEARDAY=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-024",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=YEARLY;BYYEARDAY=367",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-025",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=YEARLY;BYYEARDAY=1,A",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-026",
+      "description": "The BYYEARDAY rule part MUST NOT be specified when the FREQ rule part is set to DAILY, WEEKLY, or MONTHLY.",
+      "rule": "FREQ=DAILY;BYYEARDAY=1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-027",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=WEEKLY;BYYEARDAY=1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-028",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYYEARDAY=1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-029",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYMONTH=0",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-030",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYMONTH=-1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-031",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYMONTH=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-032",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYMONTH=13",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-033",
+      "description": "BYSETPOS rule part MUST only be used in conjunction with another BYxxx rule part.",
+      "rule": "FREQ=DAILY;BYSETPOS=1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-034",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;BYDAY=MO;BYSETPOS=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-035",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=DAILY;BYDAY=MO;BYSETPOS=1,A",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-036",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=YEARLY;BYWEEKNO=0",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-037",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=YEARLY;BYWEEKNO=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-038",
+      "description": "BYWEEKNO with FREQ not yearly",
+      "rule": "FREQ=DAILY;BYWEEKNO=1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-039",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYHOUR=-1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-040",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYHOUR=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-041",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYHOUR=25",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-042",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYMINUTE=-1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-043",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYMINUTE=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-044",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYMINUTE=60",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-045",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYSECOND=-1",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-046",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYSECOND=1.5",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-047",
+      "description": "Invalid option array (invalidRules)",
+      "rule": "FREQ=MONTHLY;BYSECOND=61",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-048",
+      "description": "Invalid WKST",
+      "rule": "FREQ=DAILY;WKST=XX",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-049",
+      "description": "plain invalid strings",
+      "rule": "foobar",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-050",
+      "description": "plain invalid strings",
+      "rule": "blah=blah=blah",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-051",
+      "description": "test invalid date formats",
+      "recurrence": "DTSTART:2006-06-24\nRRULE:FREQ=DAILY",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-052",
+      "description": "test invalid date formats",
+      "recurrence": "DTSTART:2006-06-24 12:00:00\nRRULE:FREQ=DAILY",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-053",
+      "description": "test invalid date formats",
+      "recurrence": "DTSTART:20060624\nRRULE:FREQ=DAILY;UNTIL=2006-06-24",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-054",
+      "description": "multiple dtstart",
+      "recurrence": "DTSTART:20060624\nRRULE:DTSTART=20060630;FREQ=DAILY;UNTIL=20060624",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-055",
+      "description": "test combinations of DTSTART and UNTIL which are invalid",
+      "recurrence": "DTSTART;TZID=Australia/Sydney:20160624\nRRULE:FREQ=DAILY;INTERVAL=1;UNTIL=20160628",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-056",
+      "description": "test combinations of DTSTART and UNTIL which are invalid",
+      "recurrence": "DTSTART;TZID=America/New_York:19970512T090000Z\nRRULE:FREQ=YEARLY",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-057",
+      "description": "test combinations of DTSTART and UNTIL which are invalid",
+      "recurrence": "DTSTART;TZID=America/New_York:19970512T090000\nRRULE:FREQ=YEARLY;UNTIL=19970512",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-058",
+      "description": "test combinations of DTSTART and UNTIL which are invalid",
+      "recurrence": "DTSTART;TZID=America/New_York:19970512T090000\nRRULE:FREQ=YEARLY;UNTIL=19970512T090000",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-059",
+      "description": "test combinations of DTSTART and UNTIL which are invalid",
+      "recurrence": "DTSTART:19970512T090000\nRRULE:FREQ=YEARLY;UNTIL=19970512",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-060",
+      "description": "test combinations of DTSTART and UNTIL which are invalid",
+      "recurrence": "DTSTART:19970512T090000Z\nRRULE:FREQ=YEARLY;UNTIL=19970512",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-061",
+      "description": "test combinations of DTSTART and UNTIL which are invalid",
+      "recurrence": "DTSTART:19970512\nRRULE:FREQ=YEARLY;UNTIL=19970512T090000",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-062",
+      "description": "test combinations of DTSTART and UNTIL which are invalid",
+      "recurrence": "DTSTART:19970512\nRRULE:FREQ=YEARLY;UNTIL=19970512T090000Z",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-063",
+      "description": "missing RRULE",
+      "recurrence": "DTSTART:20060624\nFREQ=DAILY",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-064",
+      "description": "multiple RRULE or DTSTART",
+      "recurrence": "DTSTART:20060624\nRRULE:FREQ=DAILY\nRRULE:FREQ=YEARLY",
+      "expectedError": "InvalidArgumentException",
+      "notes": {
+        "info": "php-rrule: the RRule class takes one RRULE; RSet takes several. RFC 5545 section 3.8.5.3 says RRULE \"SHOULD NOT be specified more than once\", so a parser for a recurrence set can accept it."
+      }
+    },
+    {
+      "id": "php-rrule-invalid-065",
+      "description": "multiple RRULE or DTSTART",
+      "recurrence": "DTSTART:20060624\nDTSTART:20060624\nRRULE:FREQ=YEARLY",
+      "expectedError": "InvalidArgumentException",
+      "notes": null
+    },
+    {
+      "id": "php-rrule-invalid-066",
+      "description": "properties for Rset",
+      "recurrence": "DTSTART:20060624\nRRULE:FREQ=DAILY\nEXRULE:FREQ=YEARLY",
+      "expectedError": "InvalidArgumentException",
+      "notes": {
+        "info": "php-rrule: the RRule class rejects EXRULE; RSet takes it. RFC 5545 Appendix A.3 says EXRULE \"can no longer be specified in a component\"."
+      }
+    }
+  ]
+}

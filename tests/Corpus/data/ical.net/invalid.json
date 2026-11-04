@@ -1,0 +1,16 @@
+{
+  "source": "ical.net",
+  "sourceUrl": "https://github.com/ical-org/ical.net/blob/b7cd9063576825fd52b26839d1e16f7187d2e023/Ical.Net.Tests/Calendars/Recurrence/RecurrenceTestCases.txt",
+  "license": "MIT",
+  "cases": [
+    {
+      "id": "ical.net-invalid-001",
+      "description": "Illegal rule part with multiple '=' [line 7]",
+      "rule": "FREQ=WEEKLY;BYDAY=MO=;COUNT=3",
+      "expectedError": "System.FormatException",
+      "notes": {
+        "info": "Ical.Net throws when it parses the RRULE value (EXCEPTION-STEP Construction)."
+      }
+    }
+  ]
+}

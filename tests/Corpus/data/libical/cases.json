@@ -1,0 +1,3746 @@
+{
+  "source": "libical",
+  "sourceUrl": "https://github.com/libical/libical/tree/a298354d59a550afe63d44ee7760f2afea599a47/src/test",
+  "license": "MPL-2.0",
+  "dtStartPolicy": "OnlyIfMatching",
+  "cases": [
+    {
+      "id": "libical-001",
+      "description": "Every day in January, for 3 years [icalrecur_test.txt:3]",
+      "recurrence": "DTSTART:19980101T090000\nRRULE:FREQ=YEARLY;UNTIL=20000131T140000Z;BYMONTH=1;BYDAY=SU,MO,TU,WE,TH,FR,SA",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980102T090000",
+        "19980103T090000",
+        "19980104T090000",
+        "19980105T090000",
+        "19980106T090000",
+        "19980107T090000",
+        "19980108T090000",
+        "19980109T090000",
+        "19980110T090000",
+        "19980111T090000",
+        "19980112T090000",
+        "19980113T090000",
+        "19980114T090000",
+        "19980115T090000",
+        "19980116T090000",
+        "19980117T090000",
+        "19980118T090000",
+        "19980119T090000",
+        "19980120T090000",
+        "19980121T090000",
+        "19980122T090000",
+        "19980123T090000",
+        "19980124T090000",
+        "19980125T090000",
+        "19980126T090000",
+        "19980127T090000",
+        "19980128T090000",
+        "19980129T090000",
+        "19980130T090000",
+        "19980131T090000",
+        "19990101T090000",
+        "19990102T090000",
+        "19990103T090000",
+        "19990104T090000",
+        "19990105T090000",
+        "19990106T090000",
+        "19990107T090000",
+        "19990108T090000",
+        "19990109T090000",
+        "19990110T090000",
+        "19990111T090000",
+        "19990112T090000",
+        "19990113T090000",
+        "19990114T090000",
+        "19990115T090000",
+        "19990116T090000",
+        "19990117T090000",
+        "19990118T090000",
+        "19990119T090000",
+        "19990120T090000",
+        "19990121T090000",
+        "19990122T090000",
+        "19990123T090000",
+        "19990124T090000",
+        "19990125T090000",
+        "19990126T090000",
+        "19990127T090000",
+        "19990128T090000",
+        "19990129T090000",
+        "19990130T090000",
+        "19990131T090000",
+        "20000101T090000",
+        "20000102T090000",
+        "20000103T090000",
+        "20000104T090000",
+        "20000105T090000",
+        "20000106T090000",
+        "20000107T090000",
+        "20000108T090000",
+        "20000109T090000",
+        "20000110T090000",
+        "20000111T090000",
+        "20000112T090000",
+        "20000113T090000",
+        "20000114T090000",
+        "20000115T090000",
+        "20000116T090000",
+        "20000117T090000",
+        "20000118T090000",
+        "20000119T090000",
+        "20000120T090000",
+        "20000121T090000",
+        "20000122T090000",
+        "20000123T090000",
+        "20000124T090000",
+        "20000125T090000",
+        "20000126T090000",
+        "20000127T090000",
+        "20000128T090000",
+        "20000129T090000",
+        "20000130T090000",
+        "20000131T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-002",
+      "description": "Yearly in June and July for 10 occurrences [icalrecur_test.txt:8]",
+      "recurrence": "DTSTART:19970610T090000\nRRULE:FREQ=YEARLY;COUNT=10;BYMONTH=6,7",
+      "startAt": null,
+      "expected": [
+        "19970610T090000",
+        "19970710T090000",
+        "19980610T090000",
+        "19980710T090000",
+        "19990610T090000",
+        "19990710T090000",
+        "20000610T090000",
+        "20000710T090000",
+        "20010610T090000",
+        "20010710T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-003",
+      "description": "Every other year on January, February, and March for 10 occurrences [icalrecur_test.txt:13]",
+      "recurrence": "DTSTART:19970310T090000\nRRULE:FREQ=YEARLY;INTERVAL=2;COUNT=10;BYMONTH=1,2,3",
+      "startAt": null,
+      "expected": [
+        "19970310T090000",
+        "19990110T090000",
+        "19990210T090000",
+        "19990310T090000",
+        "20010110T090000",
+        "20010210T090000",
+        "20010310T090000",
+        "20030110T090000",
+        "20030210T090000",
+        "20030310T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-004",
+      "description": "Every third year on the 1st, 100th, and 200th day for 10 occurrences [icalrecur_test.txt:18]",
+      "recurrence": "DTSTART:19970101T090000\nRRULE:FREQ=YEARLY;INTERVAL=3;COUNT=10;BYYEARDAY=1,100,200",
+      "startAt": null,
+      "expected": [
+        "19970101T090000",
+        "19970410T090000",
+        "19970719T090000",
+        "20000101T090000",
+        "20000409T090000",
+        "20000718T090000",
+        "20030101T090000",
+        "20030410T090000",
+        "20030719T090000",
+        "20060101T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-005",
+      "description": "Every 20th Monday of the year [icalrecur_test.txt:23]",
+      "recurrence": "DTSTART:19970519T090000\nRRULE:FREQ=YEARLY;BYDAY=20MO;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970519T090000",
+        "19980518T090000",
+        "19990517T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-006",
+      "description": "Monday of week number 20 (where the default start of the week is Monday) [icalrecur_test.txt:28]",
+      "recurrence": "DTSTART:19970512T090000\nRRULE:FREQ=YEARLY;BYWEEKNO=20;BYDAY=MO;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970512T090000",
+        "19980511T090000",
+        "19990517T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-007",
+      "description": "Monday of week number 20 (where the start of the week is Sunday) [icalrecur_test.txt:33]",
+      "recurrence": "DTSTART:19970512T090000\nRRULE:FREQ=YEARLY;BYWEEKNO=20;BYDAY=MO;WKST=SU;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970512T090000",
+        "19980518T090000",
+        "19990517T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-008",
+      "description": "Monday of week number 20 (where the start of the week is Friday) [icalrecur_test.txt:38]",
+      "recurrence": "DTSTART:19970512T090000\nRRULE:FREQ=YEARLY;BYWEEKNO=20;BYDAY=MO;WKST=FR;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19970519T090000",
+        "19980518T090000",
+        "19990517T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-009",
+      "description": "Every Thursday in March [icalrecur_test.txt:43]",
+      "recurrence": "DTSTART:19970313T090000\nRRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=TH;COUNT=11",
+      "startAt": null,
+      "expected": [
+        "19970313T090000",
+        "19970320T090000",
+        "19970327T090000",
+        "19980305T090000",
+        "19980312T090000",
+        "19980319T090000",
+        "19980326T090000",
+        "19990304T090000",
+        "19990311T090000",
+        "19990318T090000",
+        "19990325T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-010",
+      "description": "Every Thursday, but only during June, July, and August [icalrecur_test.txt:48]",
+      "recurrence": "DTSTART:19970605T090000\nRRULE:FREQ=YEARLY;BYDAY=TH;BYMONTH=6,7,8;COUNT=39",
+      "startAt": null,
+      "expected": [
+        "19970605T090000",
+        "19970612T090000",
+        "19970619T090000",
+        "19970626T090000",
+        "19970703T090000",
+        "19970710T090000",
+        "19970717T090000",
+        "19970724T090000",
+        "19970731T090000",
+        "19970807T090000",
+        "19970814T090000",
+        "19970821T090000",
+        "19970828T090000",
+        "19980604T090000",
+        "19980611T090000",
+        "19980618T090000",
+        "19980625T090000",
+        "19980702T090000",
+        "19980709T090000",
+        "19980716T090000",
+        "19980723T090000",
+        "19980730T090000",
+        "19980806T090000",
+        "19980813T090000",
+        "19980820T090000",
+        "19980827T090000",
+        "19990603T090000",
+        "19990610T090000",
+        "19990617T090000",
+        "19990624T090000",
+        "19990701T090000",
+        "19990708T090000",
+        "19990715T090000",
+        "19990722T090000",
+        "19990729T090000",
+        "19990805T090000",
+        "19990812T090000",
+        "19990819T090000",
+        "19990826T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-011",
+      "description": "Every 4 years, the first Thuesday after a Monday in November (U.S. Presidential Election Day) [icalrecur_test.txt:53]",
+      "recurrence": "DTSTART:19961105T090000\nRRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "19961105T090000",
+        "20001107T090000",
+        "20041102T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-012",
+      "description": "Friday in March occurring on or after the 26th for 5 years [icalrecur_test.txt:58]",
+      "recurrence": "DTSTART:20060331T020000\nRRULE:FREQ=YEARLY;UNTIL=20100326T000000Z;BYDAY=FR;BYYEARDAY=-275,-276,-277,-278,-279,-280,-281",
+      "startAt": null,
+      "expected": [
+        "20060331T020000",
+        "20070330T020000",
+        "20080328T020000",
+        "20090327T020000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-013",
+      "description": "Example where leap day gets skipped [icalrecur_test.txt:63]",
+      "recurrence": "DTSTART:20120229T120000Z\nRRULE:FREQ=YEARLY;UNTIL=20140301T115959Z",
+      "startAt": null,
+      "expected": [
+        "20120229T120000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-014",
+      "description": "Monthly on the first Friday for 10 occurrences [icalrecur_test.txt:68]",
+      "recurrence": "DTSTART:19970905T090000\nRRULE:FREQ=MONTHLY;COUNT=10;BYDAY=1FR",
+      "startAt": null,
+      "expected": [
+        "19970905T090000",
+        "19971003T090000",
+        "19971107T090000",
+        "19971205T090000",
+        "19980102T090000",
+        "19980206T090000",
+        "19980306T090000",
+        "19980403T090000",
+        "19980501T090000",
+        "19980605T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-015",
+      "description": "Monthly on the first Friday until December 24, 1997 [icalrecur_test.txt:73]",
+      "recurrence": "DTSTART:19970905T090000\nRRULE:FREQ=MONTHLY;UNTIL=19971224T000000Z;BYDAY=1FR",
+      "startAt": null,
+      "expected": [
+        "19970905T090000",
+        "19971003T090000",
+        "19971107T090000",
+        "19971205T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-016",
+      "description": "Every other month on the first and last Sunday of the month for 10 occurrences [icalrecur_test.txt:78]",
+      "recurrence": "DTSTART:19970907T090000\nRRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=10;BYDAY=1SU,-1SU",
+      "startAt": null,
+      "expected": [
+        "19970907T090000",
+        "19970928T090000",
+        "19971102T090000",
+        "19971130T090000",
+        "19980104T090000",
+        "19980125T090000",
+        "19980301T090000",
+        "19980329T090000",
+        "19980503T090000",
+        "19980531T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-017",
+      "description": "Monthly on the second-to-last Monday of the month for 6 months [icalrecur_test.txt:83]",
+      "recurrence": "DTSTART:19970922T090000\nRRULE:FREQ=MONTHLY;COUNT=6;BYDAY=-2MO",
+      "startAt": null,
+      "expected": [
+        "19970922T090000",
+        "19971020T090000",
+        "19971117T090000",
+        "19971222T090000",
+        "19980119T090000",
+        "19980216T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-018",
+      "description": "Monthly on the third-to-last day of the month [icalrecur_test.txt:88]",
+      "recurrence": "DTSTART:19970928T090000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-3;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "19970928T090000",
+        "19971029T090000",
+        "19971128T090000",
+        "19971229T090000",
+        "19980129T090000",
+        "19980226T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-019",
+      "description": "Monthly on the 2nd and 15th of the month for 10 occurrences [icalrecur_test.txt:93]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;COUNT=10;BYMONTHDAY=2,15",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970915T090000",
+        "19971002T090000",
+        "19971015T090000",
+        "19971102T090000",
+        "19971115T090000",
+        "19971202T090000",
+        "19971215T090000",
+        "19980102T090000",
+        "19980115T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-020",
+      "description": "Monthly on the first and last day of the month for 10 occurrences [icalrecur_test.txt:98]",
+      "recurrence": "DTSTART:19970930T090000\nRRULE:FREQ=MONTHLY;COUNT=10;BYMONTHDAY=1,-1",
+      "startAt": null,
+      "expected": [
+        "19970930T090000",
+        "19971001T090000",
+        "19971031T090000",
+        "19971101T090000",
+        "19971130T090000",
+        "19971201T090000",
+        "19971231T090000",
+        "19980101T090000",
+        "19980131T090000",
+        "19980201T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-021",
+      "description": "Every 18 months on the 10th thru 15th of the month for 10 occurrences [icalrecur_test.txt:103]",
+      "recurrence": "DTSTART:19970910T090000\nRRULE:FREQ=MONTHLY;INTERVAL=18;COUNT=10;BYMONTHDAY=10,11,12,13,14,15",
+      "startAt": null,
+      "expected": [
+        "19970910T090000",
+        "19970911T090000",
+        "19970912T090000",
+        "19970913T090000",
+        "19970914T090000",
+        "19970915T090000",
+        "19990310T090000",
+        "19990311T090000",
+        "19990312T090000",
+        "19990313T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-022",
+      "description": "Every Thuesday, every other month for 18 occurrences [icalrecur_test.txt:108]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;INTERVAL=2;BYDAY=TU;COUNT=18",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000",
+        "19970923T090000",
+        "19970930T090000",
+        "19971104T090000",
+        "19971111T090000",
+        "19971118T090000",
+        "19971125T090000",
+        "19980106T090000",
+        "19980113T090000",
+        "19980120T090000",
+        "19980127T090000",
+        "19980303T090000",
+        "19980310T090000",
+        "19980317T090000",
+        "19980324T090000",
+        "19980331T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-023",
+      "description": "Every Friday the 13th [icalrecur_test.txt:113]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "19980213T090000",
+        "19980313T090000",
+        "19981113T090000",
+        "19990813T090000",
+        "20001013T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-024",
+      "description": "The first Saturday that follows the first Sunday of the month [icalrecur_test.txt:118]",
+      "recurrence": "DTSTART:19970913T090000\nRRULE:FREQ=MONTHLY;BYDAY=SA;BYMONTHDAY=7,8,9,10,11,12,13;COUNT=10",
+      "startAt": null,
+      "expected": [
+        "19970913T090000",
+        "19971011T090000",
+        "19971108T090000",
+        "19971213T090000",
+        "19980110T090000",
+        "19980207T090000",
+        "19980307T090000",
+        "19980411T090000",
+        "19980509T090000",
+        "19980613T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-025",
+      "description": "The third instance into the month of one of Tuesday, Wednesday, or Thursday, for the next 3 months [icalrecur_test.txt:123]",
+      "recurrence": "DTSTART:19970904T090000\nRRULE:FREQ=MONTHLY;COUNT=3;BYDAY=TU,WE,TH;BYSETPOS=3",
+      "startAt": null,
+      "expected": [
+        "19970904T090000",
+        "19971007T090000",
+        "19971106T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-026",
+      "description": "The second-to-last weekday of the month [icalrecur_test.txt:128]",
+      "recurrence": "DTSTART:19970929T090000\nRRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2;COUNT=7",
+      "startAt": null,
+      "expected": [
+        "19970929T090000",
+        "19971030T090000",
+        "19971127T090000",
+        "19971230T090000",
+        "19980129T090000",
+        "19980226T090000",
+        "19980330T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-027",
+      "description": "An example where an invalid date (i.e., February 30) is ignored [icalrecur_test.txt:133]",
+      "recurrence": "DTSTART:20070115T090000\nRRULE:FREQ=MONTHLY;BYMONTHDAY=15,30;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20070115T090000",
+        "20070130T090000",
+        "20070215T090000",
+        "20070315T090000",
+        "20070330T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-028",
+      "description": "Another example where invalid dates are ignored [icalrecur_test.txt:138]",
+      "recurrence": "DTSTART:20070131T090000\nRRULE:FREQ=MONTHLY;COUNT=12",
+      "startAt": null,
+      "expected": [
+        "20070131T090000",
+        "20070331T090000",
+        "20070531T090000",
+        "20070731T090000",
+        "20070831T090000",
+        "20071031T090000",
+        "20071231T090000",
+        "20080131T090000",
+        "20080331T090000",
+        "20080531T090000",
+        "20080731T090000",
+        "20080831T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-029",
+      "description": "Weekly for 10 occurrences [icalrecur_test.txt:143]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=10",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000",
+        "19970923T090000",
+        "19970930T090000",
+        "19971007T090000",
+        "19971014T090000",
+        "19971021T090000",
+        "19971028T090000",
+        "19971104T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-030",
+      "description": "Weekly until December 24, 1997 [icalrecur_test.txt:148]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;UNTIL=19971224T000000Z",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970909T090000",
+        "19970916T090000",
+        "19970923T090000",
+        "19970930T090000",
+        "19971007T090000",
+        "19971014T090000",
+        "19971021T090000",
+        "19971028T090000",
+        "19971104T090000",
+        "19971111T090000",
+        "19971118T090000",
+        "19971125T090000",
+        "19971202T090000",
+        "19971209T090000",
+        "19971216T090000",
+        "19971223T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-031",
+      "description": "Every other week [icalrecur_test.txt:153]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;WKST=SU;COUNT=13",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970916T090000",
+        "19970930T090000",
+        "19971014T090000",
+        "19971028T090000",
+        "19971111T090000",
+        "19971125T090000",
+        "19971209T090000",
+        "19971223T090000",
+        "19980106T090000",
+        "19980120T090000",
+        "19980203T090000",
+        "19980217T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-032",
+      "description": "Weekly on Tuesday and Thursday for five weeks [icalrecur_test.txt:158]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;UNTIL=19971007T000000Z;WKST=SU;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000",
+        "19970911T090000",
+        "19970916T090000",
+        "19970918T090000",
+        "19970923T090000",
+        "19970925T090000",
+        "19970930T090000",
+        "19971002T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-033",
+      "description": "Weekly on Tuesday and Thursday for five weeks [icalrecur_test.txt:163]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;COUNT=10;WKST=SU;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970909T090000",
+        "19970911T090000",
+        "19970916T090000",
+        "19970918T090000",
+        "19970923T090000",
+        "19970925T090000",
+        "19970930T090000",
+        "19971002T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-034",
+      "description": "Weekly on Sunday every four weeks [icalrecur_test.txt:168]",
+      "recurrence": "DTSTART:20150322T000000\nRRULE:FREQ=WEEKLY;INTERVAL=4;BYDAY=SU;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20150322T000000",
+        "20150419T000000",
+        "20150517T000000",
+        "20150614T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-035",
+      "description": "Every other week on Monday, Wednesday, and Friday until December 24, 1997, starting on Monday, September 1, 1997 [icalrecur_test.txt:173]",
+      "recurrence": "DTSTART:19970901T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;UNTIL=19971224T000000Z;WKST=SU;BYDAY=MO,WE,FR",
+      "startAt": null,
+      "expected": [
+        "19970901T090000",
+        "19970903T090000",
+        "19970905T090000",
+        "19970915T090000",
+        "19970917T090000",
+        "19970919T090000",
+        "19970929T090000",
+        "19971001T090000",
+        "19971003T090000",
+        "19971013T090000",
+        "19971015T090000",
+        "19971017T090000",
+        "19971027T090000",
+        "19971029T090000",
+        "19971031T090000",
+        "19971110T090000",
+        "19971112T090000",
+        "19971114T090000",
+        "19971124T090000",
+        "19971126T090000",
+        "19971128T090000",
+        "19971208T090000",
+        "19971210T090000",
+        "19971212T090000",
+        "19971222T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-036",
+      "description": "Every other week on Monday, Wednesday, and Friday with week start being a Wednesday [icalrecur_test.txt:178]",
+      "recurrence": "DTSTART:19970901T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;WKST=WE;BYDAY=MO,WE,FR;COUNT=10",
+      "startAt": null,
+      "expected": [
+        "19970901T090000",
+        "19970910T090000",
+        "19970912T090000",
+        "19970915T090000",
+        "19970924T090000",
+        "19970926T090000",
+        "19970929T090000",
+        "19971008T090000",
+        "19971010T090000",
+        "19971013T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-037",
+      "description": "Every other week on Tuesday and Thursday, for 8 occurrences [icalrecur_test.txt:183]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=8;WKST=SU;BYDAY=TU,TH",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970916T090000",
+        "19970918T090000",
+        "19970930T090000",
+        "19971002T090000",
+        "19971014T090000",
+        "19971016T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-038",
+      "description": "Tuesday and Sunday every other week for 4 occurrences (week starts on Monday) [icalrecur_test.txt:188]",
+      "recurrence": "DTSTART:19970805T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=MO",
+      "startAt": null,
+      "expected": [
+        "19970805T090000",
+        "19970810T090000",
+        "19970819T090000",
+        "19970824T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-039",
+      "description": "Tuesday and Sunday every other week for 4 occurrences (week starts on Sunday) [icalrecur_test.txt:193]",
+      "recurrence": "DTSTART:19970805T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU",
+      "startAt": null,
+      "expected": [
+        "19970805T090000",
+        "19970817T090000",
+        "19970819T090000",
+        "19970831T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-040",
+      "description": "Sunday every other week, starting on a Tuesday (week starts on Monday) [icalrecur_test.txt:198]",
+      "recurrence": "DTSTART:19970805T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=SU",
+      "startAt": null,
+      "expected": [
+        "19970810T090000",
+        "19970824T090000",
+        "19970907T090000",
+        "19970921T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-041",
+      "description": "Monday every other week, starting on a Friday (week starts on Saturday) [icalrecur_test.txt:203]",
+      "recurrence": "DTSTART:20030919T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=MO;WKST=SA",
+      "startAt": null,
+      "expected": [
+        "20030929T090000",
+        "20031013T090000",
+        "20031027T090000",
+        "20031110T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-042",
+      "description": "Monday every other week, starting on a Friday (week starts on Friday) [icalrecur_test.txt:208]",
+      "recurrence": "DTSTART:20030919T090000\nRRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=MO;WKST=FR",
+      "startAt": null,
+      "expected": [
+        "20030922T090000",
+        "20031006T090000",
+        "20031020T090000",
+        "20031103T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-043",
+      "description": "Weekly (with a trailing semicolon that was seen in the wild on Google Calendar) [icalrecur_test.txt:213]",
+      "recurrence": "DTSTART:20141006T090000\nRRULE:FREQ=WEEKLY;INTERVAL=1;COUNT=2;BYDAY=MO;",
+      "startAt": null,
+      "expected": [
+        "20141006T090000",
+        "20141013T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "suspicious": "The RRULE value ends with \";\". The RFC 5545 recur grammar has no empty rule part; libical accepts it."
+      }
+    },
+    {
+      "id": "libical-044",
+      "description": "Daily for 10 occurrences [icalrecur_test.txt:218]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;COUNT=10",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970903T090000",
+        "19970904T090000",
+        "19970905T090000",
+        "19970906T090000",
+        "19970907T090000",
+        "19970908T090000",
+        "19970909T090000",
+        "19970910T090000",
+        "19970911T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-045",
+      "description": "Daily until December 24, 1997 [icalrecur_test.txt:223]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;UNTIL=19971224T000000Z",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970903T090000",
+        "19970904T090000",
+        "19970905T090000",
+        "19970906T090000",
+        "19970907T090000",
+        "19970908T090000",
+        "19970909T090000",
+        "19970910T090000",
+        "19970911T090000",
+        "19970912T090000",
+        "19970913T090000",
+        "19970914T090000",
+        "19970915T090000",
+        "19970916T090000",
+        "19970917T090000",
+        "19970918T090000",
+        "19970919T090000",
+        "19970920T090000",
+        "19970921T090000",
+        "19970922T090000",
+        "19970923T090000",
+        "19970924T090000",
+        "19970925T090000",
+        "19970926T090000",
+        "19970927T090000",
+        "19970928T090000",
+        "19970929T090000",
+        "19970930T090000",
+        "19971001T090000",
+        "19971002T090000",
+        "19971003T090000",
+        "19971004T090000",
+        "19971005T090000",
+        "19971006T090000",
+        "19971007T090000",
+        "19971008T090000",
+        "19971009T090000",
+        "19971010T090000",
+        "19971011T090000",
+        "19971012T090000",
+        "19971013T090000",
+        "19971014T090000",
+        "19971015T090000",
+        "19971016T090000",
+        "19971017T090000",
+        "19971018T090000",
+        "19971019T090000",
+        "19971020T090000",
+        "19971021T090000",
+        "19971022T090000",
+        "19971023T090000",
+        "19971024T090000",
+        "19971025T090000",
+        "19971026T090000",
+        "19971027T090000",
+        "19971028T090000",
+        "19971029T090000",
+        "19971030T090000",
+        "19971031T090000",
+        "19971101T090000",
+        "19971102T090000",
+        "19971103T090000",
+        "19971104T090000",
+        "19971105T090000",
+        "19971106T090000",
+        "19971107T090000",
+        "19971108T090000",
+        "19971109T090000",
+        "19971110T090000",
+        "19971111T090000",
+        "19971112T090000",
+        "19971113T090000",
+        "19971114T090000",
+        "19971115T090000",
+        "19971116T090000",
+        "19971117T090000",
+        "19971118T090000",
+        "19971119T090000",
+        "19971120T090000",
+        "19971121T090000",
+        "19971122T090000",
+        "19971123T090000",
+        "19971124T090000",
+        "19971125T090000",
+        "19971126T090000",
+        "19971127T090000",
+        "19971128T090000",
+        "19971129T090000",
+        "19971130T090000",
+        "19971201T090000",
+        "19971202T090000",
+        "19971203T090000",
+        "19971204T090000",
+        "19971205T090000",
+        "19971206T090000",
+        "19971207T090000",
+        "19971208T090000",
+        "19971209T090000",
+        "19971210T090000",
+        "19971211T090000",
+        "19971212T090000",
+        "19971213T090000",
+        "19971214T090000",
+        "19971215T090000",
+        "19971216T090000",
+        "19971217T090000",
+        "19971218T090000",
+        "19971219T090000",
+        "19971220T090000",
+        "19971221T090000",
+        "19971222T090000",
+        "19971223T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-046",
+      "description": "Every other day, 20 occurrences [icalrecur_test.txt:228]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;INTERVAL=2;COUNT=20",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970904T090000",
+        "19970906T090000",
+        "19970908T090000",
+        "19970910T090000",
+        "19970912T090000",
+        "19970914T090000",
+        "19970916T090000",
+        "19970918T090000",
+        "19970920T090000",
+        "19970922T090000",
+        "19970924T090000",
+        "19970926T090000",
+        "19970928T090000",
+        "19970930T090000",
+        "19971002T090000",
+        "19971004T090000",
+        "19971006T090000",
+        "19971008T090000",
+        "19971010T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-047",
+      "description": "Every 10 days, 5 occurrences [icalrecur_test.txt:233]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;INTERVAL=10;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970912T090000",
+        "19970922T090000",
+        "19971002T090000",
+        "19971012T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-048",
+      "description": "Every day in January, for 3 years [icalrecur_test.txt:238]",
+      "recurrence": "DTSTART:19980101T090000\nRRULE:FREQ=DAILY;UNTIL=20000131T140000Z;BYMONTH=1",
+      "startAt": null,
+      "expected": [
+        "19980101T090000",
+        "19980102T090000",
+        "19980103T090000",
+        "19980104T090000",
+        "19980105T090000",
+        "19980106T090000",
+        "19980107T090000",
+        "19980108T090000",
+        "19980109T090000",
+        "19980110T090000",
+        "19980111T090000",
+        "19980112T090000",
+        "19980113T090000",
+        "19980114T090000",
+        "19980115T090000",
+        "19980116T090000",
+        "19980117T090000",
+        "19980118T090000",
+        "19980119T090000",
+        "19980120T090000",
+        "19980121T090000",
+        "19980122T090000",
+        "19980123T090000",
+        "19980124T090000",
+        "19980125T090000",
+        "19980126T090000",
+        "19980127T090000",
+        "19980128T090000",
+        "19980129T090000",
+        "19980130T090000",
+        "19980131T090000",
+        "19990101T090000",
+        "19990102T090000",
+        "19990103T090000",
+        "19990104T090000",
+        "19990105T090000",
+        "19990106T090000",
+        "19990107T090000",
+        "19990108T090000",
+        "19990109T090000",
+        "19990110T090000",
+        "19990111T090000",
+        "19990112T090000",
+        "19990113T090000",
+        "19990114T090000",
+        "19990115T090000",
+        "19990116T090000",
+        "19990117T090000",
+        "19990118T090000",
+        "19990119T090000",
+        "19990120T090000",
+        "19990121T090000",
+        "19990122T090000",
+        "19990123T090000",
+        "19990124T090000",
+        "19990125T090000",
+        "19990126T090000",
+        "19990127T090000",
+        "19990128T090000",
+        "19990129T090000",
+        "19990130T090000",
+        "19990131T090000",
+        "20000101T090000",
+        "20000102T090000",
+        "20000103T090000",
+        "20000104T090000",
+        "20000105T090000",
+        "20000106T090000",
+        "20000107T090000",
+        "20000108T090000",
+        "20000109T090000",
+        "20000110T090000",
+        "20000111T090000",
+        "20000112T090000",
+        "20000113T090000",
+        "20000114T090000",
+        "20000115T090000",
+        "20000116T090000",
+        "20000117T090000",
+        "20000118T090000",
+        "20000119T090000",
+        "20000120T090000",
+        "20000121T090000",
+        "20000122T090000",
+        "20000123T090000",
+        "20000124T090000",
+        "20000125T090000",
+        "20000126T090000",
+        "20000127T090000",
+        "20000128T090000",
+        "20000129T090000",
+        "20000130T090000",
+        "20000131T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-049",
+      "description": "Every 20 minutes from 9:00 AM to 4:40 PM every day [icalrecur_test.txt:243]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;BYHOUR=9,10,11,12,13,14,15,16;BYMINUTE=0,20,40;COUNT=48",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T092000",
+        "19970902T094000",
+        "19970902T100000",
+        "19970902T102000",
+        "19970902T104000",
+        "19970902T110000",
+        "19970902T112000",
+        "19970902T114000",
+        "19970902T120000",
+        "19970902T122000",
+        "19970902T124000",
+        "19970902T130000",
+        "19970902T132000",
+        "19970902T134000",
+        "19970902T140000",
+        "19970902T142000",
+        "19970902T144000",
+        "19970902T150000",
+        "19970902T152000",
+        "19970902T154000",
+        "19970902T160000",
+        "19970902T162000",
+        "19970902T164000",
+        "19970903T090000",
+        "19970903T092000",
+        "19970903T094000",
+        "19970903T100000",
+        "19970903T102000",
+        "19970903T104000",
+        "19970903T110000",
+        "19970903T112000",
+        "19970903T114000",
+        "19970903T120000",
+        "19970903T122000",
+        "19970903T124000",
+        "19970903T130000",
+        "19970903T132000",
+        "19970903T134000",
+        "19970903T140000",
+        "19970903T142000",
+        "19970903T144000",
+        "19970903T150000",
+        "19970903T152000",
+        "19970903T154000",
+        "19970903T160000",
+        "19970903T162000",
+        "19970903T164000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-050",
+      "description": "daily by positive monthday [icalrecur_test.txt:248]",
+      "recurrence": "DTSTART;VALUE=DATE:20241024\nRRULE:FREQ=DAILY;BYMONTHDAY=1,24;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20241024",
+        "20241101",
+        "20241124",
+        "20241201",
+        "20241224"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-051",
+      "description": "daily by negative monthday [icalrecur_test.txt:253]",
+      "recurrence": "DTSTART;VALUE=DATE:20241030\nRRULE:FREQ=DAILY;BYMONTHDAY=-1,-2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20241030",
+        "20241031",
+        "20241129",
+        "20241130",
+        "20241230"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-052",
+      "description": "Every 3 hours from 9:00 AM to 5:00 PM on a specific day [icalrecur_test.txt:258]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=HOURLY;INTERVAL=3;UNTIL=19970902T170000Z",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T120000",
+        "19970902T150000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-053",
+      "description": "Every 15 minutes for 6 occurrences [icalrecur_test.txt:263]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;INTERVAL=15;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T091500",
+        "19970902T093000",
+        "19970902T094500",
+        "19970902T100000",
+        "19970902T101500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-054",
+      "description": "Every hour and a half for 4 occurrences [icalrecur_test.txt:268]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=MINUTELY;INTERVAL=90;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T103000",
+        "19970902T120000",
+        "19970902T133000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-055",
+      "description": "Every 20 minutes from 9:00 AM to 4:40 PM every day [icalrecur_test.txt:273]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;BYHOUR=9,10,11,12,13,14,15,16;BYMINUTE=0,20,40;COUNT=48",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T092000",
+        "19970902T094000",
+        "19970902T100000",
+        "19970902T102000",
+        "19970902T104000",
+        "19970902T110000",
+        "19970902T112000",
+        "19970902T114000",
+        "19970902T120000",
+        "19970902T122000",
+        "19970902T124000",
+        "19970902T130000",
+        "19970902T132000",
+        "19970902T134000",
+        "19970902T140000",
+        "19970902T142000",
+        "19970902T144000",
+        "19970902T150000",
+        "19970902T152000",
+        "19970902T154000",
+        "19970902T160000",
+        "19970902T162000",
+        "19970902T164000",
+        "19970903T090000",
+        "19970903T092000",
+        "19970903T094000",
+        "19970903T100000",
+        "19970903T102000",
+        "19970903T104000",
+        "19970903T110000",
+        "19970903T112000",
+        "19970903T114000",
+        "19970903T120000",
+        "19970903T122000",
+        "19970903T124000",
+        "19970903T130000",
+        "19970903T132000",
+        "19970903T134000",
+        "19970903T140000",
+        "19970903T142000",
+        "19970903T144000",
+        "19970903T150000",
+        "19970903T152000",
+        "19970903T154000",
+        "19970903T160000",
+        "19970903T162000",
+        "19970903T164000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-056",
+      "description": "Every week on Thursday and Sundays (35 times in total) [icalrecur_test.txt:278]",
+      "recurrence": "DTSTART:20111120T100000Z\nRRULE:FREQ=WEEKLY;COUNT=35;BYDAY=SU,TH",
+      "startAt": null,
+      "expected": [
+        "20111120T100000Z",
+        "20111124T100000Z",
+        "20111127T100000Z",
+        "20111201T100000Z",
+        "20111204T100000Z",
+        "20111208T100000Z",
+        "20111211T100000Z",
+        "20111215T100000Z",
+        "20111218T100000Z",
+        "20111222T100000Z",
+        "20111225T100000Z",
+        "20111229T100000Z",
+        "20120101T100000Z",
+        "20120105T100000Z",
+        "20120108T100000Z",
+        "20120112T100000Z",
+        "20120115T100000Z",
+        "20120119T100000Z",
+        "20120122T100000Z",
+        "20120126T100000Z",
+        "20120129T100000Z",
+        "20120202T100000Z",
+        "20120205T100000Z",
+        "20120209T100000Z",
+        "20120212T100000Z",
+        "20120216T100000Z",
+        "20120219T100000Z",
+        "20120223T100000Z",
+        "20120226T100000Z",
+        "20120301T100000Z",
+        "20120304T100000Z",
+        "20120308T100000Z",
+        "20120311T100000Z",
+        "20120315T100000Z",
+        "20120318T100000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-057",
+      "description": "github issue180 [icalrecur_test.txt:283]",
+      "recurrence": "DTSTART:20141030T000000Z\nRRULE:FREQ=DAILY;UNTIL=20141206T000000Z;BYMONTH=11,12,1,2,3,4,10",
+      "startAt": null,
+      "expected": [
+        "20141030T000000Z",
+        "20141031T000000Z",
+        "20141101T000000Z",
+        "20141102T000000Z",
+        "20141103T000000Z",
+        "20141104T000000Z",
+        "20141105T000000Z",
+        "20141106T000000Z",
+        "20141107T000000Z",
+        "20141108T000000Z",
+        "20141109T000000Z",
+        "20141110T000000Z",
+        "20141111T000000Z",
+        "20141112T000000Z",
+        "20141113T000000Z",
+        "20141114T000000Z",
+        "20141115T000000Z",
+        "20141116T000000Z",
+        "20141117T000000Z",
+        "20141118T000000Z",
+        "20141119T000000Z",
+        "20141120T000000Z",
+        "20141121T000000Z",
+        "20141122T000000Z",
+        "20141123T000000Z",
+        "20141124T000000Z",
+        "20141125T000000Z",
+        "20141126T000000Z",
+        "20141127T000000Z",
+        "20141128T000000Z",
+        "20141129T000000Z",
+        "20141130T000000Z",
+        "20141201T000000Z",
+        "20141202T000000Z",
+        "20141203T000000Z",
+        "20141204T000000Z",
+        "20141205T000000Z",
+        "20141206T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-058",
+      "description": "CalendarServer test: Specific in first 2 weeks of year [icalrecur_test.txt:288]",
+      "recurrence": "DTSTART:20130101T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20130101T000000",
+        "20130108T000000",
+        "20131231T000000",
+        "20140107T000000",
+        "20141230T000000",
+        "20150106T000000",
+        "20160105T000000",
+        "20160112T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-059",
+      "description": "CalendarServer test: Last day of year in leap year [icalrecur_test.txt:293]",
+      "recurrence": "DTSTART:20121231T120000\nRRULE:FREQ=YEARLY;BYYEARDAY=366;UNTIL=20200101T000000",
+      "startAt": null,
+      "expected": [
+        "20121231T120000",
+        "20161231T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-060",
+      "description": "CalendarServer test: Last Friday in October [icalrecur_test.txt:298]",
+      "recurrence": "DTSTART:20101029T120000\nRRULE:FREQ=YEARLY;BYDAY=-1FR;BYMONTH=10;UNTIL=20150101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20101029T120000",
+        "20111028T120000",
+        "20121026T120000",
+        "20131025T120000",
+        "20141031T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-061",
+      "description": "CalendarServer test: First Friday in April [icalrecur_test.txt:303]",
+      "recurrence": "DTSTART:20100402T120000\nRRULE:FREQ=YEARLY;BYDAY=1FR;BYMONTH=4;UNTIL=20150101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20100402T120000",
+        "20110401T120000",
+        "20120406T120000",
+        "20130405T120000",
+        "20140404T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-062",
+      "description": "Test monthly with largest day of month [icalrecur_test.txt:308]",
+      "recurrence": "DTSTART:20150131T000000Z\nRRULE:FREQ=MONTHLY;BYMONTHDAY=31;COUNT=12",
+      "startAt": null,
+      "expected": [
+        "20150131T000000Z",
+        "20150331T000000Z",
+        "20150531T000000Z",
+        "20150731T000000Z",
+        "20150831T000000Z",
+        "20151031T000000Z",
+        "20151231T000000Z",
+        "20160131T000000Z",
+        "20160331T000000Z",
+        "20160531T000000Z",
+        "20160731T000000Z",
+        "20160831T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-063",
+      "description": "Test monthly with -largest day of month [icalrecur_test.txt:313]",
+      "recurrence": "DTSTART:20150101T000000Z\nRRULE:FREQ=MONTHLY;BYMONTHDAY=-31;COUNT=12",
+      "startAt": null,
+      "expected": [
+        "20150101T000000Z",
+        "20150301T000000Z",
+        "20150501T000000Z",
+        "20150701T000000Z",
+        "20150801T000000Z",
+        "20151001T000000Z",
+        "20151201T000000Z",
+        "20160101T000000Z",
+        "20160301T000000Z",
+        "20160501T000000Z",
+        "20160701T000000Z",
+        "20160801T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-064",
+      "description": "Test yearly with largest day of year [icalrecur_test.txt:318]",
+      "recurrence": "DTSTART:20121231T120000\nRRULE:FREQ=YEARLY;BYYEARDAY=366;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20121231T120000",
+        "20161231T120000",
+        "20201231T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-065",
+      "description": "Test yearly with -largest day of year [icalrecur_test.txt:323]",
+      "recurrence": "DTSTART:20120101T120000\nRRULE:FREQ=YEARLY;BYYEARDAY=-366;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20120101T120000",
+        "20160101T120000",
+        "20200101T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-066",
+      "description": "Test hourly with -largest day of year as limit [icalrecur_test.txt:328]",
+      "recurrence": "DTSTART:20120101T120000\nRRULE:FREQ=HOURLY;BYHOUR=12;BYYEARDAY=-366;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20120101T120000",
+        "20160101T120000",
+        "20200101T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-067",
+      "description": "Every Wednesday in February, every other year, for 5 years, starting at January 1, 2020 [icalrecur_test.txt:333]",
+      "recurrence": "DTSTART:20170201T090000\nRRULE:FREQ=YEARLY;INTERVAL=2;UNTIL=20211231T140000Z;BYMONTH=2;BYDAY=WE",
+      "startAt": "20200101T100000",
+      "expected": [
+        "20170201T090000",
+        "20170208T090000",
+        "20170215T090000",
+        "20170222T090000",
+        "20190206T090000",
+        "20190213T090000",
+        "20190220T090000",
+        "20190227T090000",
+        "20210203T090000",
+        "20210210T090000",
+        "20210217T090000",
+        "20210224T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-068",
+      "description": "Monthly on the first Friday until December 29, 2017, starting September 15, 2017 [icalrecur_test.txt:339]",
+      "recurrence": "DTSTART:20170901T090000\nRRULE:FREQ=MONTHLY;UNTIL=20171229T000000Z;BYDAY=1FR",
+      "startAt": "20170915T090000",
+      "expected": [
+        "20170901T090000",
+        "20171006T090000",
+        "20171103T090000",
+        "20171201T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-069",
+      "description": "Bi-weekly on Sunday, Tuesday, and Thursday for five weeks, starting last day of 2016 [icalrecur_test.txt:345]",
+      "recurrence": "DTSTART:20161229T090000\nRRULE:FREQ=WEEKLY;UNTIL=20170127T000000Z;WKST=MO;BYDAY=SU,TU,TH;INTERVAL=2",
+      "startAt": "20161231T090000",
+      "expected": [
+        "20161229T090000",
+        "20170101T090000",
+        "20170110T090000",
+        "20170112T090000",
+        "20170115T090000",
+        "20170124T090000",
+        "20170126T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-070",
+      "description": "Bi-weekly on Sunday, Tuesday, and Thursday until January 27, 2017, starting second day of 2017 [icalrecur_test.txt:351]",
+      "recurrence": "DTSTART:20161229T090000\nRRULE:FREQ=WEEKLY;UNTIL=20170127T000000Z;WKST=MO;BYDAY=SU,TU,TH;INTERVAL=2",
+      "startAt": "20170102T090000",
+      "expected": [
+        "20161229T090000",
+        "20170101T090000",
+        "20170110T090000",
+        "20170112T090000",
+        "20170115T090000",
+        "20170124T090000",
+        "20170126T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-071",
+      "description": "Every 3rd day in January, starting on the 10th [icalrecur_test.txt:357]",
+      "recurrence": "DTSTART:20170101T090000\nRRULE:FREQ=DAILY;UNTIL=20170131T140000Z;BYMONTH=1;INTERVAL=3",
+      "startAt": "20170103T090000",
+      "expected": [
+        "20170101T090000",
+        "20170104T090000",
+        "20170107T090000",
+        "20170110T090000",
+        "20170113T090000",
+        "20170116T090000",
+        "20170119T090000",
+        "20170122T090000",
+        "20170125T090000",
+        "20170128T090000",
+        "20170131T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-072",
+      "description": "Every 3 hours from 9:00 AM to 5:00 PM over 2 days, starting at 11PM on September 2 [icalrecur_test.txt:363]",
+      "recurrence": "DTSTART:20170902T090000\nRRULE:FREQ=HOURLY;INTERVAL=3;UNTIL=20170903T170000Z",
+      "startAt": "20170902T230000",
+      "expected": [
+        "20170902T090000",
+        "20170902T120000",
+        "20170902T150000",
+        "20170902T180000",
+        "20170902T210000",
+        "20170903T000000",
+        "20170903T030000",
+        "20170903T060000",
+        "20170903T090000",
+        "20170903T120000",
+        "20170903T150000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-073",
+      "description": "Every 13 months, on May 12 [icalrecur_test.txt:369]",
+      "recurrence": "DTSTART:20100212T000000\nRRULE:FREQ=MONTHLY;INTERVAL=13;BYMONTH=5;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20130512T000000",
+        "20260512T000000",
+        "20390512T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-074",
+      "description": "github issue376 [icalrecur_test.txt:374]",
+      "recurrence": "DTSTART:20190101T100000\nRRULE:FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20190102T100000",
+        "20190104T100000",
+        "20190116T100000",
+        "20190118T100000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-075",
+      "description": "First 2 and last 2 ISO weeks of the year on Tue [icalrecur_test.txt:379]",
+      "recurrence": "DTSTART:20130101T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2,-1,-2;BYDAY=TU;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20130101T000000",
+        "20130108T000000",
+        "20131217T000000",
+        "20131224T000000",
+        "20131231T000000",
+        "20140107T000000",
+        "20141216T000000",
+        "20141223T000000",
+        "20141230T000000",
+        "20150106T000000",
+        "20151222T000000",
+        "20151229T000000",
+        "20160105T000000",
+        "20160112T000000",
+        "20161220T000000",
+        "20161227T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-076",
+      "description": "53rd ISO week of the year on Tue and Sat [icalrecur_test.txt:384]",
+      "recurrence": "DTSTART:20130101T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=TU,SA;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20151229T000000",
+        "20160102T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-077",
+      "description": "Monday of the 53rd ISO week, in the years that have one [icalrecur_test.txt:389]",
+      "recurrence": "DTSTART:20321227T090000\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=MO;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20321227T090000",
+        "20371228T090000",
+        "20431228T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-078",
+      "description": "Thursday of the 52nd ISO week (week 1 of 2010 starts on January 4) [icalrecur_test.txt:394]",
+      "recurrence": "DTSTART:20101230T090000\nRRULE:FREQ=YEARLY;BYWEEKNO=52;BYDAY=TH;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20101230T090000",
+        "20111229T090000",
+        "20121227T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-079",
+      "description": "Monday of the 9th week from the end, with weeks starting on Tuesday [icalrecur_test.txt:399]",
+      "recurrence": "DTSTART:20261102T090000\nRRULE:FREQ=YEARLY;BYWEEKNO=-9;BYDAY=MO;WKST=TU;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20261102T090000",
+        "20271108T090000",
+        "20281106T090000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-080",
+      "description": "github issue491 [icalrecur_test.txt:404]",
+      "recurrence": "DTSTART:20210301T142000\nRRULE:FREQ=HOURLY;UNTIL=20210303T000000Z",
+      "startAt": "20210302T100000",
+      "expected": [
+        "20210301T142000",
+        "20210301T152000",
+        "20210301T162000",
+        "20210301T172000",
+        "20210301T182000",
+        "20210301T192000",
+        "20210301T202000",
+        "20210301T212000",
+        "20210301T222000",
+        "20210301T232000",
+        "20210302T002000",
+        "20210302T012000",
+        "20210302T022000",
+        "20210302T032000",
+        "20210302T042000",
+        "20210302T052000",
+        "20210302T062000",
+        "20210302T072000",
+        "20210302T082000",
+        "20210302T092000",
+        "20210302T102000",
+        "20210302T112000",
+        "20210302T122000",
+        "20210302T132000",
+        "20210302T142000",
+        "20210302T152000",
+        "20210302T162000",
+        "20210302T172000",
+        "20210302T182000",
+        "20210302T192000",
+        "20210302T202000",
+        "20210302T212000",
+        "20210302T222000",
+        "20210302T232000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-081",
+      "description": "hourly on Thursdays [icalrecur_test.txt:410]",
+      "recurrence": "DTSTART:20241024T221234\nRRULE:FREQ=HOURLY;BYDAY=TH;BYHOUR=22,23;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20241024T221234",
+        "20241024T231234",
+        "20241031T221234",
+        "20241031T231234"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-082",
+      "description": "github issue782 [icalrecur_test.txt:415]",
+      "recurrence": "DTSTART:20180213T080001\nRRULE:FREQ=YEARLY;BYWEEKNO=6;BYDAY=TU;WKST=TH;UNTIL=20210612T000000Z",
+      "startAt": null,
+      "expected": [
+        "20180213T080001",
+        "20190212T080001",
+        "20200211T080001",
+        "20210209T080001"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-083",
+      "description": "yearly, by Feb 29th day of month [icalrecur_test.txt:420]",
+      "recurrence": "DTSTART;VALUE=DATE:20240229\nRRULE:FREQ=YEARLY;BYMONTHDAY=29;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20240229",
+        "20280229",
+        "20320229"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-084",
+      "description": "yearly, by last and -29th of Feb [icalrecur_test.txt:425]",
+      "recurrence": "DTSTART;VALUE=DATE:20240201\nRRULE:FREQ=YEARLY;BYMONTHDAY=-29,-1;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240201",
+        "20240229",
+        "20250228",
+        "20260228"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-085",
+      "description": "time-related BY* should be ignored if DTSTART is date-only [icalrecur_test.txt:430]",
+      "recurrence": "DTSTART;VALUE=DATE:20241018\nRRULE:FREQ=DAILY;BYMINUTE=1,2,3,4;INTERVAL=2;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20241018",
+        "20241020",
+        "20241022"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-086",
+      "description": "30.12 in WEEK 1 with expansion on BYMONTH, BYMONTHDAY, BYWEEKNO [icalrecur_test.txt:435]",
+      "recurrence": "DTSTART;VALUE=DATE:20241230\nRRULE:FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=30;BYWEEKNO=1;UNTIL=20320101",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "UNIMPLEMENTED: This feature has not been implemented",
+      "truncated": false,
+      "notes": {
+        "skip": "libical does not implement BYWEEKNO together with BYMONTH and BYMONTHDAY. The rule is valid RFC 5545; dateutil and Ical.Net give 20241230,20251230,20301230,20311230."
+      }
+    },
+    {
+      "id": "libical-087",
+      "description": "BYMONTHDAY with limit behaviour [icalrecur_test.txt:440]",
+      "recurrence": "DTSTART;VALUE=DATE:20250220\nRRULE:FREQ=DAILY;BYMONTHDAY=20,-2;UNTIL=20250401",
+      "startAt": null,
+      "expected": [
+        "20250220",
+        "20250227",
+        "20250320",
+        "20250330"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-088",
+      "description": "BYYEARDAY with limit behaviour; BYHOUR limit behaviour [icalrecur_test.txt:445]",
+      "recurrence": "DTSTART:20251220T000000\nRRULE:FREQ=HOURLY;BYHOUR=0;BYYEARDAY=360,-2;UNTIL=20260101T000000",
+      "startAt": null,
+      "expected": [
+        "20251226T000000",
+        "20251230T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-089",
+      "description": "BYHOUR, BYMINUTE, BYSECOND limit behaviour note that the max number of increments is 1000, so we can only observer a limited time span [icalrecur_test.txt:451]",
+      "recurrence": "DTSTART:20250216T015905\nRRULE:FREQ=SECONDLY;BYHOUR=1,2;BYMINUTE=3,4,59;BYSECOND=5,6;UNTIL=20250216T020500",
+      "startAt": null,
+      "expected": [
+        "20250216T015905",
+        "20250216T015906",
+        "20250216T020305",
+        "20250216T020306",
+        "20250216T020405",
+        "20250216T020406"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-090",
+      "description": "github issue797: BYSECOND list out of order [icalrecur_test.txt:456]",
+      "recurrence": "DTSTART:20240229T140104\nRRULE:FREQ=SECONDLY;BYSECOND=5,4;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20240229T140104",
+        "20240229T140105",
+        "20240229T140204",
+        "20240229T140205",
+        "20240229T140304"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-091",
+      "description": "github issue797: DTSTART matches the second smallest value in BYSECOND list [icalrecur_test.txt:461]",
+      "recurrence": "DTSTART:20240229T140105\nRRULE:FREQ=SECONDLY;BYSECOND=4,5;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20240229T140105",
+        "20240229T140204",
+        "20240229T140205",
+        "20240229T140304",
+        "20240229T140305"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-092",
+      "description": "BYSECOND list out of order; DTSTART matches third smallest value in BYSECOND list [icalrecur_test.txt:466]",
+      "recurrence": "DTSTART:20240229T140106\nRRULE:FREQ=SECONDLY;BYSECOND=7,4,6,5;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20240229T140106",
+        "20240229T140107",
+        "20240229T140204",
+        "20240229T140205",
+        "20240229T140206"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-093",
+      "description": "github issue797: BYMONTH out of order [icalrecur_test.txt:471]",
+      "recurrence": "DTSTART;VALUE=DATE:20240401\nRRULE:FREQ=MONTHLY;BYMONTH=5,4;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240401",
+        "20240501",
+        "20250401",
+        "20250501"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-094",
+      "description": "github issue797: BYMONTH out of order [icalrecur_test.txt:476]",
+      "recurrence": "DTSTART;VALUE=DATE:20240501\nRRULE:FREQ=MONTHLY;BYMONTH=5,4;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240501",
+        "20250401",
+        "20250501",
+        "20260401"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-095",
+      "description": "github issue797: BYMONTH out of order [icalrecur_test.txt:481]",
+      "recurrence": "DTSTART;VALUE=DATE:20240401\nRRULE:FREQ=YEARLY;BYMONTH=5,4;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240401",
+        "20240501",
+        "20250401",
+        "20250501"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-096",
+      "description": "github issue797: BYMONTH out of order [icalrecur_test.txt:486]",
+      "recurrence": "DTSTART;VALUE=DATE:20240501\nRRULE:FREQ=YEARLY;BYMONTH=5,4;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240501",
+        "20250401",
+        "20250501",
+        "20260401"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-097",
+      "description": "github issue797: BYMONTH out of order [icalrecur_test.txt:491]",
+      "recurrence": "DTSTART;VALUE=DATE:20240401\nRRULE:FREQ=DAILY;BYMONTH=5,4;BYMONTHDAY=1;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240401",
+        "20240501",
+        "20250401",
+        "20250501"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-098",
+      "description": "github issue797: BYMONTH out of order [icalrecur_test.txt:496]",
+      "recurrence": "DTSTART;VALUE=DATE:20240501\nRRULE:FREQ=DAILY;BYMONTH=5,4;BYMONTHDAY=1;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240501",
+        "20250401",
+        "20250501",
+        "20260401"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-099",
+      "description": "github issue797: BYYEARDAY out of order [icalrecur_test.txt:501]",
+      "recurrence": "DTSTART;VALUE=DATE:20240102\nRRULE:FREQ=YEARLY;BYYEARDAY=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240102",
+        "20240103",
+        "20250102",
+        "20250103"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-100",
+      "description": "github issue797: BYYEARDAY out of order [icalrecur_test.txt:506]",
+      "recurrence": "DTSTART;VALUE=DATE:20240103\nRRULE:FREQ=YEARLY;BYYEARDAY=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240103",
+        "20250102",
+        "20250103",
+        "20260102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-101",
+      "description": "github issue797: BYYEARDAY out of order [icalrecur_test.txt:511]",
+      "recurrence": "DTSTART;VALUE=DATE:20240102\nRRULE:FREQ=YEARLY;BYYEARDAY=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240102",
+        "20240103",
+        "20250102",
+        "20250103"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-102",
+      "description": "github issue797: BYMONTHDAY out of order [icalrecur_test.txt:516]",
+      "recurrence": "DTSTART;VALUE=DATE:20240102\nRRULE:FREQ=YEARLY;BYMONTH=1;BYMONTHDAY=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240102",
+        "20240103",
+        "20250102",
+        "20250103"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-103",
+      "description": "github issue797: BYMONTHDAY out of order [icalrecur_test.txt:521]",
+      "recurrence": "DTSTART;VALUE=DATE:20240103\nRRULE:FREQ=YEARLY;BYMONTH=1;BYMONTHDAY=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240103",
+        "20250102",
+        "20250103",
+        "20260102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-104",
+      "description": "github issue797: BYMONTHDAY out of order [icalrecur_test.txt:526]",
+      "recurrence": "DTSTART;VALUE=DATE:20240102\nRRULE:FREQ=DAILY;BYMONTH=1;BYMONTHDAY=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240102",
+        "20240103",
+        "20250102",
+        "20250103"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-105",
+      "description": "github issue797: BYMONTHDAY out of order [icalrecur_test.txt:531]",
+      "recurrence": "DTSTART;VALUE=DATE:20240103\nRRULE:FREQ=DAILY;BYMONTH=1;BYMONTHDAY=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240103",
+        "20250102",
+        "20250103",
+        "20260102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-106",
+      "description": "github issue797: BYSETPOS out of order [icalrecur_test.txt:536]",
+      "recurrence": "DTSTART;VALUE=DATE:20240102\nRRULE:FREQ=YEARLY;BYYEARDAY=1,2,3,4,5,6,7;BYSETPOS=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240102",
+        "20240103",
+        "20250102",
+        "20250103"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-107",
+      "description": "github issue797: BYSETPOS out of order [icalrecur_test.txt:541]",
+      "recurrence": "DTSTART;VALUE=DATE:20240103\nRRULE:FREQ=YEARLY;BYYEARDAY=1,2,3,4,5,6,7;BYSETPOS=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240103",
+        "20250102",
+        "20250103",
+        "20260102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-108",
+      "description": "Tuesday in the first two weeks of the year, starting in the second week of 2013 [icalrecur_test.txt:546]",
+      "recurrence": "DTSTART:20130108T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20130108T000000",
+        "20131231T000000",
+        "20140107T000000",
+        "20141230T000000",
+        "20150106T000000",
+        "20160105T000000",
+        "20160112T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-109",
+      "description": "Tuesday in the first two weeks of the year, starting in the first week of 2013, where the start of the week is Friday [icalrecur_test.txt:551]",
+      "recurrence": "DTSTART:20130108T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;WKST=FR;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20130108T000000",
+        "20130115T000000",
+        "20140107T000000",
+        "20140114T000000",
+        "20150106T000000",
+        "20150113T000000",
+        "20160105T000000",
+        "20160112T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-110",
+      "description": "Monday in the first two weeks of the year, starting in the second week of 2013 [icalrecur_test.txt:556]",
+      "recurrence": "DTSTART:20130107T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20130107T000000",
+        "20131230T000000",
+        "20140106T000000",
+        "20141229T000000",
+        "20150105T000000",
+        "20160104T000000",
+        "20160111T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-111",
+      "description": "Monday in the first two weeks of the year, starting in the first week of 2013, where the start of the week is Tuesday [icalrecur_test.txt:561]",
+      "recurrence": "DTSTART:20130107T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;WKST=TU;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20130107T000000",
+        "20130114T000000",
+        "20140106T000000",
+        "20140113T000000",
+        "20150105T000000",
+        "20150112T000000",
+        "20160104T000000",
+        "20160111T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-112",
+      "description": "Monday in the first two weeks of the year, starting in the first week of 2013, where the start of the week is Wednesday [icalrecur_test.txt:566]",
+      "recurrence": "DTSTART:20130107T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;WKST=WE;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20130107T000000",
+        "20130114T000000",
+        "20140106T000000",
+        "20140113T000000",
+        "20150105T000000",
+        "20150112T000000",
+        "20160104T000000",
+        "20160111T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-113",
+      "description": "Monday in the first two weeks of the year, starting in the first week of 2013, where the start of the week is Thursday [icalrecur_test.txt:571]",
+      "recurrence": "DTSTART:20130107T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;WKST=TH;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20130107T000000",
+        "20130114T000000",
+        "20140106T000000",
+        "20140113T000000",
+        "20150105T000000",
+        "20150112T000000",
+        "20160104T000000",
+        "20160111T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-114",
+      "description": "Saturday in the first two weeks of the year, starting in the second week of 2014 [icalrecur_test.txt:576]",
+      "recurrence": "DTSTART:20140111T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20140111T000000",
+        "20150103T000000",
+        "20150110T000000",
+        "20160109T000000",
+        "20160116T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-115",
+      "description": "Saturday in the first two weeks of the year, starting in the second week of 2014, where the start of the week is Tuesday [icalrecur_test.txt:581]",
+      "recurrence": "DTSTART:20140111T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;WKST=TU;UNTIL=20180101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20140111T000000",
+        "20150103T000000",
+        "20150110T000000",
+        "20160102T000000",
+        "20160109T000000",
+        "20170107T000000",
+        "20170114T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-116",
+      "description": "Saturday in the first two weeks of the year, starting in the second week of 2014, where the start of the week is Sunday [icalrecur_test.txt:586]",
+      "recurrence": "DTSTART:20140111T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=1,2;WKST=SU;UNTIL=20180101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20140111T000000",
+        "20150110T000000",
+        "20150117T000000",
+        "20160109T000000",
+        "20160116T000000",
+        "20170107T000000",
+        "20170114T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-117",
+      "description": "Tuesday in the final two weeks of the year, starting in the last week of 2013, for two occurrences [icalrecur_test.txt:591]",
+      "recurrence": "DTSTART:20131224T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=-1,-2;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20131224T000000",
+        "20141216T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-118",
+      "description": "Weekly on Tuesday and Thursday [icalrecur_test.txt:596]",
+      "recurrence": "DTSTART:20240102T120000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,SU,SA,TH;BYSETPOS=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240102T120000",
+        "20240104T120000",
+        "20240109T120000",
+        "20240111T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-119",
+      "description": "The second and third instances of the 29th day of a month within each year [icalrecur_test.txt:601]",
+      "recurrence": "DTSTART:20240229T120000\nRRULE:FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=29;BYSETPOS=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240229T120000",
+        "20240329T120000",
+        "20250329T120000",
+        "20250429T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-120",
+      "description": "The second and third instances of the 29th day of January, February, and March within each year When the year is not a leap year the third instance does not exist [icalrecur_test.txt:607]",
+      "recurrence": "DTSTART:20240229T120000\nRRULE:FREQ=YEARLY;BYMONTH=1,2,3;BYMONTHDAY=29;BYSETPOS=3,2;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20240229T120000",
+        "20240329T120000",
+        "20250329T120000",
+        "20260329T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-121",
+      "description": "The first, third, and fourth instances as well as the fifth, eighth and 21st from the last instance Since there are 24 instances each month, the 21st from the last is equal to the fourth [icalrecur_test.txt:613]",
+      "recurrence": "DTSTART:20240101T081200\nRRULE:FREQ=MONTHLY;BYMINUTE=12,39;BYHOUR=8,14,15;BYDAY=1MO,1TU,2SA,3MO;BYSETPOS=1,-5,3,-21,4,-8;COUNT=15",
+      "startAt": null,
+      "expected": [
+        "20240101T081200",
+        "20240101T141200",
+        "20240101T143900",
+        "20240113T151200",
+        "20240115T083900",
+        "20240205T081200",
+        "20240205T141200",
+        "20240205T143900",
+        "20240210T151200",
+        "20240219T083900",
+        "20240304T081200",
+        "20240304T141200",
+        "20240304T143900",
+        "20240309T151200",
+        "20240318T083900"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-122",
+      "description": "The first, third, and fourth instances as well as the fifth, eighth and 21st from the last instance Since there are 24 instances each month, the 21st from the last is equal to the fourth Starts after the third instance in January [icalrecur_test.txt:620]",
+      "recurrence": "DTSTART:20240102T143900\nRRULE:FREQ=MONTHLY;BYMINUTE=12,39;BYHOUR=8,14,15;BYDAY=1MO,1TU,2SA,3MO;BYSETPOS=1,-5,3,-21,4,-8;COUNT=15",
+      "startAt": null,
+      "expected": [
+        "20240113T151200",
+        "20240115T083900",
+        "20240205T081200",
+        "20240205T141200",
+        "20240205T143900",
+        "20240210T151200",
+        "20240219T083900",
+        "20240304T081200",
+        "20240304T141200",
+        "20240304T143900",
+        "20240309T151200",
+        "20240318T083900",
+        "20240401T081200",
+        "20240401T141200",
+        "20240401T143900"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-123",
+      "description": "The 20th and 40th minutes in an hour, every other hour [icalrecur_test.txt:625]",
+      "recurrence": "DTSTART:20241023T154000\nRRULE:FREQ=HOURLY;BYMINUTE=0,10,20,30,40,50;BYSETPOS=-2,3;INTERVAL=2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20241023T154000",
+        "20241023T172000",
+        "20241023T174000",
+        "20241023T192000",
+        "20241023T194000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-124",
+      "description": "The 20th and 40th seconds in an minute, every other minute [icalrecur_test.txt:630]",
+      "recurrence": "DTSTART:20241023T001540\nRRULE:FREQ=MINUTELY;BYSECOND=0,10,20,30,40,50;BYSETPOS=-2,3;INTERVAL=2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20241023T001540",
+        "20241023T001720",
+        "20241023T001740",
+        "20241023T001920",
+        "20241023T001940"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-125",
+      "description": "The 20th and 40th minutes in an hour, every other hour [icalrecur_test.txt:635]",
+      "recurrence": "DTSTART:20241023T154000\nRRULE:FREQ=HOURLY;BYHOUR=15,17,19;BYMINUTE=0,10,20,30,40,50;BYSETPOS=-2,3;INTERVAL=2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20241023T154000",
+        "20241023T172000",
+        "20241023T174000",
+        "20241023T192000",
+        "20241023T194000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-126",
+      "description": "The 20th and 40th seconds in an minute, every other minute [icalrecur_test.txt:640]",
+      "recurrence": "DTSTART:20241023T001540\nRRULE:FREQ=MINUTELY;BYMINUTE=15,17,19;BYSECOND=0,10,20,30,40,50;BYSETPOS=-2,3;INTERVAL=2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20241023T001540",
+        "20241023T001720",
+        "20241023T001740",
+        "20241023T001920",
+        "20241023T001940"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-127",
+      "description": "15:20 and 15:40, every five days [icalrecur_test.txt:645]",
+      "recurrence": "DTSTART:20241023T154000\nRRULE:FREQ=DAILY;BYMINUTE=0,10,20,30,40,50;BYSETPOS=-2,3;INTERVAL=5;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20241023T154000",
+        "20241028T152000",
+        "20241028T154000",
+        "20241102T152000",
+        "20241102T154000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-128",
+      "description": "15:20 and 15:40, every five days [icalrecur_test.txt:650]",
+      "recurrence": "DTSTART:20241023T154000\nRRULE:FREQ=DAILY;BYMONTHDAY=23,28,2;BYMINUTE=0,10,20,30,40,50;BYSETPOS=-2,3;INTERVAL=5;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20241023T154000",
+        "20241028T152000",
+        "20241028T154000",
+        "20241102T152000",
+        "20241102T154000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-129",
+      "description": "Monday and Wednesday each week [icalrecur_test.txt:655]",
+      "recurrence": "DTSTART;VALUE=DATE:20241023\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1,3;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20241023",
+        "20241028",
+        "20241030"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-130",
+      "description": "The 20th and 40th minutes in an hour, every other hour [icalrecur_test.txt:660]",
+      "recurrence": "DTSTART:20241023T154000\nRRULE:FREQ=HOURLY;BYHOUR=15,17,19;BYMINUTE=0,10,20,30,40,50;BYSETPOS=5,-4;INTERVAL=2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20241023T154000",
+        "20241023T172000",
+        "20241023T174000",
+        "20241023T192000",
+        "20241023T194000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-131",
+      "description": "The 1st, 2nd, 9th and 10th of each month [icalrecur_test.txt:665]",
+      "recurrence": "DTSTART;VALUE=DATE:20250810\nRRULE:FREQ=MONTHLY;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10;BYSETPOS=1,2,-1,-2;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20250810",
+        "20250901",
+        "20250902",
+        "20250909",
+        "20250910",
+        "20251001"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-132",
+      "description": "01:01:01 and 16:16:16 on the 1st and 17th of each month note that there are more than 2^16 events per month [icalrecur_test.txt:671]",
+      "recurrence": "DTSTART:20250101T010101\nRRULE:FREQ=MONTHLY;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17;BYHOUR=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;BYMINUTE=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;BYSECOND=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16;BYSETPOS=1,-1;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20250101T010101",
+        "20250117T161616",
+        "20250201T010101",
+        "20250217T161616"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-133",
+      "description": "github issue945 [icalrecur_test.txt:676]",
+      "recurrence": "DTSTART:20240229T140104\nRRULE:FREQ=SECONDLY;BYSECOND=5,4,4;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20240229T140104",
+        "20240229T140105",
+        "20240229T140204",
+        "20240229T140205",
+        "20240229T140304"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-134",
+      "description": "github issue945 [icalrecur_test.txt:681]",
+      "recurrence": "DTSTART:19970902T090000\nRRULE:FREQ=DAILY;BYHOUR=9,10,11,12,13,14,15,16,9;BYMINUTE=0,20,40,0;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "19970902T090000",
+        "19970902T092000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-135",
+      "description": "github issue945 [icalrecur_test.txt:686]",
+      "recurrence": "DTSTART:20111120T100000Z\nRRULE:FREQ=WEEKLY;COUNT=3;BYDAY=SU,TH,TH",
+      "startAt": null,
+      "expected": [
+        "20111120T100000Z",
+        "20111124T100000Z",
+        "20111127T100000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-136",
+      "description": "github issue1143 [icalrecur_test.txt:691]",
+      "recurrence": "DTSTART:20230101T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=53;COUNT=1",
+      "startAt": null,
+      "expected": [
+        "20270103T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-137",
+      "description": "github issue1223 [icalrecur_test.txt:696]",
+      "recurrence": "DTSTART:20270103T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=53;COUNT=1",
+      "startAt": null,
+      "expected": [
+        "20270103T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-138",
+      "description": "github issue1223 [icalrecur_test.txt:701]",
+      "recurrence": "DTSTART:20270103T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=TH;COUNT=1",
+      "startAt": null,
+      "expected": [
+        "20321230T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-139",
+      "description": "github issue1223 [icalrecur_test.txt:706]",
+      "recurrence": "DTSTART:20160102T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=TU,SA;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20160102T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-140",
+      "description": "github issue1223 [icalrecur_test.txt:711]",
+      "recurrence": "DTSTART:20270103T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=53;INTERVAL=6;BYDAY=TH;COUNT=1",
+      "startAt": null,
+      "expected": [
+        "20931231T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-141",
+      "description": "github issue1223 [icalrecur_test.txt:716]",
+      "recurrence": "DTSTART:20270103T000000Z\nRRULE:FREQ=YEARLY;BYWEEKNO=53;INTERVAL=5;BYDAY=TH;COUNT=1",
+      "startAt": null,
+      "expected": [
+        "20321230T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-142",
+      "description": "github issue1230 [icalrecur_test.txt:721]",
+      "recurrence": "DTSTART:20250101T051005\nRRULE:FREQ=SECONDLY;BYSECOND=5,25;INTERVAL=61;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20250101T051005",
+        "20250101T053025"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-143",
+      "description": "github issue1230 [icalrecur_test.txt:726]",
+      "recurrence": "DTSTART:20250101T050500\nRRULE:FREQ=MINUTELY;BYMINUTE=5,25;INTERVAL=61;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20250101T050500",
+        "20250102T012500",
+        "20250103T180500",
+        "20250104T142500",
+        "20250106T070500",
+        "20250107T032500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-144",
+      "description": "github issue1230 [icalrecur_test.txt:731]",
+      "recurrence": "DTSTART:20250101T030500\nRRULE:FREQ=HOURLY;BYHOUR=3,6;BYMINUTE=5,15,25;INTERVAL=7;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20250101T030500",
+        "20250101T031500",
+        "20250101T032500",
+        "20250107T060500",
+        "20250107T061500",
+        "20250107T062500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-145",
+      "description": "github issue1230 [icalrecur_test.txt:736]",
+      "recurrence": "DTSTART:20250101T030500\nRRULE:FREQ=HOURLY;BYHOUR=3,6;BYMINUTE=5,15,25;INTERVAL=7;BYSETPOS=1,-1;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20250101T030500",
+        "20250101T032500",
+        "20250107T060500",
+        "20250107T062500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-146",
+      "description": "github issue1230 [icalrecur_test.txt:741]",
+      "recurrence": "DTSTART:20250101T030500\nRRULE:FREQ=HOURLY;BYHOUR=3,6;INTERVAL=7;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20250101T030500",
+        "20250107T060500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-147",
+      "description": "github issue1230 [icalrecur_test.txt:746]",
+      "recurrence": "DTSTART:20250101T030500\nRRULE:FREQ=DAILY;BYMONTHDAY=1,20;INTERVAL=7;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20250101T030500",
+        "20250820T030500"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-148",
+      "description": "No comment in the source; RRULE:FREQ=YEARLY;BYWEEKNO=-1,-2;COUNT=5 [icalrecur_test.txt:750]",
+      "recurrence": "DTSTART;VALUE=DATE:20270102\nRRULE:FREQ=YEARLY;BYWEEKNO=-1,-2;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20270102",
+        "20271225",
+        "20280101",
+        "20281223",
+        "20281230"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-149",
+      "description": "The first date belongs to 2009, so after 6 years it will be 2015, which has a week 53. [icalrecur_test.txt:755]",
+      "recurrence": "DTSTART:20100102T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=TU,SA;INTERVAL=6;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20100102T000000",
+        "20151229T000000",
+        "20160102T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-150",
+      "description": "The first date belongs to 2009, so after 5 years it will be 2014, which has NO week 53. [icalrecur_test.txt:760]",
+      "recurrence": "DTSTART:20100102T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=TU,SA;INTERVAL=5;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20100102T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-151",
+      "description": "The first date belongs to 2009, so after 7 years it will be 2014, which has NO week 53. [icalrecur_test.txt:765]",
+      "recurrence": "DTSTART:20100102T000000\nRRULE:FREQ=YEARLY;BYWEEKNO=53;BYDAY=TU,SA;INTERVAL=7;UNTIL=20170101T000000Z",
+      "startAt": null,
+      "expected": [
+        "20100102T000000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-152",
+      "description": "DTSTART is in 2024 but the week belongs to 2025, so after 3 years it will be 2028. [icalrecur_test.txt:770]",
+      "recurrence": "DTSTART;VALUE=DATE:20241231\nRRULE:FREQ=YEARLY;BYWEEKNO=1;BYDAY=MO,TU;INTERVAL=3;UNTIL=20320101",
+      "startAt": null,
+      "expected": [
+        "20241231",
+        "20280103",
+        "20280104",
+        "20301230",
+        "20301231"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-153",
+      "description": "No comment in the source; RRULE:FREQ=WEEKLY;BYDAY=MO,SU,TU;BYMONTH=7;BYSETPOS=1;COUNT=8 [icalrecur_test.txt:774]",
+      "recurrence": "DTSTART;VALUE=DATE:20260705\nRRULE:FREQ=WEEKLY;BYDAY=MO,SU,TU;BYMONTH=7;BYSETPOS=1;COUNT=8",
+      "startAt": null,
+      "expected": [
+        "20260705",
+        "20260706",
+        "20260713",
+        "20260720",
+        "20260727",
+        "20270704",
+        "20270705",
+        "20270712"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-154",
+      "description": "No comment in the source; RRULE:FREQ=WEEKLY;BYMONTH=7;BYDAY=SU,TU;BYSETPOS=2;COUNT=8 [icalrecur_test.txt:778]",
+      "recurrence": "DTSTART;VALUE=DATE:20260712\nRRULE:FREQ=WEEKLY;BYMONTH=7;BYDAY=SU,TU;BYSETPOS=2;COUNT=8",
+      "startAt": null,
+      "expected": [
+        "20260712",
+        "20260719",
+        "20260726",
+        "20270711",
+        "20270718",
+        "20270725",
+        "20280709",
+        "20280716"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-155",
+      "description": "No comment in the source; RRULE:FREQ=WEEKLY;BYMONTH=8;BYDAY=SU,TU;BYSETPOS=-1;COUNT=8 [icalrecur_test.txt:782]",
+      "recurrence": "DTSTART;VALUE=DATE:20260802\nRRULE:FREQ=WEEKLY;BYMONTH=8;BYDAY=SU,TU;BYSETPOS=-1;COUNT=8",
+      "startAt": null,
+      "expected": [
+        "20260802",
+        "20260809",
+        "20260816",
+        "20260823",
+        "20260830",
+        "20270801",
+        "20270808",
+        "20270815"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-156",
+      "description": "No comment in the source; RRULE:FREQ=WEEKLY;BYDAY=SU;BYMONTH=7;BYSETPOS=1;COUNT=5 [icalrecur_test.txt:786]",
+      "recurrence": "DTSTART;VALUE=DATE:20260705\nRRULE:FREQ=WEEKLY;BYDAY=SU;BYMONTH=7;BYSETPOS=1;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20260705",
+        "20260712",
+        "20260719",
+        "20260726",
+        "20270704"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-157",
+      "description": "No comment in the source; RRULE:FREQ=WEEKLY;BYDAY=MO,SU,TU;BYMONTH=7;COUNT=6 [icalrecur_test.txt:790]",
+      "recurrence": "DTSTART;VALUE=DATE:20260705\nRRULE:FREQ=WEEKLY;BYDAY=MO,SU,TU;BYMONTH=7;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20260705",
+        "20260706",
+        "20260707",
+        "20260712",
+        "20260713",
+        "20260714"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-158",
+      "description": "Bad RSCALE [icalrecur_test_rscale.txt:3]",
+      "recurrence": "DTSTART;VALUE=DATE:20131025\nRRULE:RSCALE=RUSSIAN;FREQ=YEARLY",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "UNIMPLEMENTED: This feature has not been implemented",
+      "truncated": false,
+      "notes": {
+        "info": "Unknown RSCALE value. RFC 7529 section 6 lets an implementation reject the component."
+      }
+    },
+    {
+      "id": "libical-159",
+      "description": "Gregorian leap day (omit) [icalrecur_test_rscale.txt:8]",
+      "recurrence": "DTSTART;VALUE=DATE:20120229\nRRULE:RSCALE=GREGORIAN;FREQ=YEARLY;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20120229",
+        "20160229",
+        "20200229",
+        "20240229"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-160",
+      "description": "Gregorian (skip back) [icalrecur_test_rscale.txt:13]",
+      "recurrence": "DTSTART;VALUE=DATE:20140131\nRRULE:RSCALE=GREGORIAN;FREQ=MONTHLY;SKIP=BACKWARD;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20140131",
+        "20140228",
+        "20140331",
+        "20140430"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-161",
+      "description": "Gregorian (skip forward) [icalrecur_test_rscale.txt:18]",
+      "recurrence": "DTSTART;VALUE=DATE:20140131\nRRULE:RSCALE=GREGORIAN;FREQ=MONTHLY;SKIP=FORWARD;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20140131",
+        "20140301",
+        "20140331",
+        "20140501"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-162",
+      "description": "Gregorian (skip forward both) [icalrecur_test_rscale.txt:23]",
+      "recurrence": "DTSTART;VALUE=DATE:20150201\nRRULE:RSCALE=GREGORIAN;FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=28,29;SKIP=FORWARD;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20150228",
+        "20150301",
+        "20160228",
+        "20160229",
+        "20170228"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-163",
+      "description": "Gregorian (skip forward interval) [icalrecur_test_rscale.txt:28]",
+      "recurrence": "DTSTART;VALUE=DATE:20140131\nRRULE:RSCALE=GREGORIAN;FREQ=MONTHLY;INTERVAL=3;SKIP=FORWARD;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20140131",
+        "20140501",
+        "20140731",
+        "20141031"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-164",
+      "description": "Test monthly with largest day of month [icalrecur_test_rscale.txt:33]",
+      "recurrence": "DTSTART:20150131T000000Z\nRRULE:RSCALE=GREGORIAN;FREQ=MONTHLY;BYMONTHDAY=31;COUNT=12;SKIP=FORWARD",
+      "startAt": null,
+      "expected": [
+        "20150131T000000Z",
+        "20150301T000000Z",
+        "20150331T000000Z",
+        "20150501T000000Z",
+        "20150531T000000Z",
+        "20150701T000000Z",
+        "20150731T000000Z",
+        "20150831T000000Z",
+        "20151001T000000Z",
+        "20151031T000000Z",
+        "20151201T000000Z",
+        "20151231T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-165",
+      "description": "Test monthly with -largest day of month [icalrecur_test_rscale.txt:38]",
+      "recurrence": "DTSTART:20150101T000000Z\nRRULE:RSCALE=GREGORIAN;FREQ=MONTHLY;BYMONTHDAY=-31;COUNT=12;SKIP=FORWARD",
+      "startAt": null,
+      "expected": [
+        "20150101T000000Z",
+        "20150201T000000Z",
+        "20150301T000000Z",
+        "20150401T000000Z",
+        "20150501T000000Z",
+        "20150601T000000Z",
+        "20150701T000000Z",
+        "20150801T000000Z",
+        "20150901T000000Z",
+        "20151001T000000Z",
+        "20151101T000000Z",
+        "20151201T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-166",
+      "description": "Test monthly with largest day of month [icalrecur_test_rscale.txt:43]",
+      "recurrence": "DTSTART:20150131T000000Z\nRRULE:RSCALE=GREGORIAN;FREQ=MONTHLY;BYMONTHDAY=31;COUNT=12;SKIP=BACKWARD",
+      "startAt": null,
+      "expected": [
+        "20150131T000000Z",
+        "20150228T000000Z",
+        "20150331T000000Z",
+        "20150430T000000Z",
+        "20150531T000000Z",
+        "20150630T000000Z",
+        "20150731T000000Z",
+        "20150831T000000Z",
+        "20150930T000000Z",
+        "20151031T000000Z",
+        "20151130T000000Z",
+        "20151231T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-167",
+      "description": "Test monthly with -largest day of month [icalrecur_test_rscale.txt:48]",
+      "recurrence": "DTSTART:20150101T000000Z\nRRULE:RSCALE=GREGORIAN;FREQ=MONTHLY;BYMONTHDAY=-31;COUNT=12;SKIP=BACKWARD",
+      "startAt": null,
+      "expected": [
+        "20150101T000000Z",
+        "20150131T000000Z",
+        "20150301T000000Z",
+        "20150331T000000Z",
+        "20150501T000000Z",
+        "20150531T000000Z",
+        "20150701T000000Z",
+        "20150801T000000Z",
+        "20150831T000000Z",
+        "20151001T000000Z",
+        "20151031T000000Z",
+        "20151201T000000Z"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-168",
+      "description": "Test yearly with largest day of year [icalrecur_test_rscale.txt:53]",
+      "recurrence": "DTSTART:20121231T120000\nRRULE:RSCALE=GREGORIAN;FREQ=YEARLY;BYYEARDAY=366;SKIP=FORWARD;COUNT=9",
+      "startAt": null,
+      "expected": [
+        "20121231T120000",
+        "20140101T120000",
+        "20150101T120000",
+        "20160101T120000",
+        "20161231T120000",
+        "20180101T120000",
+        "20190101T120000",
+        "20200101T120000",
+        "20201231T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-169",
+      "description": "Test yearly with largest day of year [icalrecur_test_rscale.txt:58]",
+      "recurrence": "DTSTART:20121231T120000\nRRULE:RSCALE=GREGORIAN;FREQ=YEARLY;BYYEARDAY=366;SKIP=BACKWARD;COUNT=9",
+      "startAt": null,
+      "expected": [
+        "20121231T120000",
+        "20131231T120000",
+        "20141231T120000",
+        "20151231T120000",
+        "20161231T120000",
+        "20171231T120000",
+        "20181231T120000",
+        "20191231T120000",
+        "20201231T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-170",
+      "description": "Test yearly with -largest day of year [icalrecur_test_rscale.txt:63]",
+      "recurrence": "DTSTART:20120101T120000\nRRULE:RSCALE=GREGORIAN;FREQ=YEARLY;BYYEARDAY=-366;SKIP=FORWARD;COUNT=9",
+      "startAt": null,
+      "expected": [
+        "20120101T120000",
+        "20130101T120000",
+        "20140101T120000",
+        "20150101T120000",
+        "20160101T120000",
+        "20170101T120000",
+        "20180101T120000",
+        "20190101T120000",
+        "20200101T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-171",
+      "description": "Test yearly with -largest day of year [icalrecur_test_rscale.txt:68]",
+      "recurrence": "DTSTART:20120101T120000\nRRULE:RSCALE=GREGORIAN;FREQ=YEARLY;BYYEARDAY=-366;SKIP=BACKWARD;COUNT=9",
+      "startAt": null,
+      "expected": [
+        "20120101T120000",
+        "20121231T120000",
+        "20131231T120000",
+        "20141231T120000",
+        "20160101T120000",
+        "20161231T120000",
+        "20171231T120000",
+        "20181231T120000",
+        "20200101T120000"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": null
+    },
+    {
+      "id": "libical-172",
+      "description": "Ethiopic last day of year [icalrecur_test_rscale_withicu.txt:3]",
+      "recurrence": "DTSTART;VALUE=DATE:20140910\nRRULE:RSCALE=ETHIOPIC;FREQ=YEARLY;BYMONTH=13;BYMONTHDAY=-1;COUNT=6",
+      "startAt": null,
+      "expected": [
+        "20140910",
+        "20150911",
+        "20160910",
+        "20170910",
+        "20180910",
+        "20190911"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (ETHIOPIC); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-173",
+      "description": "Chinese New Year [icalrecur_test_rscale_withicu.txt:8]",
+      "recurrence": "DTSTART;VALUE=DATE:20130210\nRRULE:RSCALE=CHINESE;FREQ=YEARLY;UNTIL=20180101",
+      "startAt": null,
+      "expected": [
+        "20130210",
+        "20140131",
+        "20150219",
+        "20160208",
+        "20170128"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (CHINESE); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-174",
+      "description": "Chinese monthly [icalrecur_test_rscale_withicu.txt:13]",
+      "recurrence": "DTSTART;VALUE=DATE:20140920\nRRULE:RSCALE=CHINESE;FREQ=MONTHLY;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20140920",
+        "20141020",
+        "20141119",
+        "20141218"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (CHINESE); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-175",
+      "description": "Islamic monthly [icalrecur_test_rscale_withicu.txt:18]",
+      "recurrence": "DTSTART;VALUE=DATE:20131025\nRRULE:RSCALE=ISLAMIC-CIVIL;FREQ=MONTHLY;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20131025",
+        "20131124",
+        "20131224",
+        "20140122"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (ISLAMIC-CIVIL); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-176",
+      "description": "Islamic Ramadan [icalrecur_test_rscale_withicu.txt:23]",
+      "recurrence": "DTSTART;VALUE=DATE:20130709\nRRULE:RSCALE=ISLAMIC-CIVIL;FREQ=YEARLY;BYMONTH=9;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20130709",
+        "20140629",
+        "20150618",
+        "20160607",
+        "20170527"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (ISLAMIC-CIVIL); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-177",
+      "description": "Chinese leap month (no leap) [icalrecur_test_rscale_withicu.txt:28]",
+      "recurrence": "DTSTART;VALUE=DATE:20131025\nRRULE:RSCALE=CHINESE;FREQ=YEARLY;BYMONTHDAY=10;BYMONTH=9;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20141003",
+        "20151022",
+        "20161010"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (CHINESE); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-178",
+      "description": "Chinese leap month (omit) [icalrecur_test_rscale_withicu.txt:33]",
+      "recurrence": "DTSTART;VALUE=DATE:20131025\nRRULE:RSCALE=CHINESE;FREQ=YEARLY;BYMONTHDAY=10;BYMONTH=9L;SKIP=OMIT;COUNT=2",
+      "startAt": null,
+      "expected": [
+        "20141102",
+        "21091102"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (CHINESE); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-179",
+      "description": "No comment in the source; RRULE:RSCALE=CHINESE;FREQ=YEARLY;BYMONTHDAY=10;BYMONTH=4L;SKIP=OMIT;UNTIL=21000101 [icalrecur_test_rscale_withicu.txt:37]",
+      "recurrence": "DTSTART;VALUE=DATE:20131025\nRRULE:RSCALE=CHINESE;FREQ=YEARLY;BYMONTHDAY=10;BYMONTH=4L;SKIP=OMIT;UNTIL=21000101",
+      "startAt": null,
+      "expected": [
+        "20200601",
+        "20580531",
+        "20690530",
+        "20770531",
+        "20880530",
+        "20960531"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (CHINESE); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-180",
+      "description": "Chinese leap month (skip forward) [icalrecur_test_rscale_withicu.txt:42]",
+      "recurrence": "DTSTART;VALUE=DATE:20131025\nRRULE:RSCALE=CHINESE;FREQ=YEARLY;BYMONTHDAY=10;BYMONTH=9L;SKIP=FORWARD;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20131112",
+        "20141102",
+        "20151121"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (CHINESE); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-181",
+      "description": "Chinese leap month (skip back) [icalrecur_test_rscale_withicu.txt:47]",
+      "recurrence": "DTSTART;VALUE=DATE:20131025\nRRULE:RSCALE=CHINESE;FREQ=YEARLY;BYMONTHDAY=10;BYMONTH=9L;SKIP=BACKWARD;COUNT=3",
+      "startAt": null,
+      "expected": [
+        "20141102",
+        "20151022",
+        "20161010"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (CHINESE); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-182",
+      "description": "Chinese leap month (both) [icalrecur_test_rscale_withicu.txt:52]",
+      "recurrence": "DTSTART;VALUE=DATE:20131025\nRRULE:RSCALE=CHINESE;FREQ=YEARLY;BYMONTHDAY=10;BYMONTH=9,9L;SKIP=BACKWARD;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20141003",
+        "20141102",
+        "20151022",
+        "20161010"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (CHINESE); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-183",
+      "description": "Every other Chinese New Year, starting at Jan 1, 2016 [icalrecur_test_rscale_withicu.txt:57]",
+      "recurrence": "DTSTART;VALUE=DATE:20130210\nRRULE:RSCALE=CHINESE;FREQ=YEARLY;UNTIL=20200101;INTERVAL=2",
+      "startAt": "20160101",
+      "expected": [
+        "20130210",
+        "20150219",
+        "20170128",
+        "20190205"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (CHINESE); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-184",
+      "description": "Jewish leap month (omit) [icalrecur_test_rscale_withicu.txt:63]",
+      "recurrence": "DTSTART;VALUE=DATE:20140205\nRRULE:RSCALE=HEBREW;FREQ=YEARLY;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20140205",
+        "20160214",
+        "20190210",
+        "20220206"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (HEBREW); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-185",
+      "description": "Jewish leap month (skip forward) [icalrecur_test_rscale_withicu.txt:68]",
+      "recurrence": "DTSTART;VALUE=DATE:20140205\nRRULE:RSCALE=HEBREW;FREQ=YEARLY;SKIP=FORWARD;COUNT=4",
+      "startAt": null,
+      "expected": [
+        "20140205",
+        "20150224",
+        "20160214",
+        "20170303"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (HEBREW); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-186",
+      "description": "Jewish leap month (skip forward by month) [icalrecur_test_rscale_withicu.txt:73]",
+      "recurrence": "DTSTART;VALUE=DATE:20140208\nRRULE:RSCALE=HEBREW;FREQ=YEARLY;BYMONTH=5L;BYMONTHDAY=8;SKIP=FORWARD;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20140208",
+        "20150227",
+        "20160217",
+        "20170306",
+        "20180223"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (HEBREW); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-187",
+      "description": "30th day of Jewish leap month (skip forward) [icalrecur_test_rscale_withicu.txt:78]",
+      "recurrence": "DTSTART;VALUE=DATE:20140302\nRRULE:RSCALE=HEBREW;FREQ=YEARLY;BYMONTH=5L;BYMONTHDAY=30;SKIP=FORWARD;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20140302",
+        "20150321",
+        "20160310",
+        "20170328",
+        "20180317"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (HEBREW); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-188",
+      "description": "Last day of Jewish leap month (skip forward) [icalrecur_test_rscale_withicu.txt:83]",
+      "recurrence": "DTSTART;VALUE=DATE:20140302\nRRULE:RSCALE=HEBREW;FREQ=YEARLY;BYMONTH=5L;BYMONTHDAY=-1;SKIP=FORWARD;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20140302",
+        "20150320",
+        "20160310",
+        "20170327",
+        "20180316"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (HEBREW); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-189",
+      "description": "30th day of Jewish leap month (skip backward) [icalrecur_test_rscale_withicu.txt:88]",
+      "recurrence": "DTSTART;VALUE=DATE:20140302\nRRULE:RSCALE=HEBREW;FREQ=YEARLY;BYMONTH=5L;BYMONTHDAY=30;SKIP=BACKWARD;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20140302",
+        "20150219",
+        "20160310",
+        "20170226",
+        "20180215"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (HEBREW); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-190",
+      "description": "Last day of Jewish leap month (skip backward) [icalrecur_test_rscale_withicu.txt:93]",
+      "recurrence": "DTSTART;VALUE=DATE:20140302\nRRULE:RSCALE=HEBREW;FREQ=YEARLY;BYMONTH=5L;BYMONTHDAY=-1;SKIP=BACKWARD;COUNT=5",
+      "startAt": null,
+      "expected": [
+        "20140302",
+        "20150219",
+        "20160310",
+        "20170226",
+        "20180215"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (HEBREW); libical computes it with ICU"
+      }
+    },
+    {
+      "id": "libical-191",
+      "description": "Korean Buddha birthday [icalrecur_test_rscale_withicu_dangi.txt:3]",
+      "recurrence": "DTSTART;VALUE=DATE:20131025\nRRULE:RSCALE=DANGI;FREQ=YEARLY;BYMONTHDAY=8;BYMONTH=4;UNTIL=20160101",
+      "startAt": null,
+      "expected": [
+        "20140506",
+        "20150525"
+      ],
+      "expectedError": null,
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE (DANGI); libical computes it with ICU"
+      }
+    }
+  ]
+}

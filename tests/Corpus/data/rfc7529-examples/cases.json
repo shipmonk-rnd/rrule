@@ -1,0 +1,83 @@
+{
+  "source": "rfc7529-examples",
+  "sourceUrl": "https://www.rfc-editor.org/rfc/rfc7529#section-4.3",
+  "license": "BSD-3-Clause",
+  "dtStartPolicy": "Always",
+  "cases": [
+    {
+      "id": "rfc7529-examples-001",
+      "description": "4.3.1. Chinese New Year",
+      "recurrence": "DTSTART;VALUE=DATE:20130210\nRRULE:RSCALE=CHINESE;FREQ=YEARLY",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "unsupported calendar scale",
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE",
+        "rfcInstances": "20130210,20140131,20150219,20160208,20170128",
+        "rfcInstancesTruncated": "true"
+      }
+    },
+    {
+      "id": "rfc7529-examples-002",
+      "description": "4.3.2. Ethiopic 13th Month",
+      "recurrence": "DTSTART;VALUE=DATE:20130906\nRRULE:RSCALE=ETHIOPIC;FREQ=MONTHLY;BYMONTH=13",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "unsupported calendar scale",
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE",
+        "rfcInstances": "20130906,20140906,20150906,20160906,20170906",
+        "rfcInstancesTruncated": "true"
+      }
+    },
+    {
+      "id": "rfc7529-examples-003",
+      "description": "4.3.3. Hebrew Anniversary Starting in a Leap Month",
+      "recurrence": "DTSTART;VALUE=DATE:20140208\nRRULE:RSCALE=HEBREW;FREQ=YEARLY;BYMONTH=5L;BYMONTHDAY=8;SKIP=FORWARD",
+      "startAt": null,
+      "expected": [],
+      "expectedError": "unsupported calendar scale",
+      "truncated": false,
+      "notes": {
+        "skip": "non-Gregorian RSCALE",
+        "rfcInstances": "20140208,20150227,20160217,20170306,20180223",
+        "rfcInstancesTruncated": "true"
+      }
+    },
+    {
+      "id": "rfc7529-examples-004",
+      "description": "4.3.4. Gregorian Leap Day with SKIP: standard iCalendar behaviour without RSCALE",
+      "recurrence": "DTSTART;VALUE=DATE:20120229\nRRULE:FREQ=YEARLY",
+      "startAt": null,
+      "expected": [
+        "20120229",
+        "20160229",
+        "20200229"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": {
+        "info": "The RFC table lists 20120229 and 20160229; the prose adds 2020 (\"leap years (2016, 2020, etc.)\")."
+      }
+    },
+    {
+      "id": "rfc7529-examples-005",
+      "description": "4.3.4. Gregorian Leap Day with SKIP: RSCALE=GREGORIAN with SKIP=FORWARD",
+      "recurrence": "DTSTART;VALUE=DATE:20120229\nRRULE:RSCALE=GREGORIAN;FREQ=YEARLY;SKIP=FORWARD",
+      "startAt": null,
+      "expected": [
+        "20120229",
+        "20130301",
+        "20140301",
+        "20150301",
+        "20160229",
+        "20170301"
+      ],
+      "expectedError": null,
+      "truncated": true,
+      "notes": null
+    }
+  ]
+}
