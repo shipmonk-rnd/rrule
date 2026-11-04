@@ -49,8 +49,7 @@ final class SeededRandom
         $this->s2 ^= $t;
         $this->s3 = self::rotateLeft($this->s3, 11);
 
-        /** @var int<0, 4294967295> $result */
-        return $result;
+        return $result >= 0 && $result <= self::MASK ? $result : throw new LogicException('A 32-bit result is from 0 to 2^32 - 1');
     }
 
     /**

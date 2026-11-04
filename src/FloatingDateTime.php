@@ -5,6 +5,7 @@ namespace ShipMonk\RRule;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use LogicException;
 use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Internal\Civil;
@@ -72,12 +73,6 @@ final class FloatingDateTime
             ));
         }
 
-        /** @var int<1, 9999> $year */
-        /** @var int<1, 12> $month */
-        /** @var int<1, 31> $day */
-        /** @var int<0, 23> $hour */
-        /** @var int<0, 59> $minute */
-        /** @var int<0, 59> $second */
         return new self($year, $month, $day, $hour, $minute, $second);
     }
 
@@ -114,14 +109,18 @@ final class FloatingDateTime
             throw new InvalidArgumentException(sprintf('Local seconds %d are outside the years %d to %d', $localSeconds, Civil::MIN_YEAR, Civil::MAX_YEAR));
         }
 
-        /** @var int<0, 23> $hour */
         $hour = intdiv($secondOfDay, 3600);
-        /** @var int<0, 59> $minute */
         $minute = intdiv($secondOfDay % 3600, 60);
-        /** @var int<0, 59> $second */
         $second = $secondOfDay % 60;
 
-        return new self($year, $month, $day, $hour, $minute, $second);
+        return new self(
+            $year,
+            $month,
+            $day,
+            $hour >= 0 && $hour <= 23 ? $hour : throw new LogicException('The hour is from 0 to 23'),
+            $minute >= 0 && $minute <= 59 ? $minute : throw new LogicException('The minute is from 0 to 59'),
+            $second >= 0 ? $second : throw new LogicException('The second is not negative'),
+        );
     }
 
     /**

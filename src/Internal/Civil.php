@@ -2,6 +2,7 @@
 
 namespace ShipMonk\RRule\Internal;
 
+use LogicException;
 use function intdiv;
 
 /**
@@ -54,6 +55,11 @@ final class Civil
         return self::isLeapYear($year) ? 366 : 365;
     }
 
+    /**
+     * @phpstan-assert-if-true int<1, 9999> $year
+     * @phpstan-assert-if-true int<1, 12> $month
+     * @phpstan-assert-if-true int<1, 31> $day
+     */
     public static function isValidDate(
         int $year,
         int $month,
@@ -102,9 +108,11 @@ final class Civil
         $day = $dayOfYear - intdiv(153 * $monthPart + 2, 5) + 1;
         $month = $monthPart < 10 ? $monthPart + 3 : $monthPart - 9;
 
-        /** @var int<1, 12> $month */
-        /** @var int<1, 31> $day */
-        return [$yearOfEra + $era * 400 + ($month <= 2 ? 1 : 0), $month, $day];
+        return [
+            $yearOfEra + $era * 400 + ($month <= 2 ? 1 : 0),
+            $month >= 1 && $month <= 12 ? $month : throw new LogicException('The month is from 1 to 12'),
+            $day >= 1 && $day <= 31 ? $day : throw new LogicException('The day is from 1 to 31'),
+        ];
     }
 
     /**

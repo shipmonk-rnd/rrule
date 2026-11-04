@@ -45,9 +45,6 @@ final class CalendarDate
             throw new InvalidValueException(sprintf('Invalid date %04d-%02d-%02d (years 1 to 9999 are supported)', $year, $month, $day));
         }
 
-        /** @var int<1, 9999> $year */
-        /** @var int<1, 12> $month */
-        /** @var int<1, 31> $day */
         return new self($year, $month, $day);
     }
 

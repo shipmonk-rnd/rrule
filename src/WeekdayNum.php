@@ -31,11 +31,14 @@ final class WeekdayNum
         ?int $ordinal = null,
     ): self
     {
-        if ($ordinal !== null && ($ordinal === 0 || $ordinal < -53 || $ordinal > 53)) {
+        if ($ordinal === null) {
+            return new self($weekday, null);
+        }
+
+        if ($ordinal === 0 || $ordinal < -53 || $ordinal > 53) {
             throw new InvalidValueException(sprintf('Invalid BYDAY ordinal %d (allowed: -53 to -1 and 1 to 53)', $ordinal));
         }
 
-        /** @var int<-53, -1>|int<1, 53>|null $ordinal */
         return new self($weekday, $ordinal);
     }
 
