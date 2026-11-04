@@ -10,8 +10,6 @@ namespace ShipMonk\RRule\Exception;
 enum RuleViolation: string
 {
 
-    case IntervalNotPositive = 'interval_not_positive';
-    case ValueOutOfRange = 'value_out_of_range';
     case ByWeekNoRequiresYearly = 'by_week_no_requires_yearly';
     case ByYearDayNotAllowed = 'by_year_day_not_allowed';
     case ByMonthDayNotAllowedWithWeekly = 'by_month_day_not_allowed_with_weekly';

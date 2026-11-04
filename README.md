@@ -206,7 +206,7 @@ All exceptions implement `ShipMonk\RRule\Exception\RecurrenceException`.
 | `InvalidRecurrenceRuleException` | a rule breaks an RFC requirement; `$violation` says which |
 | `InvalidRecurrenceException` | the start, the rules and the dates do not fit together (for example the UNTIL value type), a stored value is outside the years 1 to 9999, or the start zone is not supported |
 | `InvalidValueException` | a date, time, count or ordinal is out of range |
-| `InvalidArgumentException` (unchecked) | the calling code breaks a method contract: a value of another type than the start, a search limit below 1, a negative `take()` limit |
+| `InvalidArgumentException` (unchecked) | the calling code breaks a method contract: a value of another type than the start, a rule value outside its type (`INTERVAL` 0, `BYHOUR` 24), a search limit below 1, a negative `take()` limit |
 | `SerializationException` (unchecked) | the recurrence has no RFC 5545 text form (see [Parsing and serialization](#parsing-and-serialization)) |
 | `SearchLimitExceededException` (unchecked) | see [Termination and limits](#termination-and-limits) |
 

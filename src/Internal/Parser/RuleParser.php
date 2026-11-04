@@ -178,23 +178,15 @@ final class RuleParser
             );
         }
 
-        /** @var list<int<0, 60>> $bySecond */
-        $bySecond = $this->parseUnsignedList('BYSECOND', $parts['BYSECOND'] ?? null, 0, 60, $lineNumber);
-        /** @var list<int<0, 59>> $byMinute */
-        $byMinute = $this->parseUnsignedList('BYMINUTE', $parts['BYMINUTE'] ?? null, 0, 59, $lineNumber);
-        /** @var list<int<0, 23>> $byHour */
-        $byHour = $this->parseUnsignedList('BYHOUR', $parts['BYHOUR'] ?? null, 0, 23, $lineNumber);
+        $bySecond = $this->parseBySecond($parts['BYSECOND'] ?? null, $lineNumber);
+        $byMinute = $this->parseByMinute($parts['BYMINUTE'] ?? null, $lineNumber);
+        $byHour = $this->parseByHour($parts['BYHOUR'] ?? null, $lineNumber);
         $byDay = $this->parseByDay($parts['BYDAY'] ?? null, $lineNumber);
-        /** @var list<int<-31, -1>|int<1, 31>> $byMonthDay */
-        $byMonthDay = $this->parseSignedList('BYMONTHDAY', $parts['BYMONTHDAY'] ?? null, 31, $lineNumber);
-        /** @var list<int<-366, -1>|int<1, 366>> $byYearDay */
-        $byYearDay = $this->parseSignedList('BYYEARDAY', $parts['BYYEARDAY'] ?? null, 366, $lineNumber);
-        /** @var list<int<-53, -1>|int<1, 53>> $byWeekNo */
-        $byWeekNo = $this->parseSignedList('BYWEEKNO', $parts['BYWEEKNO'] ?? null, 53, $lineNumber);
-        /** @var list<int<1, 12>> $byMonth */
+        $byMonthDay = $this->parseByMonthDay($parts['BYMONTHDAY'] ?? null, $lineNumber);
+        $byYearDay = $this->parseYearDays('BYYEARDAY', $parts['BYYEARDAY'] ?? null, $lineNumber);
+        $byWeekNo = $this->parseByWeekNo($parts['BYWEEKNO'] ?? null, $lineNumber);
         $byMonth = $this->parseByMonth($parts['BYMONTH'] ?? null, $lineNumber);
-        /** @var list<int<-366, -1>|int<1, 366>> $bySetPos */
-        $bySetPos = $this->parseSignedList('BYSETPOS', $parts['BYSETPOS'] ?? null, 366, $lineNumber);
+        $bySetPos = $this->parseYearDays('BYSETPOS', $parts['BYSETPOS'] ?? null, $lineNumber);
 
         $weekStart = isset($parts['WKST'])
             ? Weekday::tryFrom(ValueParser::upper($parts['WKST'])) ?? throw ParseErrors::create(
@@ -360,81 +352,6 @@ final class RuleParser
 
     /**
      * @param positive-int|null $lineNumber
-     * @return list<int>
-     *
-     * @throws ParseException
-     */
-    private function parseByMonth(
-        ?string $value,
-        ?int $lineNumber,
-    ): array
-    {
-        if ($value !== null && preg_match('~(?:^|,)\d+L(?:,|\z)~i', $value) === 1) {
-            throw ParseErrors::create(sprintf('Invalid BYMONTH value "%s": leap months (RFC 7529) do not exist in the GREGORIAN calendar', $value), $lineNumber);
-        }
-
-        return $this->parseUnsignedList('BYMONTH', $value, 1, 12, $lineNumber);
-    }
-
-    /**
-     * @param positive-int|null $lineNumber
-     * @return list<int>
-     *
-     * @throws ParseException
-     */
-    private function parseUnsignedList(
-        string $name,
-        ?string $value,
-        int $min,
-        int $max,
-        ?int $lineNumber,
-    ): array
-    {
-        $numbers = [];
-
-        foreach ($this->splitList($name, $value, $lineNumber) as $item) {
-            $number = $this->parseInteger($name, $item, $item, '', $lineNumber);
-
-            if ($number < $min || $number > $max) {
-                throw ParseErrors::create(sprintf('Invalid %s value "%s": allowed values are %d to %d', $name, $item, $min, $max), $lineNumber);
-            }
-
-            $numbers[] = $number;
-        }
-
-        return $numbers;
-    }
-
-    /**
-     * @param positive-int|null $lineNumber
-     * @return list<int>
-     *
-     * @throws ParseException
-     */
-    private function parseSignedList(
-        string $name,
-        ?string $value,
-        int $max,
-        ?int $lineNumber,
-    ): array
-    {
-        $numbers = [];
-
-        foreach ($this->splitList($name, $value, $lineNumber) as $item) {
-            $number = $this->parseInteger($name, $item, $item, '+-', $lineNumber);
-
-            if ($number === 0 || $number < -$max || $number > $max) {
-                throw ParseErrors::create(sprintf('Invalid %s value "%s": allowed values are -%d to -1 and 1 to %d', $name, $item, $max, $max), $lineNumber);
-            }
-
-            $numbers[] = $number;
-        }
-
-        return $numbers;
-    }
-
-    /**
-     * @param positive-int|null $lineNumber
      * @return list<WeekdayNum>
      *
      * @throws ParseException
@@ -465,6 +382,188 @@ final class RuleParser
         }
 
         return $byDay;
+    }
+
+    /**
+     * @param positive-int|null $lineNumber
+     * @return list<int<0, 60>>
+     *
+     * @throws ParseException
+     */
+    private function parseBySecond(
+        ?string $value,
+        ?int $lineNumber,
+    ): array
+    {
+        $numbers = [];
+
+        foreach ($this->parseIntegers('BYSECOND', $value, '', $lineNumber) as [$item, $number]) {
+            $numbers[] = $number >= 0 && $number <= 60 ? $number : throw self::outOfRange('BYSECOND', $item, 'allowed values are 0 to 60', $lineNumber);
+        }
+
+        return $numbers;
+    }
+
+    /**
+     * @param positive-int|null $lineNumber
+     * @return list<int<0, 59>>
+     *
+     * @throws ParseException
+     */
+    private function parseByMinute(
+        ?string $value,
+        ?int $lineNumber,
+    ): array
+    {
+        $numbers = [];
+
+        foreach ($this->parseIntegers('BYMINUTE', $value, '', $lineNumber) as [$item, $number]) {
+            $numbers[] = $number >= 0 && $number <= 59 ? $number : throw self::outOfRange('BYMINUTE', $item, 'allowed values are 0 to 59', $lineNumber);
+        }
+
+        return $numbers;
+    }
+
+    /**
+     * @param positive-int|null $lineNumber
+     * @return list<int<0, 23>>
+     *
+     * @throws ParseException
+     */
+    private function parseByHour(
+        ?string $value,
+        ?int $lineNumber,
+    ): array
+    {
+        $numbers = [];
+
+        foreach ($this->parseIntegers('BYHOUR', $value, '', $lineNumber) as [$item, $number]) {
+            $numbers[] = $number >= 0 && $number <= 23 ? $number : throw self::outOfRange('BYHOUR', $item, 'allowed values are 0 to 23', $lineNumber);
+        }
+
+        return $numbers;
+    }
+
+    /**
+     * @param positive-int|null $lineNumber
+     * @return list<int<-31, -1>|int<1, 31>>
+     *
+     * @throws ParseException
+     */
+    private function parseByMonthDay(
+        ?string $value,
+        ?int $lineNumber,
+    ): array
+    {
+        $numbers = [];
+
+        foreach ($this->parseIntegers('BYMONTHDAY', $value, '+-', $lineNumber) as [$item, $number]) {
+            $numbers[] = $number !== 0 && $number >= -31 && $number <= 31 ? $number : throw self::outOfRange('BYMONTHDAY', $item, 'allowed values are -31 to -1 and 1 to 31', $lineNumber);
+        }
+
+        return $numbers;
+    }
+
+    /**
+     * BYYEARDAY and BYSETPOS have the same range.
+     *
+     * @param positive-int|null $lineNumber
+     * @return list<int<-366, -1>|int<1, 366>>
+     *
+     * @throws ParseException
+     */
+    private function parseYearDays(
+        string $name,
+        ?string $value,
+        ?int $lineNumber,
+    ): array
+    {
+        $numbers = [];
+
+        foreach ($this->parseIntegers($name, $value, '+-', $lineNumber) as [$item, $number]) {
+            $numbers[] = $number !== 0 && $number >= -366 && $number <= 366 ? $number : throw self::outOfRange($name, $item, 'allowed values are -366 to -1 and 1 to 366', $lineNumber);
+        }
+
+        return $numbers;
+    }
+
+    /**
+     * @param positive-int|null $lineNumber
+     * @return list<int<-53, -1>|int<1, 53>>
+     *
+     * @throws ParseException
+     */
+    private function parseByWeekNo(
+        ?string $value,
+        ?int $lineNumber,
+    ): array
+    {
+        $numbers = [];
+
+        foreach ($this->parseIntegers('BYWEEKNO', $value, '+-', $lineNumber) as [$item, $number]) {
+            $numbers[] = $number !== 0 && $number >= -53 && $number <= 53 ? $number : throw self::outOfRange('BYWEEKNO', $item, 'allowed values are -53 to -1 and 1 to 53', $lineNumber);
+        }
+
+        return $numbers;
+    }
+
+    /**
+     * @param positive-int|null $lineNumber
+     * @return list<int<1, 12>>
+     *
+     * @throws ParseException
+     */
+    private function parseByMonth(
+        ?string $value,
+        ?int $lineNumber,
+    ): array
+    {
+        if ($value !== null && preg_match('~(?:^|,)\d+L(?:,|\z)~i', $value) === 1) {
+            throw ParseErrors::create(sprintf('Invalid BYMONTH value "%s": leap months (RFC 7529) do not exist in the GREGORIAN calendar', $value), $lineNumber);
+        }
+
+        $numbers = [];
+
+        foreach ($this->parseIntegers('BYMONTH', $value, '', $lineNumber) as [$item, $number]) {
+            $numbers[] = $number >= 1 && $number <= 12 ? $number : throw self::outOfRange('BYMONTH', $item, 'allowed values are 1 to 12', $lineNumber);
+        }
+
+        return $numbers;
+    }
+
+    /**
+     * @param positive-int|null $lineNumber
+     * @return list<array{string, int}> the text and the number of each item
+     *
+     * @throws ParseException
+     */
+    private function parseIntegers(
+        string $name,
+        ?string $value,
+        string $allowedSigns,
+        ?int $lineNumber,
+    ): array
+    {
+        $numbers = [];
+
+        foreach ($this->splitList($name, $value, $lineNumber) as $item) {
+            $numbers[] = [$item, $this->parseInteger($name, $item, $item, $allowedSigns, $lineNumber)];
+        }
+
+        return $numbers;
+    }
+
+    /**
+     * @param positive-int|null $lineNumber
+     */
+    private static function outOfRange(
+        string $name,
+        string $item,
+        string $allowed,
+        ?int $lineNumber,
+    ): ParseException
+    {
+        return ParseErrors::create(sprintf('Invalid %s value "%s": %s', $name, $item, $allowed), $lineNumber);
     }
 
     /**

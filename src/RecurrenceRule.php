@@ -3,6 +3,7 @@
 namespace ShipMonk\RRule;
 
 use LogicException;
+use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
 use ShipMonk\RRule\Exception\ParseException;
 use ShipMonk\RRule\Exception\RuleViolation;
@@ -37,7 +38,8 @@ final class RecurrenceRule
      * @param list<int<1, 12>>                $byMonth
      * @param list<int<-366, -1>|int<1, 366>> $bySetPos
      *
-     * @throws InvalidRecurrenceRuleException
+     * @throws InvalidRecurrenceRuleException when the parts do not fit together (RFC 5545 section 3.3.10, RFC 7529);
+     *                                        a value outside its type throws the unchecked InvalidArgumentException
      */
     public function __construct(
         public readonly Frequency $frequency,
@@ -58,25 +60,96 @@ final class RecurrenceRule
     )
     {
         if ($interval < 1) { // @phpstan-ignore smaller.alwaysFalse (runtime check for callers without static analysis)
-            throw new InvalidRecurrenceRuleException(RuleViolation::IntervalNotPositive, sprintf('INTERVAL must be a positive integer, %d given', $interval));
+            throw new InvalidArgumentException(sprintf('INTERVAL must be a positive integer, %d given', $interval));
         }
 
-        self::checkRange('BYSECOND', $bySecond, 0, 60, false);
-        self::checkRange('BYMINUTE', $byMinute, 0, 59, false);
-        self::checkRange('BYHOUR', $byHour, 0, 23, false);
-        self::checkRange('BYMONTHDAY', $byMonthDay, -31, 31, true);
-        self::checkRange('BYYEARDAY', $byYearDay, -366, 366, true);
-        self::checkRange('BYWEEKNO', $byWeekNo, -53, 53, true);
-        self::checkRange('BYMONTH', $byMonth, 1, 12, false);
-        self::checkRange('BYSETPOS', $bySetPos, -366, 366, true);
+        if (!array_is_list($bySecond)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
+            throw new InvalidArgumentException('BYSECOND must be a list');
+        }
+
+        foreach ($bySecond as $second) {
+            if (!is_int($second) || $second < 0 || $second > 60) { // @phpstan-ignore function.alreadyNarrowedType, smaller.alwaysFalse, greater.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse (runtime check for callers without static analysis)
+                throw new InvalidArgumentException(self::describeOutOfRange('BYSECOND', $second, '0 to 60'));
+            }
+        }
+
+        if (!array_is_list($byMinute)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
+            throw new InvalidArgumentException('BYMINUTE must be a list');
+        }
+
+        foreach ($byMinute as $minute) {
+            if (!is_int($minute) || $minute < 0 || $minute > 59) { // @phpstan-ignore function.alreadyNarrowedType, smaller.alwaysFalse, greater.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse (runtime check for callers without static analysis)
+                throw new InvalidArgumentException(self::describeOutOfRange('BYMINUTE', $minute, '0 to 59'));
+            }
+        }
+
+        if (!array_is_list($byHour)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
+            throw new InvalidArgumentException('BYHOUR must be a list');
+        }
+
+        foreach ($byHour as $hour) {
+            if (!is_int($hour) || $hour < 0 || $hour > 23) { // @phpstan-ignore function.alreadyNarrowedType, smaller.alwaysFalse, greater.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse (runtime check for callers without static analysis)
+                throw new InvalidArgumentException(self::describeOutOfRange('BYHOUR', $hour, '0 to 23'));
+            }
+        }
+
+        if (!array_is_list($byMonthDay)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
+            throw new InvalidArgumentException('BYMONTHDAY must be a list');
+        }
+
+        foreach ($byMonthDay as $monthDay) {
+            if (!is_int($monthDay) || $monthDay === 0 || $monthDay < -31 || $monthDay > 31) { // @phpstan-ignore function.alreadyNarrowedType, identical.alwaysFalse, smaller.alwaysFalse, greater.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse (runtime check for callers without static analysis)
+                throw new InvalidArgumentException(self::describeOutOfRange('BYMONTHDAY', $monthDay, '-31 to 31, except 0'));
+            }
+        }
+
+        if (!array_is_list($byYearDay)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
+            throw new InvalidArgumentException('BYYEARDAY must be a list');
+        }
+
+        foreach ($byYearDay as $yearDay) {
+            if (!is_int($yearDay) || $yearDay === 0 || $yearDay < -366 || $yearDay > 366) { // @phpstan-ignore function.alreadyNarrowedType, identical.alwaysFalse, smaller.alwaysFalse, greater.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse (runtime check for callers without static analysis)
+                throw new InvalidArgumentException(self::describeOutOfRange('BYYEARDAY', $yearDay, '-366 to 366, except 0'));
+            }
+        }
+
+        if (!array_is_list($byWeekNo)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
+            throw new InvalidArgumentException('BYWEEKNO must be a list');
+        }
+
+        foreach ($byWeekNo as $weekNo) {
+            if (!is_int($weekNo) || $weekNo === 0 || $weekNo < -53 || $weekNo > 53) { // @phpstan-ignore function.alreadyNarrowedType, identical.alwaysFalse, smaller.alwaysFalse, greater.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse (runtime check for callers without static analysis)
+                throw new InvalidArgumentException(self::describeOutOfRange('BYWEEKNO', $weekNo, '-53 to 53, except 0'));
+            }
+        }
+
+        if (!array_is_list($byMonth)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
+            throw new InvalidArgumentException('BYMONTH must be a list');
+        }
+
+        foreach ($byMonth as $month) {
+            if (!is_int($month) || $month < 1 || $month > 12) { // @phpstan-ignore function.alreadyNarrowedType, smaller.alwaysFalse, greater.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse (runtime check for callers without static analysis)
+                throw new InvalidArgumentException(self::describeOutOfRange('BYMONTH', $month, '1 to 12'));
+            }
+        }
+
+        if (!array_is_list($bySetPos)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
+            throw new InvalidArgumentException('BYSETPOS must be a list');
+        }
+
+        foreach ($bySetPos as $setPosition) {
+            if (!is_int($setPosition) || $setPosition === 0 || $setPosition < -366 || $setPosition > 366) { // @phpstan-ignore function.alreadyNarrowedType, identical.alwaysFalse, smaller.alwaysFalse, greater.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse, booleanOr.alwaysFalse (runtime check for callers without static analysis)
+                throw new InvalidArgumentException(self::describeOutOfRange('BYSETPOS', $setPosition, '-366 to 366, except 0'));
+            }
+        }
 
         if (!array_is_list($byDay)) { // @phpstan-ignore function.alreadyNarrowedType (runtime check for callers without static analysis)
-            throw new InvalidRecurrenceRuleException(RuleViolation::ValueOutOfRange, 'BYDAY must be a list');
+            throw new InvalidArgumentException('BYDAY must be a list');
         }
 
         foreach ($byDay as $weekdayNum) {
             if (!$weekdayNum instanceof WeekdayNum) { // @phpstan-ignore instanceof.alwaysTrue (runtime check for callers without static analysis)
-                throw new InvalidRecurrenceRuleException(RuleViolation::ValueOutOfRange, 'BYDAY must contain WeekdayNum objects');
+                throw new InvalidArgumentException('BYDAY must contain WeekdayNum objects');
             }
 
             if ($weekdayNum->ordinal === null) {
@@ -340,31 +413,13 @@ final class RecurrenceRule
         );
     }
 
-    /**
-     * @param array<mixed> $values
-     *
-     * @throws InvalidRecurrenceRuleException
-     */
-    private static function checkRange(
+    private static function describeOutOfRange(
         string $part,
-        array $values,
-        int $min,
-        int $max,
-        bool $nonZero,
-    ): void
+        mixed $value,
+        string $allowed,
+    ): string
     {
-        if (!array_is_list($values)) {
-            throw new InvalidRecurrenceRuleException(RuleViolation::ValueOutOfRange, sprintf('%s must be a list', $part));
-        }
-
-        foreach ($values as $value) {
-            if (!is_int($value) || $value < $min || $value > $max || ($nonZero && $value === 0)) {
-                throw new InvalidRecurrenceRuleException(
-                    RuleViolation::ValueOutOfRange,
-                    sprintf('%s value %s is out of range (allowed: %d to %d%s)', $part, is_int($value) ? $value : 'of a non-integer type', $min, $max, $nonZero ? ', except 0' : ''),
-                );
-            }
-        }
+        return sprintf('%s value %s is out of range (allowed: %s)', $part, is_int($value) ? $value : 'of a non-integer type', $allowed);
     }
 
 }
