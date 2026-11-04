@@ -127,6 +127,7 @@ final class FloatingDateTimeTest extends TestCase
     public function testLocalSecondsRange(): void
     {
         self::assertSame('1970-01-01T00:00:00', FloatingDateTime::fromLocalSeconds(0)->toString());
+        self::assertSame('0001-01-01T00:00:00', FloatingDateTime::fromLocalSeconds(-62_135_596_800)->toString());
         self::assertSame('9999-12-31T23:59:59', FloatingDateTime::fromLocalSeconds(253_402_300_799)->toString());
         self::assertSame(253_402_300_799, FloatingDateTime::of(9999, 12, 31, 23, 59, 59)->toLocalSeconds());
 

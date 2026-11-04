@@ -7,6 +7,7 @@ use ShipMonk\RRule\Parser\ParseMode;
 use ShipMonk\RRule\Parser\ParseWarning;
 use ShipMonk\RRule\Parser\ParseWarningCode;
 use function usort;
+use const PHP_INT_MAX;
 
 /**
  * The parse mode and the warnings of one parse call.
@@ -73,7 +74,7 @@ final class ParseContext
     public function getWarnings(): array
     {
         $warnings = $this->warnings;
-        usort($warnings, static fn (ParseWarning $a, ParseWarning $b): int => ($a->lineNumber ?? 0) <=> ($b->lineNumber ?? 0));
+        usort($warnings, static fn (ParseWarning $a, ParseWarning $b): int => ($a->lineNumber ?? PHP_INT_MAX) <=> ($b->lineNumber ?? PHP_INT_MAX));
 
         return $warnings;
     }

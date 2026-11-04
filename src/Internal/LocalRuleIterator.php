@@ -129,10 +129,8 @@ final class LocalRuleIterator
                 break;
             }
 
-            // a later period produces no candidate before this bound
-            $releaseBelow = $spillDays === 0 || $period >= $maxPeriod
-                ? PHP_INT_MAX
-                : ($this->getPeriodDays($startUnit + ($period + 1) * $interval)[0] - $spillDays) * Civil::SECONDS_PER_DAY;
+            // the next period starts after this one, and SKIP moves its dates at most one day earlier
+            $releaseBelow = ($lastDay + 1 - $spillDays) * Civil::SECONDS_PER_DAY;
             $days = array_values($days);
             $indexes = $this->selectIndexes(count($days) * count($plan->timesOfDay));
 
@@ -162,7 +160,7 @@ final class LocalRuleIterator
             $quietSince = null;
 
             foreach (self::combine($days, $plan->timesOfDay, $indexes) as $candidate) {
-                foreach (self::release($held, $candidate + 1, $lower) as $earlier) {
+                foreach (self::release($held, $candidate, $lower) as $earlier) {
                     yield $earlier;
                 }
 
@@ -186,7 +184,7 @@ final class LocalRuleIterator
     }
 
     /**
-     * Takes the held candidates below the bound in ascending order, from the lower bound on. A candidate is held
+     * Takes the held candidates up to the given one in ascending order, from the lower bound on. A candidate is held
      * only when it is within the upper bound.
      *
      * @param SplMinHeap<int> $held
@@ -194,13 +192,13 @@ final class LocalRuleIterator
      */
     private static function release(
         SplMinHeap $held,
-        int $below,
+        int $upTo,
         int $lower,
     ): Generator
     {
         while (!$held->isEmpty()) {
             try {
-                if ($held->top() >= $below) {
+                if ($held->top() > $upTo) {
                     return;
                 }
 

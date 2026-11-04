@@ -24,6 +24,7 @@ use ShipMonk\RRule\Parser\ParseResult;
 use ShipMonk\RRule\Parser\ParseWarning;
 use ShipMonk\RRule\Parser\ParseWarningCode;
 use ShipMonk\RRule\Parser\RecurrenceParser;
+use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\RecurrenceRule;
 use Throwable;
 use function array_map;
@@ -83,6 +84,16 @@ final class RecurrenceParsingTest extends ParserTestCase
         yield 'leading empty lines' => ["\r\n\nDTSTART:20260131T090000", '2026-01-31T09:00:00 floating'];
         yield 'folded parameter' => ["DTSTART;TZID=Europe/Pr\r\n ague:20260131T090000", '2026-01-31T09:00:00+01:00 Europe/Prague'];
         yield 'folded with tab' => ["DTSTART:2026\n\t0131T090000", '2026-01-31T09:00:00 floating'];
+    }
+
+    public function testTimeZoneThatPhpBuildsWithoutDst(): void
+    {
+        $recurrence = Recurrence::fromString("DTSTART;TZID=CET:20260715T120000\nRDATE;TZID=WET:20260801T120000");
+
+        self::assertTrue($recurrence->isInstant());
+        self::assertSame('2026-07-15T12:00:00+02:00', $recurrence->getStart()->format('c'));
+        self::assertSame('Europe/Brussels', $recurrence->getStart()->getTimezone()->getName());
+        self::assertSame(['2026-08-01T13:00:00+02:00'], array_map(static fn (DateTimeImmutable $date): string => $date->format('c'), $recurrence->getAddedDates()), 'WET is +01:00 in summer');
     }
 
     public function testZonedStartKeepsTheWrittenTime(): void

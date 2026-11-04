@@ -665,6 +665,8 @@ final class RecurrenceTest extends TestCase
         self::assertSame([$rule], Recurrence::inTimeZone($start, $prague, ...['daily' => $rule])->getRules());
         self::assertSame([$rule], $recurrence->withRules(...['daily' => $rule])->getRules());
         self::assertSame([$rule], $recurrence->withExclusionRules(...['daily' => $rule])->getExclusionRules());
+        $day = CalendarDate::of(2026, 1, 2);
+        self::assertSame([$day], $recurrence->withExcludedDays(...['day' => $day])->getExcludedDays());
     }
 
     public function testSkipMovesDatesIntoTheNeighbouringPeriod(): void
@@ -694,6 +696,14 @@ final class RecurrenceTest extends TestCase
             ['2026-04-01T09:00:00', '2026-05-01T09:00:00', '2026-05-01T17:00:00', '2026-05-31T17:00:00', '2026-06-01T09:00:00', '2026-07-01T09:00:00', '2026-07-01T17:00:00'],
             self::formatAll($setPositions->take(7)),
         );
+
+        // the April period selects 03-31T09:00 (moved from April "day 0"), after the March period selected 03-31T17:00
+        $backwardSetPositions = Recurrence::fromString("DTSTART:20260301T090000\nRRULE:RSCALE=GREGORIAN;FREQ=MONTHLY;BYMONTHDAY=-31,31;SKIP=BACKWARD;BYHOUR=9,17;BYSETPOS=1,-1");
+
+        self::assertSame(
+            ['2026-03-01T09:00:00', '2026-03-31T09:00:00', '2026-03-31T17:00:00', '2026-04-30T17:00:00', '2026-05-01T09:00:00', '2026-05-31T09:00:00', '2026-05-31T17:00:00'],
+            self::formatAll($backwardSetPositions->take(7)),
+        );
     }
 
     public function testQueryValuesWithMicroseconds(): void
@@ -708,12 +718,24 @@ final class RecurrenceTest extends TestCase
         self::assertSame(['2026-01-03T10:00:00+00:00'], self::formatAll($recurrence->between($at, new DateTimeImmutable('2026-01-03T10:00:00.5Z'))));
         self::assertFalse($recurrence->occursAt($at));
         self::assertTrue($recurrence->occursAt(new DateTimeImmutable('2026-01-02T10:00:00Z')));
+
+        $everySecond = Recurrence::of(new DateTimeImmutable('2026-01-01T10:00:00Z'), new RecurrenceRule(Frequency::Secondly));
+        $at = new DateTimeImmutable('2026-01-01T10:00:05.5Z');
+
+        self::assertSame('2026-01-01T10:00:06+00:00', $everySecond->firstAfter($at)?->format('c'));
+        self::assertSame('2026-01-01T10:00:06+00:00', $everySecond->firstAfter($at, inclusive: true)?->format('c'));
+        self::assertSame('2026-01-01T10:00:05+00:00', $everySecond->lastBefore($at)?->format('c'));
+        self::assertSame('2026-01-01T10:00:05+00:00', $everySecond->lastBefore($at, inclusive: true)?->format('c'));
+        self::assertSame(['2026-01-01T10:00:06+00:00', '2026-01-01T10:00:07+00:00'], self::formatAll($everySecond->between($at, new DateTimeImmutable('2026-01-01T10:00:07.5Z'))));
     }
 
     public function testValuesOutsideTheYearRangeAreRejected(): void
     {
         $tokyo = new DateTimeZone('Asia/Tokyo');
         $recurrence = Recurrence::of(new DateTimeImmutable('2026-01-01T00:00:00Z'));
+
+        self::assertSame('DTSTART:00010101T000000Z', Recurrence::of(new DateTimeImmutable('@-62135596800'))->toString(), 'the first second of year 1');
+        self::assertSame('DTSTART:99991231T235959Z', Recurrence::of(new DateTimeImmutable('@253402300799'))->toString(), 'the last second of year 9999');
 
         foreach ([
             'start in year 10000' => static fn () => Recurrence::of(new DateTimeImmutable('@253402300800')),
@@ -784,7 +806,7 @@ final class RecurrenceTest extends TestCase
     {
         $recurrence = (new RecurrenceParser(ParseMode::Lenient))->parseRecurrence("DTSTART:20260101T090000Z\nRRULE:FREQ=YEARLY\nEXRULE:FREQ=SECONDLY;BYHOUR=3")->value;
 
-        self::assertSame(['2026-01-01T09:00:00+00:00', '2027-01-01T09:00:00+00:00'], self::formatAll($recurrence->withSearchLimit(1000)->take(2)));
+        self::assertSame(['2026-01-01T09:00:00+00:00', '2027-01-01T09:00:00+00:00', '2028-01-01T09:00:00+00:00'], self::formatAll($recurrence->withSearchLimit(1000)->take(3)));
     }
 
     public function testQueriesBeyondTheSupportedRange(): void
@@ -872,6 +894,7 @@ final class RecurrenceTest extends TestCase
         yield 'SKIP=BACKWARD with a negative ordinal BYDAY in the year' => ['20260201T000000', 'RSCALE=GREGORIAN;FREQ=YEARLY;BYMONTHDAY=30;BYDAY=-44MO;SKIP=BACKWARD', ['2033-02-28T00:00:00', '2039-02-28T00:00:00']];
         yield 'SKIP=FORWARD with BYDAY: a moved date waits for the next match' => ['20260131T000000', 'RSCALE=GREGORIAN;FREQ=MONTHLY;BYMONTHDAY=31;BYDAY=MO;SKIP=FORWARD', ['2026-08-31T00:00:00', '2027-03-01T00:00:00', '2027-05-31T00:00:00', '2028-01-31T00:00:00', '2028-05-01T00:00:00']];
         yield 'SKIP=FORWARD with BYDAY and UNTIL: a moved date is the last occurrence' => ['20260131T000000', 'RSCALE=GREGORIAN;FREQ=MONTHLY;BYMONTHDAY=31;BYDAY=MO;SKIP=FORWARD;UNTIL=20270315T000000', ['2026-08-31T00:00:00', '2027-03-01T00:00:00']];
+        yield 'SKIP=FORWARD from the period before the start does not count' => ['20260301T090000', 'RSCALE=GREGORIAN;FREQ=MONTHLY;BYMONTHDAY=31;BYHOUR=10;SKIP=FORWARD', ['2026-03-31T10:00:00', '2026-05-01T10:00:00', '2026-05-31T10:00:00']];
         yield 'jump to minute 0 of the next hour' => ['20260101T094000', 'FREQ=MINUTELY;BYMINUTE=0,30', ['2026-01-01T10:00:00', '2026-01-01T10:30:00', '2026-01-01T11:00:00']];
         yield 'jump to hour 0 of the next day' => ['20260101T130000', 'FREQ=HOURLY;BYHOUR=0,12', ['2026-01-02T00:00:00', '2026-01-02T12:00:00']];
         yield 'SKIP=FORWARD to day 182 of the year' => ['20260601T000000', 'RSCALE=GREGORIAN;FREQ=YEARLY;BYMONTHDAY=31;BYDAY=26MO;SKIP=FORWARD', ['2030-07-01T00:00:00', '2041-07-01T00:00:00']];

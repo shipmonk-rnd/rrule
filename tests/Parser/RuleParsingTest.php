@@ -72,6 +72,7 @@ final class RuleParsingTest extends ParserTestCase
         yield 'default INTERVAL' => ['FREQ=DAILY;INTERVAL=1', 'FREQ=DAILY'];
         yield 'INTERVAL with leading zeros' => ['FREQ=DAILY;INTERVAL=007', 'FREQ=DAILY;INTERVAL=7'];
         yield 'INTERVAL with 18 digits' => ['FREQ=DAILY;INTERVAL=999999999999999999', 'FREQ=DAILY;INTERVAL=999999999999999999'];
+        yield 'INTERVAL equal to PHP_INT_MAX' => ['FREQ=DAILY;INTERVAL=9223372036854775807', 'FREQ=DAILY;INTERVAL=9223372036854775807'];
         yield 'INTERVAL with many leading zeros' => ['FREQ=DAILY;INTERVAL=00000000000000000000002', 'FREQ=DAILY;INTERVAL=2'];
         yield 'COUNT' => ['FREQ=DAILY;COUNT=1', 'FREQ=DAILY;COUNT=1'];
         yield 'COUNT with leading zero' => ['FREQ=DAILY;COUNT=010', 'FREQ=DAILY;COUNT=10'];

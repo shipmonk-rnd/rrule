@@ -5,6 +5,7 @@ namespace ShipMonk\RRule\Internal;
 use function array_key_first;
 use function count;
 use function intdiv;
+use function min;
 
 /**
  * Finds the calendar dates that pass the date filters of a plan (BYMONTH, BYWEEKNO, BYYEARDAY, BYMONTHDAY, BYDAY).
@@ -71,8 +72,9 @@ final class DateMatcher
     public function findNextMatchingDay(int $fromDay): ?int
     {
         $fromYear = Civil::civilFromDays($fromDay)[0];
+        $lastYear = min($fromYear + 400, Civil::MAX_YEAR);
 
-        for ($year = $fromYear; $year <= $fromYear + 400 && $year <= Civil::MAX_YEAR; $year++) {
+        for ($year = $fromYear; $year <= $lastYear; $year++) {
             foreach ($this->getYear($year) as $day) {
                 if ($day >= $fromDay) {
                     return $day;

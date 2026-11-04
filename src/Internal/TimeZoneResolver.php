@@ -104,19 +104,16 @@ final class TimeZoneResolver
         }
 
         $gap = 0;
-        $previousOffset = null;
+        $segments = $this->getSegments($localSeconds);
 
-        foreach ($this->getSegments($localSeconds) as [$start, $offset]) {
-            if ($previousOffset !== null && $offset > $previousOffset) {
-                $length = $offset - $previousOffset;
-                $gapStart = $start + $previousOffset;
+        foreach ($segments as $index => [, $previousOffset]) {
+            [$start, $offset] = $segments[$index + 1] ?? [0, $previousOffset];
+            $length = $offset - $previousOffset;
+            $gapStart = $start + $previousOffset;
 
-                if ($localSeconds >= $gapStart && $localSeconds < $gapStart + 2 * $length) {
-                    $gap = max($gap, $length);
-                }
+            if ($localSeconds >= $gapStart && $localSeconds < $gapStart + 2 * $length) {
+                $gap = max($gap, $length);
             }
-
-            $previousOffset = $offset;
         }
 
         return $gap;
