@@ -12,8 +12,6 @@
     <file>src/</file>
     <file>tests/</file>
 
-    <exclude-pattern>tests/Type/data/*</exclude-pattern>
-
     <rule ref="ShipMonkCodingStandard"/>
 
     <!-- align @param annotations to columns; severity must be restored explicitly because ShipMonkCodingStandard excludes these codes -->

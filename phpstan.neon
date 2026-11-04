@@ -27,10 +27,6 @@ parameters:
     - src
     - tests
 
-  excludePaths:
-    analyseAndScan:
-      - tests/Type/data/*
-
   exceptions:
     check:
       missingCheckedExceptionInThrows: true
