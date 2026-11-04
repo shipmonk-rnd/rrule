@@ -4,7 +4,8 @@ Strictly typed iCalendar recurrence for PHP: [RFC 5545](https://www.rfc-editor.o
 
 - 📐 **RFC compliant:** every ambiguity is decided from the RFC text, its verified errata and the JSCalendar 2.0 expansion algorithm, and [documented](#semantics)
 - 🌍 **Correct time zones:** DST gaps and overlaps resolve as RFC 5545 section 3.3.5 requires (PHP's own `DateTime` does not)
-- 🧷 **Typed:** generics tell PHPStan whether you get dates, floating date-times or instants; immutable values everywhere
+- 🧷 **Typed:** generics tell PHPStan whether you get dates, local date-times or instants; immutable values everywhere
+- 🧹 **Strict parser, lenient on request:** the parser accepts only RFC text by default; `ParseMode::Lenient` also accepts known Google, Outlook and rrule.js deviations and reports each one as a [warning](#parsing-and-serialization)
 - ⏩ **Fast queries:** `firstAfter()` skips ahead instead of iterating from the start; every rule is proven to terminate
 - 🕸️ **Zero dependencies:** only PHP 8.1+
 - 🧪 **Tested against the world:** ~950 cases from libical, Ical.Net, python-dateutil, Mozilla, ical.js, sabre/vobject, rust-rrule, lib-recur, php-rrule, pycalendar and the RFC examples, plus differential tests against libical 4, python-dateutil and an independent reference implementation
@@ -26,7 +27,7 @@ $recurrence = Recurrence::fromString(<<<'ICS'
     RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1
     ICS);
 
-// parsed text can have a date, floating or zoned start; this narrows the type for PHPStan
+// parsed text can have a date, local or zoned start; this narrows the type for PHPStan
 if (!$recurrence->isInstant()) {
     throw new LogicException('Expected a start with a time zone');
 }
@@ -96,18 +97,20 @@ The type of the start (DTSTART) decides the type of every occurrence. PHPStan kn
 
 | Start | RFC 5545 value | Occurrences | UNTIL must be |
 |---|---|---|---|
-| `CalendarDate::of(2026, 1, 31)` | DATE (all-day) | `CalendarDate` | `Until::date()` |
-| `FloatingDateTime::of(2026, 1, 31, 9)` | DATE-TIME without zone ("floating") | `FloatingDateTime` | `Until::floating()` |
+| `LocalDate::of(2026, 1, 31)` | DATE (all-day) | `LocalDate` | `Until::date()` |
+| `LocalDateTime::of(2026, 1, 31, 9)` | DATE-TIME without zone ("floating") | `LocalDateTime` | `Until::local()` |
 | `new DateTimeImmutable('...', new DateTimeZone('UTC'))` | DATE-TIME in UTC | `DateTimeImmutable` in UTC | `Until::instant()` |
 | `new DateTimeImmutable('...', new DateTimeZone('Europe/Prague'))` | DATE-TIME with TZID | `DateTimeImmutable` in that zone | `Until::instant()` |
-| `Recurrence::inTimeZone(FloatingDateTime::of(2026, 3, 29, 2, 30), $prague)` | DATE-TIME with TZID, as written | `DateTimeImmutable` in that zone | `Until::instant()` |
+| `Recurrence::inTimeZone(LocalDateTime::of(2026, 3, 29, 2, 30), $prague)` | DATE-TIME with TZID, as written | `DateTimeImmutable` in that zone | `Until::instant()` |
+
+`LocalDate` and `LocalDateTime` have the same meaning as in java.time and brick/date-time.
 
 `Recurrence::inTimeZone()` takes the start as a local time, the way `DTSTART;TZID=...` writes it, and the parser uses it. The difference matters only for a start that does not exist (inside a DST gap): the first occurrence moves forward (02:30 becomes 03:30), but the rules keep 02:30 for the other days. A `DateTimeImmutable` has already lost the written time.
 
 A `DateTimeImmutable` start must use a named IANA zone or UTC: a fixed offset (`+02:00`) or an abbreviation (`CEST`) has no TZID, so it is rejected. PHP builds `new DateTimeZone('CET')` (also `EET`, `MET`, `WET`) as a fixed offset without DST, so such a start is rejected too; the parser reads `TZID=CET` as the IANA zone (`Europe/Brussels`).
-`FloatingDateTime::atTimeZone()` and `CalendarDate::atStartOfDayIn()` convert to instants with the RFC rules for DST gaps and overlaps.
+`LocalDateTime::atTimeZone()` and `LocalDate::atStartOfDayIn()` convert to instants with the RFC rules for DST gaps and overlaps.
 
-A parsed recurrence can have any start type. `isAllDay()`, `isFloating()` and `isInstant()` tell which, and narrow the type for PHPStan. A parameter that accepts every kind is `Recurrence<*>`. `getStartLocalTime()` returns the start as DTSTART writes it.
+A parsed recurrence can have any start type. `isAllDay()`, `isLocal()` and `isInstant()` tell which, and narrow the type for PHPStan. A parameter that accepts every kind is `Recurrence<*>`. `getStartLocalTime()` returns the start as DTSTART writes it.
 
 ## Queries
 
@@ -132,7 +135,7 @@ For an instant recurrence, query values may be in any time zone. Occurrences hav
 $recurrence = Recurrence::of($start, $rule, $anotherRule)   // several RRULEs are allowed
     ->withAddedDates($extraDate)                            // RDATE
     ->withExcludedDates($cancelledDate)                     // EXDATE
-    ->withExcludedDays(CalendarDate::of(2026, 12, 24))      // EXDATE;VALUE=DATE for a DATE-TIME start
+    ->withExcludedDays(LocalDate::of(2026, 12, 24))         // EXDATE;VALUE=DATE for a DATE-TIME start
     ->withExclusionRules($exclusionRule)                    // EXRULE (RFC 2445)
     ->withDtStartPolicy(DtStartPolicy::Always);             // the default
 ```

@@ -8,8 +8,8 @@ use LogicException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\TimeZoneResolver;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRuleTests\Differential\Python\PythonAdapter;
 use ShipMonk\RRuleTests\Differential\Python\TzifWriter;
 use function array_chunk;
@@ -25,7 +25,7 @@ use function min;
 use function sprintf;
 
 /**
- * Compares FloatingDateTime::atTimeZone() with Python zoneinfo (fold=0) for every zone and every transition
+ * Compares LocalDateTime::atTimeZone() with Python zoneinfo (fold=0) for every zone and every transition
  * from 1970 to 2037: the times just before, at the start, in the middle, at the end of and just after each gap
  * and overlap, plus ordinary times.
  *
@@ -33,7 +33,7 @@ use function sprintf;
  * exactly that data. So the test checks only the resolution rule, also where PHP's timezonedb and the tzdata of
  * Python are different releases.
  */
-#[CoversClass(FloatingDateTime::class)]
+#[CoversClass(LocalDateTime::class)]
 #[CoversClass(TimeZoneResolver::class)]
 final class TimeZoneResolverDifferentialTest extends TestCase
 {
@@ -91,7 +91,7 @@ final class TimeZoneResolverDifferentialTest extends TestCase
 
         foreach ($points as $index => ['zone' => $zone, 'local' => $localSeconds]) {
             $theirs = $expected[$index] ?? throw new LogicException('zoneinfo returned too few results');
-            $ours = FloatingDateTime::fromDateTime(new DateTimeImmutable('@' . $localSeconds))->atTimeZone($zone)->getTimestamp();
+            $ours = LocalDateTime::fromDateTime(new DateTimeImmutable('@' . $localSeconds))->atTimeZone($zone)->getTimestamp();
 
             if ($ours !== $theirs) {
                 $mismatches[] = sprintf(

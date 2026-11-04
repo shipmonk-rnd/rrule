@@ -5,14 +5,14 @@ namespace ShipMonk\RRule\Internal\Values;
 use DateTimeImmutable;
 use DateTimeZone;
 use LogicException;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidRecurrenceException;
 use ShipMonk\RRule\Exception\InvalidValueException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\Civil;
 use ShipMonk\RRule\Internal\TimeZoneResolver;
 use ShipMonk\RRule\Internal\ValueKind;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use function sprintf;
 
 /**
@@ -51,7 +51,7 @@ final class InstantValues implements ValueConverter
     }
 
     public function accept(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        LocalDate|LocalDateTime|DateTimeImmutable $value,
         string $name,
     ): DateTimeImmutable
     {
@@ -63,7 +63,7 @@ final class InstantValues implements ValueConverter
     }
 
     public function acceptStored(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        LocalDate|LocalDateTime|DateTimeImmutable $value,
         string $name,
     ): DateTimeImmutable
     {
@@ -88,7 +88,7 @@ final class InstantValues implements ValueConverter
         return $accepted;
     }
 
-    public function toPosition(CalendarDate|FloatingDateTime|DateTimeImmutable $value): int
+    public function toPosition(LocalDate|LocalDateTime|DateTimeImmutable $value): int
     {
         if (!$value instanceof DateTimeImmutable) {
             throw new LogicException('Expected DateTimeImmutable');

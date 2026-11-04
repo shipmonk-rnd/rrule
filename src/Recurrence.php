@@ -15,8 +15,8 @@ use ShipMonk\RRule\Internal\RuleSerializer;
 use ShipMonk\RRule\Internal\TimeZoneResolver;
 use ShipMonk\RRule\Internal\ValueKind;
 use ShipMonk\RRule\Internal\Values\DateValues;
-use ShipMonk\RRule\Internal\Values\FloatingValues;
 use ShipMonk\RRule\Internal\Values\InstantValues;
+use ShipMonk\RRule\Internal\Values\LocalValues;
 use ShipMonk\RRule\Internal\Values\ValueConverter;
 use ShipMonk\RRule\Parser\ParseMode;
 use ShipMonk\RRule\Parser\RecurrenceParser;
@@ -29,8 +29,8 @@ use function sprintf;
  * excluded dates (EXDATE) and, for compatibility with RFC 2445, exclusion rules (EXRULE).
  *
  * The type of the start decides the type of every occurrence:
- * - {@see CalendarDate}: all-day occurrences (DATE values),
- * - {@see FloatingDateTime}: wall-clock occurrences without a time zone,
+ * - {@see LocalDate}: all-day occurrences (DATE values),
+ * - {@see LocalDateTime}: wall-clock occurrences without a time zone,
  * - DateTimeImmutable in UTC or in a named zone: instants, returned in the zone of the start.
  *
  * The object is immutable. Every query starts a new expansion, so the object is safe to share and to iterate
@@ -40,7 +40,7 @@ use function sprintf;
  * Values have whole seconds: the start, RDATE and EXDATE values drop their microseconds. A query value with
  * microseconds is compared exactly, so `firstAfter(10:00:00.5)` does not return 10:00:00.
  *
- * @template T of CalendarDate|FloatingDateTime|DateTimeImmutable
+ * @template T of LocalDate|LocalDateTime|DateTimeImmutable
  * @implements IteratorAggregate<int, T>
  *
  * @api
@@ -56,14 +56,14 @@ final class Recurrence implements IteratorAggregate
      * @param list<RecurrenceRule> $rules
      * @param list<T>              $addedDates
      * @param list<T>              $excludedDates
-     * @param list<CalendarDate>   $excludedDays
+     * @param list<LocalDate>      $excludedDays
      * @param list<RecurrenceRule> $exclusionRules
      * @param positive-int         $searchLimit
      * @param int                  $startLocal     the start as local wall-clock seconds; for a zoned start, the time as written
      */
     private function __construct(
         private readonly ValueConverter $values,
-        private readonly CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        private readonly LocalDate|LocalDateTime|DateTimeImmutable $start,
         private readonly int $startLocal,
         private readonly array $rules,
         private readonly array $addedDates,
@@ -77,23 +77,23 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
-     * @return ($start is CalendarDate ? self<CalendarDate> : ($start is FloatingDateTime ? self<FloatingDateTime> : self<DateTimeImmutable>))
+     * @return ($start is LocalDate ? self<LocalDate> : ($start is LocalDateTime ? self<LocalDateTime> : self<DateTimeImmutable>))
      *
      * @throws InvalidRecurrenceException
      */
     public static function of(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        LocalDate|LocalDateTime|DateTimeImmutable $start,
         RecurrenceRule ...$rules,
     ): self
     {
-        if ($start instanceof CalendarDate) {
+        if ($start instanceof LocalDate) {
             $dates = new DateValues();
 
             return self::create($dates, $start, array_values($rules), $dates->toPosition($start));
         }
 
-        if ($start instanceof FloatingDateTime) {
-            return self::create(new FloatingValues(), $start, array_values($rules), $start->toLocalSeconds());
+        if ($start instanceof LocalDateTime) {
+            return self::create(new LocalValues(), $start, array_values($rules), $start->toLocalSeconds());
         }
 
         $values = self::createInstantValues($start->getTimezone());
@@ -114,7 +114,7 @@ final class Recurrence implements IteratorAggregate
      * @throws InvalidRecurrenceException
      */
     public static function inTimeZone(
-        FloatingDateTime $start,
+        LocalDateTime $start,
         DateTimeZone $timeZone,
         RecurrenceRule ...$rules,
     ): self
@@ -127,7 +127,7 @@ final class Recurrence implements IteratorAggregate
     /**
      * Parses DTSTART, RRULE, RDATE, EXDATE (and in lenient mode EXRULE) content lines.
      *
-     * @return self<CalendarDate>|self<FloatingDateTime>|self<DateTimeImmutable>
+     * @return self<LocalDate>|self<LocalDateTime>|self<DateTimeImmutable>
      *
      * @throws ParseException
      */
@@ -163,7 +163,7 @@ final class Recurrence implements IteratorAggregate
      *
      * @throws InvalidRecurrenceException when a value is outside the years 1 to 9999
      */
-    public function withAddedDates(CalendarDate|FloatingDateTime|DateTimeImmutable ...$dates): self
+    public function withAddedDates(LocalDate|LocalDateTime|DateTimeImmutable ...$dates): self
     {
         return $this->copy(addedDates: $this->acceptAll($dates, 'RDATE'));
     }
@@ -176,7 +176,7 @@ final class Recurrence implements IteratorAggregate
      *
      * @throws InvalidRecurrenceException when a value is outside the years 1 to 9999
      */
-    public function withExcludedDates(CalendarDate|FloatingDateTime|DateTimeImmutable ...$dates): self
+    public function withExcludedDates(LocalDate|LocalDateTime|DateTimeImmutable ...$dates): self
     {
         return $this->copy(excludedDates: $this->acceptAll($dates, 'EXDATE'));
     }
@@ -188,7 +188,7 @@ final class Recurrence implements IteratorAggregate
      *
      * @return self<T>
      */
-    public function withExcludedDays(CalendarDate ...$days): self
+    public function withExcludedDays(LocalDate ...$days): self
     {
         return $this->copy(excludedDays: array_values($days));
     }
@@ -242,23 +242,23 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
-     * True when the occurrences are dates (the start is a {@see CalendarDate}).
+     * True when the occurrences are dates (the start is a {@see LocalDate}).
      *
-     * @phpstan-assert-if-true self<CalendarDate> $this
+     * @phpstan-assert-if-true self<LocalDate> $this
      */
     public function isAllDay(): bool
     {
-        return $this->start instanceof CalendarDate;
+        return $this->start instanceof LocalDate;
     }
 
     /**
-     * True when the occurrences are wall-clock date-times without a time zone (the start is a {@see FloatingDateTime}).
+     * True when the occurrences are wall-clock date-times without a time zone (the start is a {@see LocalDateTime}).
      *
-     * @phpstan-assert-if-true self<FloatingDateTime> $this
+     * @phpstan-assert-if-true self<LocalDateTime> $this
      */
-    public function isFloating(): bool
+    public function isLocal(): bool
     {
-        return $this->start instanceof FloatingDateTime;
+        return $this->start instanceof LocalDateTime;
     }
 
     /**
@@ -274,7 +274,7 @@ final class Recurrence implements IteratorAggregate
     /**
      * @return T
      */
-    public function getStart(): CalendarDate|FloatingDateTime|DateTimeImmutable
+    public function getStart(): LocalDate|LocalDateTime|DateTimeImmutable
     {
         return $this->start;
     }
@@ -284,9 +284,9 @@ final class Recurrence implements IteratorAggregate
      * can differ from the local time of {@see self::getStart()}: a start of 02:30 in a DST gap begins at 03:30,
      * and the later occurrences keep 02:30. For a date start, this is its midnight.
      */
-    public function getStartLocalTime(): FloatingDateTime
+    public function getStartLocalTime(): LocalDateTime
     {
-        return FloatingDateTime::fromLocalSeconds($this->startLocal);
+        return LocalDateTime::fromLocalSeconds($this->startLocal);
     }
 
     /**
@@ -314,7 +314,7 @@ final class Recurrence implements IteratorAggregate
     }
 
     /**
-     * @return list<CalendarDate>
+     * @return list<LocalDate>
      */
     public function getExcludedDays(): array
     {
@@ -347,7 +347,7 @@ final class Recurrence implements IteratorAggregate
     /**
      * @return T|null
      */
-    public function first(): CalendarDate|FloatingDateTime|DateTimeImmutable|null
+    public function first(): LocalDate|LocalDateTime|DateTimeImmutable|null
     {
         foreach ($this->createEngine()->iterate(null, null) as $occurrence) {
             return $occurrence;
@@ -365,9 +365,9 @@ final class Recurrence implements IteratorAggregate
      * @return T|null
      */
     public function firstAfter(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $after,
+        LocalDate|LocalDateTime|DateTimeImmutable $after,
         bool $inclusive = false,
-    ): CalendarDate|FloatingDateTime|DateTimeImmutable|null
+    ): LocalDate|LocalDateTime|DateTimeImmutable|null
     {
         $from = $inclusive ? $this->toPosition($after, 'after', roundUp: true) : $this->toPosition($after, 'after') + 1;
 
@@ -385,9 +385,9 @@ final class Recurrence implements IteratorAggregate
      * @return T|null
      */
     public function lastBefore(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $before,
+        LocalDate|LocalDateTime|DateTimeImmutable $before,
         bool $inclusive = false,
-    ): CalendarDate|FloatingDateTime|DateTimeImmutable|null
+    ): LocalDate|LocalDateTime|DateTimeImmutable|null
     {
         $end = $inclusive ? $this->toPosition($before, 'before') + 1 : $this->toPosition($before, 'before', roundUp: true);
 
@@ -402,8 +402,8 @@ final class Recurrence implements IteratorAggregate
      * @return Generator<int, T>
      */
     public function between(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $from,
-        CalendarDate|FloatingDateTime|DateTimeImmutable $to,
+        LocalDate|LocalDateTime|DateTimeImmutable $from,
+        LocalDate|LocalDateTime|DateTimeImmutable $to,
     ): Generator
     {
         return $this->createEngine()->iterate($this->toPosition($from, 'from', roundUp: true), $this->toPosition($to, 'to', roundUp: true));
@@ -441,7 +441,7 @@ final class Recurrence implements IteratorAggregate
     /**
      * @param T $value
      */
-    public function occursAt(CalendarDate|FloatingDateTime|DateTimeImmutable $value): bool
+    public function occursAt(LocalDate|LocalDateTime|DateTimeImmutable $value): bool
     {
         $position = $this->toPosition($value, 'value');
 
@@ -491,13 +491,13 @@ final class Recurrence implements IteratorAggregate
      * @param list<RecurrenceRule> $rules
      * @return self<S>
      *
-     * @template S of CalendarDate|FloatingDateTime|DateTimeImmutable
+     * @template S of LocalDate|LocalDateTime|DateTimeImmutable
      *
      * @throws InvalidRecurrenceException
      */
     private static function create(
         ValueConverter $values,
-        CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        LocalDate|LocalDateTime|DateTimeImmutable $start,
         array $rules,
         int $startLocal,
     ): self
@@ -530,7 +530,7 @@ final class Recurrence implements IteratorAggregate
      * Positions are whole seconds. With $roundUp, a value with microseconds maps to the next whole second.
      */
     private function toPosition(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        LocalDate|LocalDateTime|DateTimeImmutable $value,
         string $name,
         bool $roundUp = false,
     ): int
@@ -540,13 +540,13 @@ final class Recurrence implements IteratorAggregate
         return $roundUp && self::hasFraction($value) ? $position + 1 : $position;
     }
 
-    private static function hasFraction(CalendarDate|FloatingDateTime|DateTimeImmutable $value): bool
+    private static function hasFraction(LocalDate|LocalDateTime|DateTimeImmutable $value): bool
     {
         return $value instanceof DateTimeImmutable && $value->format('u') !== '000000';
     }
 
     /**
-     * @param array<CalendarDate|FloatingDateTime|DateTimeImmutable> $values
+     * @param array<LocalDate|LocalDateTime|DateTimeImmutable> $values
      * @return list<T>
      *
      * @throws InvalidRecurrenceException
@@ -606,8 +606,8 @@ final class Recurrence implements IteratorAggregate
 
         $until = $rule->end->value;
         $matches = match ($kind) {
-            ValueKind::Date => $until instanceof CalendarDate,
-            ValueKind::Floating => $until instanceof FloatingDateTime,
+            ValueKind::Date => $until instanceof LocalDate,
+            ValueKind::Floating => $until instanceof LocalDateTime,
             ValueKind::Utc, ValueKind::Zoned => $until instanceof DateTimeImmutable,
         };
 
@@ -629,7 +629,7 @@ final class Recurrence implements IteratorAggregate
      * @param list<RecurrenceRule>|null $rules
      * @param list<T>|null              $addedDates
      * @param list<T>|null              $excludedDates
-     * @param list<CalendarDate>|null   $excludedDays
+     * @param list<LocalDate>|null      $excludedDays
      * @param list<RecurrenceRule>|null $exclusionRules
      * @param positive-int|null         $searchLimit
      * @return self<T>

@@ -3,14 +3,14 @@
 namespace ShipMonk\RRule\Parser;
 
 use DateTimeImmutable;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\ParseException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\Parser\ContentLineReader;
 use ShipMonk\RRule\Internal\Parser\ParseContext;
 use ShipMonk\RRule\Internal\Parser\ParseErrors;
 use ShipMonk\RRule\Internal\Parser\RecurrenceTextParser;
 use ShipMonk\RRule\Internal\Parser\RuleParser;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\RecurrenceRule;
 use function count;
@@ -78,7 +78,7 @@ final class RecurrenceParser
      * Parses DTSTART, RRULE, RDATE, EXDATE (and in lenient mode EXRULE) content lines.
      * Lines may end with CRLF or LF and may be folded.
      *
-     * @return ParseResult<Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable>>
+     * @return ParseResult<Recurrence<LocalDate>|Recurrence<LocalDateTime>|Recurrence<DateTimeImmutable>>
      *
      * @throws ParseException
      */

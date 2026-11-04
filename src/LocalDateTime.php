@@ -19,7 +19,7 @@ use function sprintf;
  *
  * @api
  */
-final class FloatingDateTime
+final class LocalDateTime
 {
 
     /**
@@ -95,7 +95,7 @@ final class FloatingDateTime
 
     /**
      * The wall-clock time that is the given number of seconds after 1970-01-01T00:00:00 (negative: before it).
-     * Every day has 86400 seconds, because a floating time has no time zone.
+     * Every day has 86400 seconds, because a local time has no time zone.
      *
      * @throws InvalidArgumentException when the time is outside the years 1 to 9999; it is unchecked
      */
@@ -136,9 +136,9 @@ final class FloatingDateTime
         );
     }
 
-    public function getDate(): CalendarDate
+    public function getDate(): LocalDate
     {
-        return CalendarDate::fromDayNumber(Civil::daysFromCivil($this->year, $this->month, $this->day));
+        return LocalDate::fromDayNumber(Civil::daysFromCivil($this->year, $this->month, $this->day));
     }
 
     /**

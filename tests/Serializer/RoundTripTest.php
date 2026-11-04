@@ -7,9 +7,7 @@ use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Count;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Internal\Parser\ContentLine;
 use ShipMonk\RRule\Internal\Parser\ContentLineReader;
@@ -20,6 +18,8 @@ use ShipMonk\RRule\Internal\Parser\RecurrenceTextParser;
 use ShipMonk\RRule\Internal\Parser\RuleParser;
 use ShipMonk\RRule\Internal\Parser\ValueParser;
 use ShipMonk\RRule\Internal\RuleSerializer;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Parser\ParseMode;
 use ShipMonk\RRule\Parser\RecurrenceParser;
 use ShipMonk\RRule\Recurrence;
@@ -198,7 +198,7 @@ final class RoundTripTest extends TestCase
     }
 
     /**
-     * @param Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable> $recurrence
+     * @param Recurrence<LocalDate>|Recurrence<LocalDateTime>|Recurrence<DateTimeImmutable> $recurrence
      */
     #[DataProvider('provideRecurrences')]
     public function testRecurrenceRoundTrip(Recurrence $recurrence): void
@@ -213,7 +213,7 @@ final class RoundTripTest extends TestCase
             self::assertSame(self::describeRules($recurrence->getExclusionRules()), self::describeRules($parsed->getExclusionRules()));
             self::assertSame(self::describeAll($recurrence->getAddedDates()), self::describeAll($parsed->getAddedDates()));
 
-            if ($recurrence->getStart() instanceof CalendarDate) {
+            if ($recurrence->getStart() instanceof LocalDate) {
                 self::assertSame(
                     self::describeAll([...$recurrence->getExcludedDates(), ...$recurrence->getExcludedDays()]),
                     self::describeAll($parsed->getExcludedDates()),
@@ -226,7 +226,7 @@ final class RoundTripTest extends TestCase
     }
 
     /**
-     * @return array<string, array{Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable>}>
+     * @return array<string, array{Recurrence<LocalDate>|Recurrence<LocalDateTime>|Recurrence<DateTimeImmutable>}>
      */
     public static function provideRecurrences(): array
     {
@@ -241,28 +241,28 @@ final class RoundTripTest extends TestCase
         }
 
         return [
-            'date start only' => [Recurrence::of(CalendarDate::of(2026, 1, 31))],
+            'date start only' => [Recurrence::of(LocalDate::of(2026, 1, 31))],
 
             'date start with everything' => [
                 Recurrence::of(
-                    CalendarDate::of(2026, 1, 31),
-                    new RecurrenceRule(Frequency::Monthly, end: Until::date(CalendarDate::of(2027, 1, 31)), byMonthDay: [-1]),
+                    LocalDate::of(2026, 1, 31),
+                    new RecurrenceRule(Frequency::Monthly, end: Until::date(LocalDate::of(2027, 1, 31)), byMonthDay: [-1]),
                     new RecurrenceRule(Frequency::Yearly, end: Count::of(3)),
                 )
-                    ->withAddedDates(CalendarDate::of(1, 1, 1), CalendarDate::of(9999, 12, 31))
-                    ->withExcludedDates(CalendarDate::of(2026, 2, 28))
-                    ->withExcludedDays(CalendarDate::of(2026, 3, 31))
+                    ->withAddedDates(LocalDate::of(1, 1, 1), LocalDate::of(9999, 12, 31))
+                    ->withExcludedDates(LocalDate::of(2026, 2, 28))
+                    ->withExcludedDays(LocalDate::of(2026, 3, 31))
                     ->withExclusionRules(new RecurrenceRule(Frequency::Weekly, byDay: [WeekdayNum::every(Weekday::Sunday)])),
             ],
 
             'floating start with everything' => [
                 Recurrence::of(
-                    FloatingDateTime::of(2026, 1, 31, 9, 30, 15),
-                    new RecurrenceRule(Frequency::Hourly, interval: 5, end: Until::floating(FloatingDateTime::of(2026, 2, 1))),
+                    LocalDateTime::of(2026, 1, 31, 9, 30, 15),
+                    new RecurrenceRule(Frequency::Hourly, interval: 5, end: Until::local(LocalDateTime::of(2026, 2, 1))),
                 )
-                    ->withAddedDates(FloatingDateTime::of(1, 1, 1), FloatingDateTime::of(9999, 12, 31, 23, 59, 59))
-                    ->withExcludedDates(FloatingDateTime::of(2026, 1, 31, 14, 30, 15))
-                    ->withExcludedDays(CalendarDate::of(2026, 2, 1))
+                    ->withAddedDates(LocalDateTime::of(1, 1, 1), LocalDateTime::of(9999, 12, 31, 23, 59, 59))
+                    ->withExcludedDates(LocalDateTime::of(2026, 1, 31, 14, 30, 15))
+                    ->withExcludedDays(LocalDate::of(2026, 2, 1))
                     ->withExclusionRules(new RecurrenceRule(Frequency::Daily, byHour: [3])),
             ],
 
@@ -274,7 +274,7 @@ final class RoundTripTest extends TestCase
                 )
                     ->withAddedDates(new DateTimeImmutable('2026-02-03 10:00:00', $prague), new DateTimeImmutable('2026-02-04 10:00:00', $utc))
                     ->withExcludedDates(new DateTimeImmutable('2026-02-07 09:00:00', $utc))
-                    ->withExcludedDays(CalendarDate::of(2026, 2, 14)),
+                    ->withExcludedDays(LocalDate::of(2026, 2, 14)),
             ],
 
             'zoned start with repeated local times' => [
@@ -284,7 +284,7 @@ final class RoundTripTest extends TestCase
                 )
                     ->withAddedDates($secondOverlap, new DateTimeImmutable('2026-11-01 05:30:00', $utc), new DateTimeImmutable('2026-11-20 09:00:00', $prague))
                     ->withExcludedDates($secondOverlap, new DateTimeImmutable('2026-11-02 01:30:00', $newYork))
-                    ->withExcludedDays(CalendarDate::of(2026, 11, 3), CalendarDate::of(2026, 11, 4))
+                    ->withExcludedDays(LocalDate::of(2026, 11, 3), LocalDate::of(2026, 11, 4))
                     ->withExclusionRules(new RecurrenceRule(Frequency::Weekly, byDay: [WeekdayNum::every(Weekday::Saturday)])),
             ],
 
@@ -324,7 +324,7 @@ final class RoundTripTest extends TestCase
     /**
      * The serializer groups values by their form, so the order can change; the set does not.
      *
-     * @param list<CalendarDate|FloatingDateTime|DateTimeImmutable> $values
+     * @param list<LocalDate|LocalDateTime|DateTimeImmutable> $values
      * @return list<string>
      */
     private static function describeAll(array $values): array
@@ -335,13 +335,13 @@ final class RoundTripTest extends TestCase
         return $descriptions;
     }
 
-    private static function describe(CalendarDate|FloatingDateTime|DateTimeImmutable $value): string
+    private static function describe(LocalDate|LocalDateTime|DateTimeImmutable $value): string
     {
         if ($value instanceof DateTimeImmutable) {
             return $value->format('Y-m-d\TH:i:sP e U');
         }
 
-        return $value->toString() . ($value instanceof CalendarDate ? ' date' : ' floating');
+        return $value->toString() . ($value instanceof LocalDate ? ' date' : ' floating');
     }
 
 }

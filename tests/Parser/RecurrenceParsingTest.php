@@ -5,12 +5,10 @@ namespace ShipMonk\RRuleTests\Parser;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\InvalidRecurrenceException;
 use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Exception\ParseException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\Parser\ContentLine;
 use ShipMonk\RRule\Internal\Parser\ContentLineReader;
 use ShipMonk\RRule\Internal\Parser\ParseContext;
@@ -19,6 +17,8 @@ use ShipMonk\RRule\Internal\Parser\RawRule;
 use ShipMonk\RRule\Internal\Parser\RecurrenceTextParser;
 use ShipMonk\RRule\Internal\Parser\RuleParser;
 use ShipMonk\RRule\Internal\Parser\ValueParser;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Parser\ParseMode;
 use ShipMonk\RRule\Parser\ParseResult;
 use ShipMonk\RRule\Parser\ParseWarning;
@@ -425,8 +425,8 @@ final class RecurrenceParsingTest extends ParserTestCase
     {
         $parser = new RecurrenceParser();
 
-        self::assertInstanceOf(CalendarDate::class, $parser->parseRecurrence('DTSTART;VALUE=DATE:20260101')->value->getStart());
-        self::assertInstanceOf(FloatingDateTime::class, $parser->parseRecurrence('DTSTART:20260101T090000')->value->getStart());
+        self::assertInstanceOf(LocalDate::class, $parser->parseRecurrence('DTSTART;VALUE=DATE:20260101')->value->getStart());
+        self::assertInstanceOf(LocalDateTime::class, $parser->parseRecurrence('DTSTART:20260101T090000')->value->getStart());
         self::assertInstanceOf(DateTimeImmutable::class, $parser->parseRecurrence('DTSTART:20260101T090000Z')->value->getStart());
     }
 

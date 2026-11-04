@@ -7,11 +7,11 @@ use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Count;
 use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidValueException;
-use ShipMonk\RRule\FloatingDateTime;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Until;
 use ShipMonk\RRule\Weekday;
 use ShipMonk\RRule\WeekdayNum;
@@ -40,11 +40,11 @@ final class SmallValuesTest extends TestCase
 
     public function testUntil(): void
     {
-        $date = CalendarDate::of(2026, 1, 31);
-        $floating = FloatingDateTime::of(2026, 1, 31, 9);
+        $date = LocalDate::of(2026, 1, 31);
+        $localDateTime = LocalDateTime::of(2026, 1, 31, 9);
 
         self::assertSame($date, Until::date($date)->value);
-        self::assertSame($floating, Until::floating($floating)->value);
+        self::assertSame($localDateTime, Until::local($localDateTime)->value);
 
         $instant = Until::instant(new DateTimeImmutable('2026-01-31 10:00:00.750', new DateTimeZone('Europe/Prague')))->value;
         self::assertInstanceOf(DateTimeImmutable::class, $instant);

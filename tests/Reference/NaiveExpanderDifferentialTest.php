@@ -5,7 +5,6 @@ namespace ShipMonk\RRuleTests\Reference;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\DateMatcher;
 use ShipMonk\RRule\Internal\ExpansionPlan;
 use ShipMonk\RRule\Internal\LocalRuleIterator;
@@ -14,8 +13,9 @@ use ShipMonk\RRule\Internal\RuleStream;
 use ShipMonk\RRule\Internal\SearchBudget;
 use ShipMonk\RRule\Internal\ValueKind;
 use ShipMonk\RRule\Internal\Values\DateValues;
-use ShipMonk\RRule\Internal\Values\FloatingValues;
 use ShipMonk\RRule\Internal\Values\InstantValues;
+use ShipMonk\RRule\Internal\Values\LocalValues;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Recurrence;
 use function array_map;
 use function array_unique;
@@ -37,7 +37,7 @@ use function str_ends_with;
 #[CoversClass(SearchBudget::class)]
 #[CoversClass(ValueKind::class)]
 #[CoversClass(DateValues::class)]
-#[CoversClass(FloatingValues::class)]
+#[CoversClass(LocalValues::class)]
 #[CoversClass(InstantValues::class)]
 final class NaiveExpanderDifferentialTest extends TestCase
 {
@@ -65,7 +65,7 @@ final class NaiveExpanderDifferentialTest extends TestCase
             }
         }
 
-        $actual = array_map(static fn (FloatingDateTime $occurrence): string => $occurrence->toString(), $occurrences);
+        $actual = array_map(static fn (LocalDateTime $occurrence): string => $occurrence->toString(), $occurrences);
         self::assertSame($case->expected, $actual, $case->description . ' complete before ' . ($case->completeBefore ?? '-'));
 
         // the skip-ahead queries must agree with iteration
@@ -82,7 +82,7 @@ final class NaiveExpanderDifferentialTest extends TestCase
             self::assertSame($occurrence->toString(), $recurrence->firstAfter($occurrence, inclusive: true)?->toString(), $message);
             self::assertSame($next->toString(), $recurrence->firstAfter($occurrence)?->toString(), $message);
             self::assertSame($occurrence->toString(), $recurrence->lastBefore($next)?->toString(), $message);
-            self::assertSame([$occurrence->toString()], array_map(static fn (FloatingDateTime $value): string => $value->toString(), iterator_to_array($recurrence->between($occurrence, $next), false)), $message);
+            self::assertSame([$occurrence->toString()], array_map(static fn (LocalDateTime $value): string => $value->toString(), iterator_to_array($recurrence->between($occurrence, $next), false)), $message);
         }
     }
 

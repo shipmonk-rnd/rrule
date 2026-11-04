@@ -4,10 +4,10 @@ namespace ShipMonk\RRule\Internal;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Count;
 use ShipMonk\RRule\Exception\SerializationException;
-use ShipMonk\RRule\FloatingDateTime;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Skip;
@@ -105,10 +105,10 @@ final class RuleSerializer
         $start = $recurrence->getStart();
         $timeZone = null;
 
-        if ($start instanceof CalendarDate) {
+        if ($start instanceof LocalDate) {
             $lines = ['DTSTART;VALUE=DATE:' . self::formatDate($start)];
-        } elseif ($start instanceof FloatingDateTime) {
-            $lines = ['DTSTART:' . self::formatFloating($start)];
+        } elseif ($start instanceof LocalDateTime) {
+            $lines = ['DTSTART:' . self::formatLocal($start)];
         } elseif (ValueKind::isUtc($start->getTimezone())) {
             $lines = ['DTSTART:' . self::formatUtc($start)];
         } else {
@@ -124,7 +124,7 @@ final class RuleSerializer
                 ));
             }
 
-            $lines = ['DTSTART;TZID=' . self::formatParameterValue($timeZone->getName()) . ':' . self::formatFloating($local)];
+            $lines = ['DTSTART;TZID=' . self::formatParameterValue($timeZone->getName()) . ':' . self::formatLocal($local)];
         }
 
         foreach ($recurrence->getRules() as $rule) {
@@ -148,12 +148,12 @@ final class RuleSerializer
     {
         $value = $until->value;
 
-        if ($value instanceof CalendarDate) {
+        if ($value instanceof LocalDate) {
             return self::formatDate($value);
         }
 
-        if ($value instanceof FloatingDateTime) {
-            return self::formatFloating($value);
+        if ($value instanceof LocalDateTime) {
+            return self::formatLocal($value);
         }
 
         return self::formatUtc($value);
@@ -193,7 +193,7 @@ final class RuleSerializer
     }
 
     /**
-     * @param list<CalendarDate|FloatingDateTime|DateTimeImmutable> $values
+     * @param list<LocalDate|LocalDateTime|DateTimeImmutable> $values
      * @return list<string>
      */
     private static function formatDateLines(
@@ -207,10 +207,10 @@ final class RuleSerializer
         $groups = [];
 
         foreach ($values as $value) {
-            if ($value instanceof CalendarDate) {
+            if ($value instanceof LocalDate) {
                 $groups[';VALUE=DATE'][] = self::formatDate($value);
-            } elseif ($value instanceof FloatingDateTime) {
-                $groups[''][] = self::formatFloating($value);
+            } elseif ($value instanceof LocalDateTime) {
+                $groups[''][] = self::formatLocal($value);
             } elseif ($resolver !== null && $resolver->localToUnix(self::getWallSeconds($value)) === $value->getTimestamp()) {
                 $groups[$zoneParameter][] = self::formatWallTime($value);
             } else {
@@ -227,24 +227,24 @@ final class RuleSerializer
         return $lines;
     }
 
-    private static function formatDate(CalendarDate $date): string
+    private static function formatDate(LocalDate $date): string
     {
         return sprintf('%04d%02d%02d', $date->year, $date->month, $date->day);
     }
 
-    private static function formatFloating(FloatingDateTime $dateTime): string
+    private static function formatLocal(LocalDateTime $dateTime): string
     {
         return sprintf('%04d%02d%02dT%02d%02d%02d', $dateTime->year, $dateTime->month, $dateTime->day, $dateTime->hour, $dateTime->minute, $dateTime->second);
     }
 
     private static function formatUtc(DateTimeImmutable $instant): string
     {
-        return self::formatFloating(FloatingDateTime::fromLocalSeconds($instant->getTimestamp())) . 'Z';
+        return self::formatLocal(LocalDateTime::fromLocalSeconds($instant->getTimestamp())) . 'Z';
     }
 
     private static function formatWallTime(DateTimeImmutable $instant): string
     {
-        return self::formatFloating(FloatingDateTime::fromLocalSeconds(self::getWallSeconds($instant)));
+        return self::formatLocal(LocalDateTime::fromLocalSeconds(self::getWallSeconds($instant)));
     }
 
     private static function getWallSeconds(DateTimeImmutable $instant): int

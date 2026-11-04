@@ -3,11 +3,11 @@
 namespace ShipMonk\RRule\Internal\Parser;
 
 use DateTimeImmutable;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\InvalidRecurrenceException;
 use ShipMonk\RRule\Exception\ParseException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\Civil;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Parser\ParseWarningCode;
 use ShipMonk\RRule\Recurrence;
 use function explode;
@@ -41,7 +41,7 @@ final class RecurrenceTextParser
     }
 
     /**
-     * @return Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable>
+     * @return Recurrence<LocalDate>|Recurrence<LocalDateTime>|Recurrence<DateTimeImmutable>
      *
      * @throws ParseException
      */
@@ -112,20 +112,20 @@ final class RecurrenceTextParser
      * A zoned start keeps the local time as written (RFC 5545 section 3.3.5): a start in a DST gap moves forward,
      * but the rules keep the written time.
      *
-     * @return Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable>
+     * @return Recurrence<LocalDate>|Recurrence<LocalDateTime>|Recurrence<DateTimeImmutable>
      *
      * @throws InvalidRecurrenceException
      * @throws ParseException
      */
     private function createRecurrence(
         ?ContentLine $startLine,
-        CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        LocalDate|LocalDateTime|DateTimeImmutable $start,
     ): Recurrence
     {
         if ($startLine !== null && $start instanceof DateTimeImmutable && $startLine->getParameter('TZID') !== null) {
             $written = ValueParser::parseDateTime($startLine->value, $startLine->name, $startLine->lineNumber);
 
-            if ($written instanceof FloatingDateTime) {
+            if ($written instanceof LocalDateTime) {
                 return Recurrence::inTimeZone($written, $start->getTimezone());
             }
         }
@@ -141,7 +141,7 @@ final class RecurrenceTextParser
     private function resolveStart(
         ?ContentLine $startLine,
         array $entries,
-    ): CalendarDate|FloatingDateTime|DateTimeImmutable
+    ): LocalDate|LocalDateTime|DateTimeImmutable
     {
         $start = $startLine === null ? null : [$this->parseValues($startLine, [self::VALUE_DATE_TIME, self::VALUE_DATE], false)[0][1], $startLine->lineNumber];
 
@@ -172,8 +172,8 @@ final class RecurrenceTextParser
     }
 
     /**
-     * @param Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable> $recurrence
-     * @return Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable>
+     * @param Recurrence<LocalDate>|Recurrence<LocalDateTime>|Recurrence<DateTimeImmutable> $recurrence
+     * @return Recurrence<LocalDate>|Recurrence<LocalDateTime>|Recurrence<DateTimeImmutable>
      *
      * @throws InvalidRecurrenceException
      * @throws ParseException
@@ -181,7 +181,7 @@ final class RecurrenceTextParser
     private function addDates(
         Recurrence $recurrence,
         ContentLine $line,
-        CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        LocalDate|LocalDateTime|DateTimeImmutable $start,
     ): Recurrence
     {
         $isAddition = $line->name === 'RDATE';
@@ -191,24 +191,24 @@ final class RecurrenceTextParser
         $convertedText = null;
 
         foreach ($this->parseValues($line, $valueTypes, true) as [$text, $value]) {
-            if ($start instanceof CalendarDate) {
-                if (!$value instanceof CalendarDate) {
+            if ($start instanceof LocalDate) {
+                if (!$value instanceof LocalDate) {
                     throw ParseErrors::create(sprintf('%s value "%s" is a DATE-TIME, but DTSTART is a DATE', $line->name, $text), $line->lineNumber);
                 }
 
                 $dates[] = $value;
-            } elseif ($value instanceof CalendarDate) {
+            } elseif ($value instanceof LocalDate) {
                 if ($isAddition) {
                     $convertedText ??= $text;
-                    $dates[] = $start instanceof FloatingDateTime
-                        ? FloatingDateTime::fromLocalSeconds($value->toDayNumber() * Civil::SECONDS_PER_DAY)
+                    $dates[] = $start instanceof LocalDateTime
+                        ? LocalDateTime::fromLocalSeconds($value->toDayNumber() * Civil::SECONDS_PER_DAY)
                         : $value->atStartOfDayIn($start->getTimezone());
                 } else {
                     $days[] = $value;
                 }
-            } elseif ($start instanceof FloatingDateTime && $value instanceof DateTimeImmutable) {
+            } elseif ($start instanceof LocalDateTime && $value instanceof DateTimeImmutable) {
                 throw ParseErrors::create(sprintf('%s value "%s" has a time zone, but DTSTART is floating', $line->name, $text), $line->lineNumber);
-            } elseif ($start instanceof DateTimeImmutable && $value instanceof FloatingDateTime) {
+            } elseif ($start instanceof DateTimeImmutable && $value instanceof LocalDateTime) {
                 throw ParseErrors::create(sprintf('%s value "%s" is floating, but DTSTART has a time zone', $line->name, $text), $line->lineNumber);
             } else {
                 $dates[] = $value;
@@ -241,7 +241,7 @@ final class RecurrenceTextParser
 
     /**
      * @param non-empty-list<string> $valueTypes the allowed VALUE parameters; the first one is the default
-     * @return non-empty-list<array{string, CalendarDate|FloatingDateTime|DateTimeImmutable}> the text and the value
+     * @return non-empty-list<array{string, LocalDate|LocalDateTime|DateTimeImmutable}> the text and the value
      *
      * @throws ParseException
      */
@@ -286,7 +286,7 @@ final class RecurrenceTextParser
 
             $dateTime = ValueParser::parseDateTime($valueType === self::VALUE_PERIOD ? $this->getPeriodStart($line, $text) : $text, $line->name, $line->lineNumber);
 
-            if ($timeZoneId !== null && $dateTime instanceof FloatingDateTime) {
+            if ($timeZoneId !== null && $dateTime instanceof LocalDateTime) {
                 $values[] = [$text, $dateTime->atTimeZone(ValueParser::parseTimeZone($timeZoneId, $line->lineNumber))];
             } else {
                 $timeZoneIgnored = $timeZoneIgnored || $timeZoneId !== null;

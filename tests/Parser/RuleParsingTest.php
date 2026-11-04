@@ -5,12 +5,10 @@ namespace ShipMonk\RRuleTests\Parser;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\CalendarScale;
 use ShipMonk\RRule\Count;
 use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
 use ShipMonk\RRule\Exception\InvalidValueException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Internal\Parser\ContentLineReader;
 use ShipMonk\RRule\Internal\Parser\ParseContext;
@@ -18,6 +16,8 @@ use ShipMonk\RRule\Internal\Parser\ParseErrors;
 use ShipMonk\RRule\Internal\Parser\RawRule;
 use ShipMonk\RRule\Internal\Parser\RuleParser;
 use ShipMonk\RRule\Internal\Parser\ValueParser;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Parser\ParseMode;
 use ShipMonk\RRule\Parser\RecurrenceParser;
 use ShipMonk\RRule\Skip;
@@ -131,12 +131,12 @@ final class RuleParsingTest extends ParserTestCase
 
         $until = $parser->parseRule('FREQ=DAILY;UNTIL=20260131')->value->end;
         self::assertInstanceOf(Until::class, $until);
-        self::assertInstanceOf(CalendarDate::class, $until->value);
+        self::assertInstanceOf(LocalDate::class, $until->value);
         self::assertSame('2026-01-31', $until->value->toString());
 
         $until = $parser->parseRule('FREQ=DAILY;UNTIL=20260131T081520')->value->end;
         self::assertInstanceOf(Until::class, $until);
-        self::assertInstanceOf(FloatingDateTime::class, $until->value);
+        self::assertInstanceOf(LocalDateTime::class, $until->value);
         self::assertSame('2026-01-31T08:15:20', $until->value->toString());
 
         $until = $parser->parseRule('FREQ=DAILY;UNTIL=20260131T081520Z')->value->end;

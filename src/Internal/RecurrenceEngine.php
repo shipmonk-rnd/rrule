@@ -5,13 +5,13 @@ namespace ShipMonk\RRule\Internal;
 use DateTimeImmutable;
 use DateTimeZone;
 use Generator;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Count;
 use ShipMonk\RRule\DtStartPolicy;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Internal\Values\InstantValues;
 use ShipMonk\RRule\Internal\Values\ValueConverter;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Until;
 use function array_flip;
@@ -26,7 +26,7 @@ use const PHP_INT_MAX;
  * Evaluates a recurrence set (RFC 5545 section 3.8.5.3): the start, the rules and the added dates, minus the
  * excluded dates, the excluded days and the exclusion rules. Every call works on fresh state.
  *
- * @template T of CalendarDate|FloatingDateTime|DateTimeImmutable
+ * @template T of LocalDate|LocalDateTime|DateTimeImmutable
  *
  * @internal
  */
@@ -51,13 +51,13 @@ final class RecurrenceEngine
      * @param list<RecurrenceRule> $rules
      * @param list<T>              $addedDates
      * @param list<T>              $excludedDates
-     * @param list<CalendarDate>   $excludedDays
+     * @param list<LocalDate>      $excludedDays
      * @param list<RecurrenceRule> $exclusionRules
      * @param positive-int         $searchLimit
      */
     public function __construct(
         private readonly ValueConverter $values,
-        CalendarDate|FloatingDateTime|DateTimeImmutable $start,
+        LocalDate|LocalDateTime|DateTimeImmutable $start,
         private readonly int $startLocal,
         private readonly array $rules,
         private readonly array $addedDates,
@@ -73,15 +73,15 @@ final class RecurrenceEngine
     }
 
     /**
-     * Unix seconds for instants, local seconds for floating date-times and dates.
+     * Unix seconds for instants, local seconds for local date-times and dates.
      */
-    private static function positionOf(CalendarDate|FloatingDateTime|DateTimeImmutable $value): int
+    private static function positionOf(LocalDate|LocalDateTime|DateTimeImmutable $value): int
     {
-        if ($value instanceof CalendarDate) {
+        if ($value instanceof LocalDate) {
             return $value->toDayNumber() * Civil::SECONDS_PER_DAY;
         }
 
-        if ($value instanceof FloatingDateTime) {
+        if ($value instanceof LocalDateTime) {
             return $value->toLocalSeconds();
         }
 
@@ -109,7 +109,7 @@ final class RecurrenceEngine
      * @param int $end exclusive
      * @return T|null
      */
-    public function findLastBefore(int $end): CalendarDate|FloatingDateTime|DateTimeImmutable|null
+    public function findLastBefore(int $end): LocalDate|LocalDateTime|DateTimeImmutable|null
     {
         // no occurrence is after the supported range, so the search windows need not start beyond it
         $end = min($end, self::MAX_POSITION);
@@ -169,7 +169,7 @@ final class RecurrenceEngine
         }
 
         $excludedPositions = array_flip($this->toSortedPositions($this->excludedDates));
-        $excludedDays = array_flip(array_map(static fn (CalendarDate $day): int => $day->toDayNumber(), $this->excludedDays));
+        $excludedDays = array_flip(array_map(static fn (LocalDate $day): int => $day->toDayNumber(), $this->excludedDays));
 
         while (true) {
             $next = null;
@@ -327,7 +327,7 @@ final class RecurrenceEngine
     /**
      * @return T
      */
-    private function toValue(int $position): CalendarDate|FloatingDateTime|DateTimeImmutable
+    private function toValue(int $position): LocalDate|LocalDateTime|DateTimeImmutable
     {
         return $this->values->fromPosition($position);
     }

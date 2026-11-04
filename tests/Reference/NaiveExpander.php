@@ -6,8 +6,8 @@ use DateTimeImmutable;
 use DateTimeZone;
 use LogicException;
 use ShipMonk\RRule\Count;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Skip;
 use ShipMonk\RRule\Until;
@@ -44,7 +44,7 @@ final class NaiveExpander
      */
     public static function expand(
         RecurrenceRule $rule,
-        FloatingDateTime $start,
+        LocalDateTime $start,
         bool $startCounts,
         int $maxResults,
         int $lastYear,
@@ -56,7 +56,7 @@ final class NaiveExpander
         $parts = self::addImpliedParts($rule, $startTime);
         $results = [];
         $count = $rule->end instanceof Count ? $rule->end->value : null;
-        $until = $rule->end instanceof Until && $rule->end->value instanceof FloatingDateTime ? $rule->end->value->toString() : null;
+        $until = $rule->end instanceof Until && $rule->end->value instanceof LocalDateTime ? $rule->end->value->toString() : null;
         $startString = $startTime->format(self::FORMAT);
 
         if ($startCounts) {

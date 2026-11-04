@@ -7,7 +7,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\CalendarScale;
 use ShipMonk\RRule\Count;
 use ShipMonk\RRule\Exception\InvalidArgumentException;
@@ -15,6 +14,7 @@ use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
 use ShipMonk\RRule\Exception\RecurrenceException;
 use ShipMonk\RRule\Exception\RuleViolation;
 use ShipMonk\RRule\Frequency;
+use ShipMonk\RRule\LocalDate;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Skip;
 use ShipMonk\RRule\Until;
@@ -144,7 +144,7 @@ final class RecurrenceRuleTest extends TestCase
         self::assertSame('FREQ=YEARLY;BYWEEKNO=20', (new RecurrenceRule(Frequency::Yearly))->withByWeekNo([20])->toString());
         self::assertSame('FREQ=YEARLY;INTERVAL=2;COUNT=5', $rule->withSkip(Skip::Omit)->withBySetPos([])->withBySecond([])->withByMinute([])->withByHour([])->withByDay([])->withByMonthDay([])->withByYearDay([])->withByMonth([])->withWeekStart(Weekday::Monday)->toString());
         self::assertSame('FREQ=YEARLY;INTERVAL=2;BYSECOND=0,30;BYMINUTE=15;BYHOUR=9;BYDAY=1MO;BYMONTHDAY=1,-1;BYYEARDAY=100;BYMONTH=3;BYSETPOS=1;WKST=SU', $rule->withEnd(null)->withSkip(Skip::Omit)->toString());
-        self::assertSame('FREQ=YEARLY;UNTIL=20260101', (new RecurrenceRule(Frequency::Yearly))->withEnd(Until::date(CalendarDate::of(2026, 1, 1)))->toString());
+        self::assertSame('FREQ=YEARLY;UNTIL=20260101', (new RecurrenceRule(Frequency::Yearly))->withEnd(Until::date(LocalDate::of(2026, 1, 1)))->toString());
         self::assertSame('FREQ=YEARLY;COUNT=5', (new RecurrenceRule(Frequency::Yearly, end: Count::of(5)))->withInterval(1)->toString(), 'withInterval keeps the end');
     }
 

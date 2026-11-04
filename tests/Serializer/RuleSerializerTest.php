@@ -7,13 +7,13 @@ use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\CalendarScale;
 use ShipMonk\RRule\Count;
 use ShipMonk\RRule\Exception\SerializationException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Internal\RuleSerializer;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Skip;
@@ -76,8 +76,8 @@ final class RuleSerializerTest extends TestCase
 
             'RSCALE without SKIP' => [new RecurrenceRule(Frequency::Monthly, calendarScale: CalendarScale::Gregorian), 'FREQ=MONTHLY;RSCALE=GREGORIAN'],
             'SKIP=BACKWARD' => [new RecurrenceRule(Frequency::Monthly, calendarScale: CalendarScale::Gregorian, skip: Skip::Backward), 'FREQ=MONTHLY;RSCALE=GREGORIAN;SKIP=BACKWARD'],
-            'UNTIL date in year 1' => [new RecurrenceRule(Frequency::Daily, end: Until::date(CalendarDate::of(1, 2, 3))), 'FREQ=DAILY;UNTIL=00010203'],
-            'UNTIL floating' => [new RecurrenceRule(Frequency::Daily, end: Until::floating(FloatingDateTime::of(2026, 1, 31, 8, 5, 3))), 'FREQ=DAILY;UNTIL=20260131T080503'],
+            'UNTIL date in year 1' => [new RecurrenceRule(Frequency::Daily, end: Until::date(LocalDate::of(1, 2, 3))), 'FREQ=DAILY;UNTIL=00010203'],
+            'UNTIL floating' => [new RecurrenceRule(Frequency::Daily, end: Until::local(LocalDateTime::of(2026, 1, 31, 8, 5, 3))), 'FREQ=DAILY;UNTIL=20260131T080503'],
             'UNTIL instant' => [
                 new RecurrenceRule(Frequency::Daily, end: Until::instant(new DateTimeImmutable('2026-01-01 00:30:00', new DateTimeZone('Europe/Prague')))),
                 'FREQ=DAILY;UNTIL=20251231T233000Z',
@@ -93,10 +93,10 @@ final class RuleSerializerTest extends TestCase
 
     public function testDateRecurrence(): void
     {
-        $recurrence = Recurrence::of(CalendarDate::of(2026, 1, 31), new RecurrenceRule(Frequency::Daily, end: Count::of(5)), new RecurrenceRule(Frequency::Weekly))
-            ->withAddedDates(CalendarDate::of(2026, 3, 1), CalendarDate::of(2026, 4, 1))
-            ->withExcludedDates(CalendarDate::of(2026, 2, 1))
-            ->withExcludedDays(CalendarDate::of(2026, 2, 2))
+        $recurrence = Recurrence::of(LocalDate::of(2026, 1, 31), new RecurrenceRule(Frequency::Daily, end: Count::of(5)), new RecurrenceRule(Frequency::Weekly))
+            ->withAddedDates(LocalDate::of(2026, 3, 1), LocalDate::of(2026, 4, 1))
+            ->withExcludedDates(LocalDate::of(2026, 2, 1))
+            ->withExcludedDays(LocalDate::of(2026, 2, 2))
             ->withExclusionRules(new RecurrenceRule(Frequency::Monthly), new RecurrenceRule(Frequency::Yearly));
 
         self::assertSame(
@@ -113,10 +113,10 @@ final class RuleSerializerTest extends TestCase
 
     public function testFloatingRecurrence(): void
     {
-        $recurrence = Recurrence::of(FloatingDateTime::of(2026, 1, 31, 9), new RecurrenceRule(Frequency::Daily, end: Until::floating(FloatingDateTime::of(2026, 2, 28, 9))))
-            ->withAddedDates(FloatingDateTime::of(2026, 3, 1, 10))
-            ->withExcludedDates(FloatingDateTime::of(2026, 2, 1, 9), FloatingDateTime::of(2026, 2, 2, 9))
-            ->withExcludedDays(CalendarDate::of(2026, 2, 3));
+        $recurrence = Recurrence::of(LocalDateTime::of(2026, 1, 31, 9), new RecurrenceRule(Frequency::Daily, end: Until::local(LocalDateTime::of(2026, 2, 28, 9))))
+            ->withAddedDates(LocalDateTime::of(2026, 3, 1, 10))
+            ->withExcludedDates(LocalDateTime::of(2026, 2, 1, 9), LocalDateTime::of(2026, 2, 2, 9))
+            ->withExcludedDays(LocalDate::of(2026, 2, 3));
 
         self::assertSame(
             "DTSTART:20260131T090000\n"
@@ -152,7 +152,7 @@ final class RuleSerializerTest extends TestCase
         $recurrence = Recurrence::of(new DateTimeImmutable('2026-01-31 09:00:00', $prague), new RecurrenceRule(Frequency::Daily))
             ->withAddedDates(new DateTimeImmutable('2026-02-01 10:00:00', new DateTimeZone('America/New_York')), $secondOverlap, $firstOverlap)
             ->withExcludedDates($secondOverlap, new DateTimeImmutable('2026-02-02 09:00:00', $prague))
-            ->withExcludedDays(CalendarDate::of(2026, 2, 3));
+            ->withExcludedDays(LocalDate::of(2026, 2, 3));
 
         self::assertSame(
             "DTSTART;TZID=Europe/Prague:20260131T090000\n"
@@ -178,10 +178,10 @@ final class RuleSerializerTest extends TestCase
         $dates = [];
 
         for ($day = 1; $day <= 9; $day++) {
-            $dates[] = FloatingDateTime::of(2026, 2, $day, 9);
+            $dates[] = LocalDateTime::of(2026, 2, $day, 9);
         }
 
-        $recurrence = Recurrence::of(FloatingDateTime::of(2026, 1, 31, 9))->withAddedDates(...$dates);
+        $recurrence = Recurrence::of(LocalDateTime::of(2026, 1, 31, 9))->withAddedDates(...$dates);
         $text = RuleSerializer::serializeRecurrence($recurrence, "\r\n");
 
         self::assertSame(
@@ -241,8 +241,8 @@ final class RuleSerializerTest extends TestCase
 
     public function testFormatUntil(): void
     {
-        self::assertSame('20260131', RuleSerializer::formatUntil(Until::date(CalendarDate::of(2026, 1, 31))));
-        self::assertSame('20260131T235959', RuleSerializer::formatUntil(Until::floating(FloatingDateTime::of(2026, 1, 31, 23, 59, 59))));
+        self::assertSame('20260131', RuleSerializer::formatUntil(Until::date(LocalDate::of(2026, 1, 31))));
+        self::assertSame('20260131T235959', RuleSerializer::formatUntil(Until::local(LocalDateTime::of(2026, 1, 31, 23, 59, 59))));
         self::assertSame('20260131T225959Z', RuleSerializer::formatUntil(Until::instant(new DateTimeImmutable('2026-01-31 23:59:59', new DateTimeZone('Europe/Prague')))));
     }
 

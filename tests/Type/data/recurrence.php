@@ -3,8 +3,8 @@
 namespace ShipMonk\RRuleTests\Type\Data;
 
 use DateTimeImmutable;
-use ShipMonk\RRule\CalendarDate;
-use ShipMonk\RRule\FloatingDateTime;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\RecurrenceRule;
@@ -31,47 +31,47 @@ function instants(DateTimeImmutable $start, RecurrenceRule $rule): void
     }
 }
 
-function dates(CalendarDate $start): void
+function dates(LocalDate $start): void
 {
     $recurrence = Recurrence::of($start, new RecurrenceRule(Frequency::Daily));
-    assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\CalendarDate>', $recurrence);
-    assertType('ShipMonk\RRule\CalendarDate|null', $recurrence->firstAfter($start));
-    assertType('list<ShipMonk\RRule\CalendarDate>', $recurrence->withExcludedDates($start)->getExcludedDates());
+    assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\LocalDate>', $recurrence);
+    assertType('ShipMonk\RRule\LocalDate|null', $recurrence->firstAfter($start));
+    assertType('list<ShipMonk\RRule\LocalDate>', $recurrence->withExcludedDates($start)->getExcludedDates());
 
     foreach ($recurrence as $occurrence) {
-        assertType('ShipMonk\RRule\CalendarDate', $occurrence);
+        assertType('ShipMonk\RRule\LocalDate', $occurrence);
     }
 }
 
-function floating(FloatingDateTime $start): void
+function floating(LocalDateTime $start): void
 {
     $recurrence = Recurrence::of($start)->withDtStartPolicy(\ShipMonk\RRule\DtStartPolicy::OnlyIfMatching);
-    assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\FloatingDateTime>', $recurrence);
-    assertType('ShipMonk\RRule\FloatingDateTime|null', $recurrence->lastBefore($start, inclusive: true));
+    assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\LocalDateTime>', $recurrence);
+    assertType('ShipMonk\RRule\LocalDateTime|null', $recurrence->lastBefore($start, inclusive: true));
 }
 
 function parsed(string $text): void
 {
     $recurrence = Recurrence::fromString($text);
-    assertType('ShipMonk\RRule\Recurrence<DateTimeImmutable>|ShipMonk\RRule\Recurrence<ShipMonk\RRule\CalendarDate>|ShipMonk\RRule\Recurrence<ShipMonk\RRule\FloatingDateTime>', $recurrence);
+    assertType('ShipMonk\RRule\Recurrence<DateTimeImmutable>|ShipMonk\RRule\Recurrence<ShipMonk\RRule\LocalDate>|ShipMonk\RRule\Recurrence<ShipMonk\RRule\LocalDateTime>', $recurrence);
 
     if ($recurrence->isInstant()) {
         assertType('ShipMonk\RRule\Recurrence<DateTimeImmutable>', $recurrence);
         assertType('DateTimeImmutable|null', $recurrence->firstAfter(new DateTimeImmutable()));
-    } elseif ($recurrence->isFloating()) {
-        assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\FloatingDateTime>', $recurrence);
+    } elseif ($recurrence->isLocal()) {
+        assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\LocalDateTime>', $recurrence);
     } else {
-        assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\CalendarDate>', $recurrence);
+        assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\LocalDate>', $recurrence);
     }
 
     if ($recurrence->isAllDay()) {
-        assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\CalendarDate>', $recurrence);
+        assertType('ShipMonk\RRule\Recurrence<ShipMonk\RRule\LocalDate>', $recurrence);
     }
 
-    assertType('ShipMonk\RRule\FloatingDateTime', $recurrence->getStartLocalTime());
+    assertType('ShipMonk\RRule\LocalDateTime', $recurrence->getStartLocalTime());
 }
 
-function zoned(\ShipMonk\RRule\FloatingDateTime $start, \DateTimeZone $zone): void
+function zoned(\ShipMonk\RRule\LocalDateTime $start, \DateTimeZone $zone): void
 {
     assertType('ShipMonk\RRule\Recurrence<DateTimeImmutable>', Recurrence::inTimeZone($start, $zone));
 }

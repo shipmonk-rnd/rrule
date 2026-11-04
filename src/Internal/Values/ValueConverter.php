@@ -3,16 +3,16 @@
 namespace ShipMonk\RRule\Internal\Values;
 
 use DateTimeImmutable;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\InvalidRecurrenceException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\ValueKind;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 
 /**
  * Converts the values of one recurrence between their public type and the integer positions the engine uses:
- * local seconds for dates and floating date-times, Unix seconds for instants.
+ * local seconds for dates and local date-times, Unix seconds for instants.
  *
- * @template T of CalendarDate|FloatingDateTime|DateTimeImmutable
+ * @template T of LocalDate|LocalDateTime|DateTimeImmutable
  *
  * @internal
  */
@@ -27,9 +27,9 @@ interface ValueConverter
      * @return T
      */
     public function accept(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        LocalDate|LocalDateTime|DateTimeImmutable $value,
         string $name,
-    ): CalendarDate|FloatingDateTime|DateTimeImmutable;
+    ): LocalDate|LocalDateTime|DateTimeImmutable;
 
     /**
      * Like {@see self::accept()}, for a value that the recurrence stores (the start, RDATE, EXDATE): it must also
@@ -40,18 +40,18 @@ interface ValueConverter
      * @throws InvalidRecurrenceException
      */
     public function acceptStored(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        LocalDate|LocalDateTime|DateTimeImmutable $value,
         string $name,
-    ): CalendarDate|FloatingDateTime|DateTimeImmutable;
+    ): LocalDate|LocalDateTime|DateTimeImmutable;
 
     /**
      * @param T $value
      */
-    public function toPosition(CalendarDate|FloatingDateTime|DateTimeImmutable $value): int;
+    public function toPosition(LocalDate|LocalDateTime|DateTimeImmutable $value): int;
 
     /**
      * @return T
      */
-    public function fromPosition(int $position): CalendarDate|FloatingDateTime|DateTimeImmutable;
+    public function fromPosition(int $position): LocalDate|LocalDateTime|DateTimeImmutable;
 
 }

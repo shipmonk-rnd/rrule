@@ -8,8 +8,8 @@ use ShipMonk\RRule\CalendarScale;
 use ShipMonk\RRule\Count;
 use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
 use ShipMonk\RRule\Exception\InvalidValueException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Skip;
 use ShipMonk\RRule\Until;
@@ -75,7 +75,7 @@ final class ReferenceCase
     }
 
     /**
-     * @return array{RecurrenceRule, FloatingDateTime}
+     * @return array{RecurrenceRule, LocalDateTime}
      *
      * @throws InvalidRecurrenceRuleException
      * @throws InvalidValueException
@@ -88,7 +88,7 @@ final class ReferenceCase
         $year = $random->between(1995, 2030);
         $month = $random->between(1, 12);
         $daysInMonth = (int) (new DateTimeImmutable("$year-$month-01"))->format('t');
-        $start = FloatingDateTime::of(
+        $start = LocalDateTime::of(
             $year,
             $month,
             $random->chance(25) ? $daysInMonth - $random->between(0, 2) : $random->between(1, 28),
@@ -133,7 +133,7 @@ final class ReferenceCase
         if ($random->chance(30)) {
             $end = Count::of($random->between(1, 20));
         } elseif ($random->chance(15)) {
-            $end = Until::floating(FloatingDateTime::of($start->year + $random->between(0, 3), $random->between(1, 12), $random->between(1, 28), $random->between(0, 23)));
+            $end = Until::local(LocalDateTime::of($start->year + $random->between(0, 3), $random->between(1, 12), $random->between(1, 28), $random->between(0, 23)));
         }
 
         $rule = new RecurrenceRule(
@@ -159,7 +159,7 @@ final class ReferenceCase
 
     public static function describe(
         RecurrenceRule $rule,
-        FloatingDateTime $start,
+        LocalDateTime $start,
     ): string
     {
         $parts = ['FREQ=' . $rule->frequency->value, 'INTERVAL=' . $rule->interval];
@@ -168,7 +168,7 @@ final class ReferenceCase
             $parts[] = 'COUNT=' . $rule->end->value;
         }
 
-        if ($rule->end instanceof Until && $rule->end->value instanceof FloatingDateTime) {
+        if ($rule->end instanceof Until && $rule->end->value instanceof LocalDateTime) {
             $parts[] = 'UNTIL=' . $rule->end->value->toString();
         }
 

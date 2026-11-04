@@ -16,7 +16,7 @@ use function sprintf;
  *
  * @api
  */
-final class CalendarDate
+final class LocalDate
 {
 
     /**
@@ -98,9 +98,9 @@ final class CalendarDate
         int $hour,
         int $minute = 0,
         int $second = 0,
-    ): FloatingDateTime
+    ): LocalDateTime
     {
-        return FloatingDateTime::of($this->year, $this->month, $this->day, $hour, $minute, $second);
+        return LocalDateTime::of($this->year, $this->month, $this->day, $hour, $minute, $second);
     }
 
     /**

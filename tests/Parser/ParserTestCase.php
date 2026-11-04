@@ -4,9 +4,9 @@ namespace ShipMonk\RRuleTests\Parser;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\ParseException;
-use ShipMonk\RRule\FloatingDateTime;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Parser\ParseMode;
 use ShipMonk\RRule\Parser\ParseWarning;
 use ShipMonk\RRule\Parser\ParseWarningCode;
@@ -83,20 +83,20 @@ abstract class ParserTestCase extends TestCase
     }
 
     /**
-     * @param Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable> $recurrence
+     * @param Recurrence<LocalDate>|Recurrence<LocalDateTime>|Recurrence<DateTimeImmutable> $recurrence
      */
     protected static function serialize(Recurrence $recurrence): string
     {
         return $recurrence->toString("\n");
     }
 
-    protected static function describe(CalendarDate|FloatingDateTime|DateTimeImmutable $value): string
+    protected static function describe(LocalDate|LocalDateTime|DateTimeImmutable $value): string
     {
         if ($value instanceof DateTimeImmutable) {
             return $value->format('Y-m-d\TH:i:sP e');
         }
 
-        return $value->toString() . ($value instanceof CalendarDate ? ' date' : ' floating');
+        return $value->toString() . ($value instanceof LocalDate ? ' date' : ' floating');
     }
 
 }

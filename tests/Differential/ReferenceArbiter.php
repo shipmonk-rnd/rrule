@@ -4,10 +4,10 @@ namespace ShipMonk\RRuleTests\Differential;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\InvalidValueException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\TimeZoneResolver;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Until;
 use ShipMonk\RRuleTests\Differential\Generator\GeneratedRecurrence;
 use ShipMonk\RRuleTests\Reference\NaiveExpander;
@@ -45,33 +45,33 @@ final class ReferenceArbiter
     ): bool
     {
         $value = $case->dtStart->value;
-        $start = FloatingDateTime::of((int) substr($value, 0, 4), (int) substr($value, 4, 2), (int) substr($value, 6, 2), (int) substr($value, 9, 2), (int) substr($value, 11, 2), (int) substr($value, 13, 2));
+        $start = LocalDateTime::of((int) substr($value, 0, 4), (int) substr($value, 4, 2), (int) substr($value, 6, 2), (int) substr($value, 9, 2), (int) substr($value, 11, 2), (int) substr($value, 13, 2));
         $zoned = $case->dtStart->kind === DtStartKind::Zoned;
         $resolver = new TimeZoneResolver(new DateTimeZone($zoned ? (string) $case->dtStart->timeZone : 'UTC'));
         $rule = $case->rule;
         $until = $rule->end instanceof Until ? $rule->end->value : null;
 
         if ($until instanceof DateTimeImmutable) {
-            $rule = $rule->withEnd(Until::floating(FloatingDateTime::fromLocalSeconds($resolver->unixToLocal($until->getTimestamp()) + 86_400)));
-        } elseif ($until instanceof CalendarDate) {
-            $rule = $rule->withEnd(Until::floating($until->atTime(23, 59, 59)));
+            $rule = $rule->withEnd(Until::local(LocalDateTime::fromLocalSeconds($resolver->unixToLocal($until->getTimestamp()) + 86_400)));
+        } elseif ($until instanceof LocalDate) {
+            $rule = $rule->withEnd(Until::local($until->atTime(23, 59, 59)));
         }
 
         [$reference, $completeBefore] = NaiveExpander::expand($rule, $start, false, $limit * 3, 9999, 300_000);
         $startUnix = $resolver->localToUnix($start->toLocalSeconds());
         $untilUnix = match (true) {
             $until instanceof DateTimeImmutable => $until->getTimestamp(),
-            $until instanceof FloatingDateTime => $resolver->localToUnix($until->toLocalSeconds()),
-            $until instanceof CalendarDate => $resolver->localToUnix($until->toDayNumber() * 86_400 + 86_399),
+            $until instanceof LocalDateTime => $resolver->localToUnix($until->toLocalSeconds()),
+            $until instanceof LocalDate => $resolver->localToUnix($until->toDayNumber() * 86_400 + 86_399),
             default => null,
         };
         $boundary = $completeBefore === null || str_ends_with($completeBefore, '!') || str_starts_with($completeBefore, '10000')
             ? null
-            : self::format($resolver->localToUnix(FloatingDateTime::fromDateTime(new DateTimeImmutable($completeBefore))->toLocalSeconds()), $case->dtStart->kind);
+            : self::format($resolver->localToUnix(LocalDateTime::fromDateTime(new DateTimeImmutable($completeBefore))->toLocalSeconds()), $case->dtStart->kind);
         $instants = [];
 
         foreach ($reference as $local) {
-            $unix = $resolver->localToUnix(FloatingDateTime::fromDateTime(new DateTimeImmutable($local))->toLocalSeconds());
+            $unix = $resolver->localToUnix(LocalDateTime::fromDateTime(new DateTimeImmutable($local))->toLocalSeconds());
 
             if ($unix >= $startUnix && ($untilUnix === null || $unix <= $untilUnix)) {
                 $instants[$unix] = true;

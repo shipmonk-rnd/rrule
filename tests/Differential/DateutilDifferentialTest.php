@@ -6,9 +6,9 @@ use DateTimeImmutable;
 use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\DtStartPolicy;
-use ShipMonk\RRule\FloatingDateTime;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRule\Skip;
 use ShipMonk\RRuleTests\Differential\Generator\GeneratedRecurrence;
@@ -129,8 +129,8 @@ final class DateutilDifferentialTest extends TestCase
 
         foreach ($recurrence->take(self::LIMIT) as $occurrence) {
             $result[] = match (true) {
-                $occurrence instanceof CalendarDate => sprintf('%04d%02d%02d', $occurrence->year, $occurrence->month, $occurrence->day),
-                $occurrence instanceof FloatingDateTime => sprintf('%04d%02d%02dT%02d%02d%02d', $occurrence->year, $occurrence->month, $occurrence->day, $occurrence->hour, $occurrence->minute, $occurrence->second),
+                $occurrence instanceof LocalDate => sprintf('%04d%02d%02d', $occurrence->year, $occurrence->month, $occurrence->day),
+                $occurrence instanceof LocalDateTime => sprintf('%04d%02d%02dT%02d%02d%02d', $occurrence->year, $occurrence->month, $occurrence->day, $occurrence->hour, $occurrence->minute, $occurrence->second),
                 $occurrence instanceof DateTimeImmutable => $occurrence->setTimezone(new DateTimeZone('UTC'))->format('Ymd\THis\Z'),
             };
         }

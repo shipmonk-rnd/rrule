@@ -7,10 +7,8 @@ use LogicException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\DtStartPolicy;
 use ShipMonk\RRule\Exception\ParseException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\DateMatcher;
 use ShipMonk\RRule\Internal\ExpansionPlan;
 use ShipMonk\RRule\Internal\LocalRuleIterator;
@@ -19,8 +17,10 @@ use ShipMonk\RRule\Internal\RuleStream;
 use ShipMonk\RRule\Internal\SearchBudget;
 use ShipMonk\RRule\Internal\ValueKind;
 use ShipMonk\RRule\Internal\Values\DateValues;
-use ShipMonk\RRule\Internal\Values\FloatingValues;
 use ShipMonk\RRule\Internal\Values\InstantValues;
+use ShipMonk\RRule\Internal\Values\LocalValues;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Parser\ParseMode;
 use ShipMonk\RRule\Parser\RecurrenceParser;
 use ShipMonk\RRule\Recurrence;
@@ -51,7 +51,7 @@ use const JSON_THROW_ON_ERROR;
 #[CoversClass(SearchBudget::class)]
 #[CoversClass(ValueKind::class)]
 #[CoversClass(DateValues::class)]
-#[CoversClass(FloatingValues::class)]
+#[CoversClass(LocalValues::class)]
 #[CoversClass(InstantValues::class)]
 #[CoversClass(ParseException::class)]
 final class CorpusTest extends TestCase
@@ -169,13 +169,13 @@ final class CorpusTest extends TestCase
     }
 
     /**
-     * @param Recurrence<CalendarDate>|Recurrence<FloatingDateTime>|Recurrence<DateTimeImmutable> $recurrence
+     * @param Recurrence<LocalDate>|Recurrence<LocalDateTime>|Recurrence<DateTimeImmutable> $recurrence
      * @return list<string>
      */
     private static function expandNaively(Recurrence $recurrence): array
     {
         $start = $recurrence->getStart();
-        self::assertInstanceOf(FloatingDateTime::class, $start, 'Naive comparison needs a floating start');
+        self::assertInstanceOf(LocalDateTime::class, $start, 'Naive comparison needs a floating start');
         $rules = $recurrence->getRules();
         self::assertCount(1, $rules);
         [$expanded] = NaiveExpander::expand($rules[0], $start, $recurrence->getDtStartPolicy() === DtStartPolicy::Always, 30, $start->year + 50, 20_000);
@@ -189,15 +189,15 @@ final class CorpusTest extends TestCase
     }
 
     private static function format(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        LocalDate|LocalDateTime|DateTimeImmutable $value,
         bool $withOffset,
     ): string
     {
-        if ($value instanceof CalendarDate) {
+        if ($value instanceof LocalDate) {
             return sprintf('%04d%02d%02d', $value->year, $value->month, $value->day);
         }
 
-        if ($value instanceof FloatingDateTime) {
+        if ($value instanceof LocalDateTime) {
             return sprintf('%04d%02d%02dT%02d%02d%02d', $value->year, $value->month, $value->day, $value->hour, $value->minute, $value->second);
         }
 

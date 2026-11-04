@@ -9,20 +9,20 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ShipMonk\RRule\Exception\InvalidArgumentException;
 use ShipMonk\RRule\Exception\InvalidValueException;
-use ShipMonk\RRule\FloatingDateTime;
+use ShipMonk\RRule\LocalDateTime;
 use function sprintf;
 
-#[CoversClass(FloatingDateTime::class)]
-final class FloatingDateTimeTest extends TestCase
+#[CoversClass(LocalDateTime::class)]
+final class LocalDateTimeTest extends TestCase
 {
 
     public function testOf(): void
     {
-        $dateTime = FloatingDateTime::of(2026, 1, 31, 9, 5, 7);
+        $dateTime = LocalDateTime::of(2026, 1, 31, 9, 5, 7);
 
         self::assertSame([2026, 1, 31, 9, 5, 7], [$dateTime->year, $dateTime->month, $dateTime->day, $dateTime->hour, $dateTime->minute, $dateTime->second]);
         self::assertSame('2026-01-31T09:05:07', $dateTime->toString());
-        self::assertSame('2026-01-31T00:00:00', FloatingDateTime::of(2026, 1, 31)->toString());
+        self::assertSame('2026-01-31T00:00:00', LocalDateTime::of(2026, 1, 31)->toString());
         self::assertSame('2026-01-31', $dateTime->getDate()->toString());
     }
 
@@ -39,7 +39,7 @@ final class FloatingDateTimeTest extends TestCase
         $this->expectException(InvalidValueException::class);
         $this->expectExceptionMessage(sprintf('Invalid date-time %04d-%02d-%02dT%02d:%02d:%02d (years 1 to 9999 are supported)', $year, $month, $day, $hour, $minute, $second));
 
-        FloatingDateTime::of($year, $month, $day, $hour, $minute, $second);
+        LocalDateTime::of($year, $month, $day, $hour, $minute, $second);
     }
 
     /**
@@ -58,14 +58,14 @@ final class FloatingDateTimeTest extends TestCase
 
     public function testBoundaries(): void
     {
-        self::assertSame('2026-01-01T23:59:59', FloatingDateTime::of(2026, 1, 1, 23, 59, 59)->toString());
+        self::assertSame('2026-01-01T23:59:59', LocalDateTime::of(2026, 1, 1, 23, 59, 59)->toString());
     }
 
     public function testFromDateTimeUsesTheWallClockTime(): void
     {
         $dateTime = new DateTimeImmutable('2026-01-31 23:30:15.250', new DateTimeZone('America/New_York'));
 
-        self::assertSame('2026-01-31T23:30:15', FloatingDateTime::fromDateTime($dateTime)->toString());
+        self::assertSame('2026-01-31T23:30:15', LocalDateTime::fromDateTime($dateTime)->toString());
     }
 
     /**
@@ -79,7 +79,7 @@ final class FloatingDateTimeTest extends TestCase
         string $expected,
     ): void
     {
-        $instant = FloatingDateTime::of(...$local)->atTimeZone(new DateTimeZone($zone));
+        $instant = LocalDateTime::of(...$local)->atTimeZone(new DateTimeZone($zone));
 
         self::assertSame($expected, $instant->format('Y-m-d\TH:i:sP'));
         self::assertSame($zone, $instant->getTimezone()->getName());
@@ -98,42 +98,42 @@ final class FloatingDateTimeTest extends TestCase
 
     public function testLocalSeconds(): void
     {
-        $dateTime = FloatingDateTime::of(1969, 12, 31, 23, 59, 59);
+        $dateTime = LocalDateTime::of(1969, 12, 31, 23, 59, 59);
 
         self::assertSame(-1, $dateTime->toLocalSeconds());
-        self::assertSame('1969-12-31T23:59:59', FloatingDateTime::fromLocalSeconds(-1)->toString());
-        self::assertSame('1970-01-01T01:00:00', FloatingDateTime::fromLocalSeconds(3600)->toString());
-        self::assertSame('1970-01-01T00:59:59', FloatingDateTime::fromLocalSeconds(3599)->toString());
-        self::assertSame('1970-01-01T00:01:00', FloatingDateTime::fromLocalSeconds(60)->toString());
-        self::assertSame('1970-01-01T00:00:59', FloatingDateTime::fromLocalSeconds(59)->toString());
-        self::assertSame('2026-01-31T09:05:07', FloatingDateTime::fromLocalSeconds(FloatingDateTime::of(2026, 1, 31, 9, 5, 7)->toLocalSeconds())->toString());
+        self::assertSame('1969-12-31T23:59:59', LocalDateTime::fromLocalSeconds(-1)->toString());
+        self::assertSame('1970-01-01T01:00:00', LocalDateTime::fromLocalSeconds(3600)->toString());
+        self::assertSame('1970-01-01T00:59:59', LocalDateTime::fromLocalSeconds(3599)->toString());
+        self::assertSame('1970-01-01T00:01:00', LocalDateTime::fromLocalSeconds(60)->toString());
+        self::assertSame('1970-01-01T00:00:59', LocalDateTime::fromLocalSeconds(59)->toString());
+        self::assertSame('2026-01-31T09:05:07', LocalDateTime::fromLocalSeconds(LocalDateTime::of(2026, 1, 31, 9, 5, 7)->toLocalSeconds())->toString());
     }
 
     public function testComparison(): void
     {
-        $dateTime = FloatingDateTime::of(2026, 3, 15, 10);
+        $dateTime = LocalDateTime::of(2026, 3, 15, 10);
 
-        self::assertSame(0, $dateTime->compareTo(FloatingDateTime::of(2026, 3, 15, 10)));
-        self::assertSame(-1, $dateTime->compareTo(FloatingDateTime::of(2026, 3, 15, 10, 0, 1)));
-        self::assertSame(1, $dateTime->compareTo(FloatingDateTime::of(2026, 3, 15, 9, 59, 59)));
-        self::assertTrue($dateTime->equals(FloatingDateTime::of(2026, 3, 15, 10)));
-        self::assertFalse($dateTime->equals(FloatingDateTime::of(2026, 3, 15, 11)));
-        self::assertTrue($dateTime->isBefore(FloatingDateTime::of(2026, 3, 15, 11)));
+        self::assertSame(0, $dateTime->compareTo(LocalDateTime::of(2026, 3, 15, 10)));
+        self::assertSame(-1, $dateTime->compareTo(LocalDateTime::of(2026, 3, 15, 10, 0, 1)));
+        self::assertSame(1, $dateTime->compareTo(LocalDateTime::of(2026, 3, 15, 9, 59, 59)));
+        self::assertTrue($dateTime->equals(LocalDateTime::of(2026, 3, 15, 10)));
+        self::assertFalse($dateTime->equals(LocalDateTime::of(2026, 3, 15, 11)));
+        self::assertTrue($dateTime->isBefore(LocalDateTime::of(2026, 3, 15, 11)));
         self::assertFalse($dateTime->isBefore($dateTime));
-        self::assertTrue($dateTime->isAfter(FloatingDateTime::of(2026, 3, 15, 9)));
+        self::assertTrue($dateTime->isAfter(LocalDateTime::of(2026, 3, 15, 9)));
         self::assertFalse($dateTime->isAfter($dateTime));
     }
 
     public function testLocalSecondsRange(): void
     {
-        self::assertSame('1970-01-01T00:00:00', FloatingDateTime::fromLocalSeconds(0)->toString());
-        self::assertSame('0001-01-01T00:00:00', FloatingDateTime::fromLocalSeconds(-62_135_596_800)->toString());
-        self::assertSame('9999-12-31T23:59:59', FloatingDateTime::fromLocalSeconds(253_402_300_799)->toString());
-        self::assertSame(253_402_300_799, FloatingDateTime::of(9999, 12, 31, 23, 59, 59)->toLocalSeconds());
+        self::assertSame('1970-01-01T00:00:00', LocalDateTime::fromLocalSeconds(0)->toString());
+        self::assertSame('0001-01-01T00:00:00', LocalDateTime::fromLocalSeconds(-62_135_596_800)->toString());
+        self::assertSame('9999-12-31T23:59:59', LocalDateTime::fromLocalSeconds(253_402_300_799)->toString());
+        self::assertSame(253_402_300_799, LocalDateTime::of(9999, 12, 31, 23, 59, 59)->toLocalSeconds());
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Local seconds 253402300800 are outside the years 1 to 9999');
-        FloatingDateTime::fromLocalSeconds(253_402_300_800);
+        LocalDateTime::fromLocalSeconds(253_402_300_800);
     }
 
 }

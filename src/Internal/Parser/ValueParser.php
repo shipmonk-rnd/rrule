@@ -4,11 +4,11 @@ namespace ShipMonk\RRule\Internal\Parser;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Exception\ParseException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\ValueKind;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use Throwable;
 use function preg_match;
 use function sprintf;
@@ -64,14 +64,14 @@ final class ValueParser
         string $value,
         string $name,
         ?int $lineNumber,
-    ): CalendarDate
+    ): LocalDate
     {
         if (preg_match(self::DATE_PATTERN, $value, $matches) !== 1) {
             throw ParseErrors::create(sprintf('Invalid %s value "%s": expected a DATE (YYYYMMDD)', $name, $value), $lineNumber);
         }
 
         try {
-            return CalendarDate::of((int) $matches[1], (int) $matches[2], (int) $matches[3]);
+            return LocalDate::of((int) $matches[1], (int) $matches[2], (int) $matches[3]);
         } catch (InvalidValueException $e) {
             throw ParseErrors::create(sprintf('Invalid %s value "%s": %s', $name, $value, $e->getMessage()), $lineNumber, $e);
         }
@@ -88,14 +88,14 @@ final class ValueParser
         string $value,
         string $name,
         ?int $lineNumber,
-    ): FloatingDateTime|DateTimeImmutable
+    ): LocalDateTime|DateTimeImmutable
     {
         if (preg_match(self::DATE_TIME_PATTERN, $value, $matches) !== 1) {
             throw ParseErrors::create(sprintf('Invalid %s value "%s": expected a DATE-TIME (YYYYMMDDTHHMMSS, optionally followed by Z)', $name, $value), $lineNumber);
         }
 
         try {
-            $dateTime = FloatingDateTime::of(
+            $dateTime = LocalDateTime::of(
                 (int) $matches[1],
                 (int) $matches[2],
                 (int) $matches[3],
@@ -121,7 +121,7 @@ final class ValueParser
         string $value,
         string $name,
         ?int $lineNumber,
-    ): CalendarDate|FloatingDateTime|DateTimeImmutable
+    ): LocalDate|LocalDateTime|DateTimeImmutable
     {
         if (self::isDate($value)) {
             return self::parseDate($value, $name, $lineNumber);

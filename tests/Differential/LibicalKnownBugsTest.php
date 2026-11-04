@@ -6,7 +6,7 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ShipMonk\RRule\DtStartPolicy;
-use ShipMonk\RRule\FloatingDateTime;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Recurrence;
 use ShipMonk\RRuleTests\Differential\Libical\LibicalAdapter;
 use function sprintf;
@@ -38,7 +38,7 @@ final class LibicalKnownBugsTest extends TestCase
         }
 
         $recurrence = Recurrence::fromString("DTSTART:$start\nRRULE:$rule")->withDtStartPolicy(DtStartPolicy::OnlyIfMatching);
-        self::assertTrue($recurrence->isFloating());
+        self::assertTrue($recurrence->isLocal());
         $ours = [];
 
         foreach ($recurrence->take(5) as $occurrence) {
@@ -99,7 +99,7 @@ final class LibicalKnownBugsTest extends TestCase
         ];
     }
 
-    private static function format(FloatingDateTime $value): string
+    private static function format(LocalDateTime $value): string
     {
         return sprintf('%04d%02d%02dT%02d%02d%02d', $value->year, $value->month, $value->day, $value->hour, $value->minute, $value->second);
     }

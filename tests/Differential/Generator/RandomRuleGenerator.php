@@ -5,13 +5,13 @@ namespace ShipMonk\RRuleTests\Differential\Generator;
 use DateTimeImmutable;
 use DateTimeZone;
 use LogicException;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\CalendarScale;
 use ShipMonk\RRule\Count;
 use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
 use ShipMonk\RRule\Exception\InvalidValueException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Skip;
 use ShipMonk\RRule\Until;
@@ -685,11 +685,11 @@ final class RandomRuleGenerator
 
         return match ($kind) {
             DtStartKind::Date => [
-                Until::date(CalendarDate::of((int) gmdate('Y', $until), (int) gmdate('n', $until), (int) gmdate('j', $until))),
+                Until::date(LocalDate::of((int) gmdate('Y', $until), (int) gmdate('n', $until), (int) gmdate('j', $until))),
                 'UNTIL=' . gmdate('Ymd', $until),
             ],
             DtStartKind::Floating => [
-                Until::floating(FloatingDateTime::fromDateTime(new DateTimeImmutable('@' . $until))),
+                Until::local(LocalDateTime::fromDateTime(new DateTimeImmutable('@' . $until))),
                 'UNTIL=' . gmdate('Ymd\THis', $until),
             ],
             // For a zoned start the UNTIL instant is the local time read as UTC: a time near the local time.

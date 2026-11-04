@@ -4,15 +4,15 @@ namespace ShipMonk\RRule\Internal\Values;
 
 use DateTimeImmutable;
 use LogicException;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\Exception\InvalidArgumentException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Internal\Civil;
 use ShipMonk\RRule\Internal\ValueKind;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use function sprintf;
 
 /**
- * @implements ValueConverter<CalendarDate>
+ * @implements ValueConverter<LocalDate>
  *
  * @internal
  */
@@ -25,37 +25,37 @@ final class DateValues implements ValueConverter
     }
 
     public function accept(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        LocalDate|LocalDateTime|DateTimeImmutable $value,
         string $name,
-    ): CalendarDate
+    ): LocalDate
     {
-        if (!$value instanceof CalendarDate) {
-            throw new InvalidArgumentException(sprintf('The %s value must be a CalendarDate, because the start is a date', $name));
+        if (!$value instanceof LocalDate) {
+            throw new InvalidArgumentException(sprintf('The %s value must be a LocalDate, because the start is a date', $name));
         }
 
         return $value;
     }
 
     public function acceptStored(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $value,
+        LocalDate|LocalDateTime|DateTimeImmutable $value,
         string $name,
-    ): CalendarDate
+    ): LocalDate
     {
         return $this->accept($value, $name);
     }
 
-    public function toPosition(CalendarDate|FloatingDateTime|DateTimeImmutable $value): int
+    public function toPosition(LocalDate|LocalDateTime|DateTimeImmutable $value): int
     {
-        if (!$value instanceof CalendarDate) {
-            throw new LogicException('Expected CalendarDate');
+        if (!$value instanceof LocalDate) {
+            throw new LogicException('Expected LocalDate');
         }
 
         return $value->toDayNumber() * Civil::SECONDS_PER_DAY;
     }
 
-    public function fromPosition(int $position): CalendarDate
+    public function fromPosition(int $position): LocalDate
     {
-        return CalendarDate::fromDayNumber(Civil::floorDiv($position, Civil::SECONDS_PER_DAY));
+        return LocalDate::fromDayNumber(Civil::floorDiv($position, Civil::SECONDS_PER_DAY));
     }
 
 }

@@ -3,16 +3,16 @@
 namespace ShipMonk\RRule\Internal\Parser;
 
 use DateTimeImmutable;
-use ShipMonk\RRule\CalendarDate;
 use ShipMonk\RRule\CalendarScale;
 use ShipMonk\RRule\Count;
 use ShipMonk\RRule\Exception\InvalidRecurrenceRuleException;
 use ShipMonk\RRule\Exception\InvalidValueException;
 use ShipMonk\RRule\Exception\ParseException;
-use ShipMonk\RRule\FloatingDateTime;
 use ShipMonk\RRule\Frequency;
 use ShipMonk\RRule\Internal\Civil;
 use ShipMonk\RRule\Internal\RuleSerializer;
+use ShipMonk\RRule\LocalDate;
+use ShipMonk\RRule\LocalDateTime;
 use ShipMonk\RRule\Parser\ParseWarningCode;
 use ShipMonk\RRule\RecurrenceRule;
 use ShipMonk\RRule\Skip;
@@ -145,13 +145,13 @@ final class RuleParser
     }
 
     /**
-     * @param CalendarDate|FloatingDateTime|DateTimeImmutable|null $start null for a rule without a recurrence
+     * @param LocalDate|LocalDateTime|DateTimeImmutable|null $start null for a rule without a recurrence
      *
      * @throws ParseException
      */
     public function build(
         RawRule $rule,
-        CalendarDate|FloatingDateTime|DateTimeImmutable|null $start,
+        LocalDate|LocalDateTime|DateTimeImmutable|null $start,
     ): RecurrenceRule
     {
         $parts = $rule->parts;
@@ -218,7 +218,7 @@ final class RuleParser
         }
 
         if ($this->context->isLenient()) {
-            if ($start instanceof CalendarDate) {
+            if ($start instanceof LocalDate) {
                 $reason = 'RFC 5545 section 3.3.10 says that it must be ignored with a DATE start';
                 $bySecond = $this->ignorePart($bySecond, ParseWarningCode::TimePartsIgnoredForDateStart, 'BYSECOND', $reason, $rule);
                 $byMinute = $this->ignorePart($byMinute, ParseWarningCode::TimePartsIgnoredForDateStart, 'BYMINUTE', $reason, $rule);
@@ -319,7 +319,7 @@ final class RuleParser
      */
     private function parseUntil(
         string $value,
-        CalendarDate|FloatingDateTime|DateTimeImmutable|null $start,
+        LocalDate|LocalDateTime|DateTimeImmutable|null $start,
         ?int $lineNumber,
     ): Until
     {
@@ -327,10 +327,10 @@ final class RuleParser
         $converted = $start !== null && $this->context->isLenient() ? $this->convertUntil($parsed, $start) : null;
         $until = $converted ?? $parsed;
 
-        if ($until instanceof CalendarDate) {
+        if ($until instanceof LocalDate) {
             $result = Until::date($until);
-        } elseif ($until instanceof FloatingDateTime) {
-            $result = Until::floating($until);
+        } elseif ($until instanceof LocalDateTime) {
+            $result = Until::local($until);
         } else {
             try {
                 $result = Until::instant($until);
@@ -698,36 +698,36 @@ final class RuleParser
      * Returns null when the types already match.
      */
     private function convertUntil(
-        CalendarDate|FloatingDateTime|DateTimeImmutable $until,
-        CalendarDate|FloatingDateTime|DateTimeImmutable $start,
-    ): CalendarDate|FloatingDateTime|DateTimeImmutable|null
+        LocalDate|LocalDateTime|DateTimeImmutable $until,
+        LocalDate|LocalDateTime|DateTimeImmutable $start,
+    ): LocalDate|LocalDateTime|DateTimeImmutable|null
     {
-        if ($start instanceof CalendarDate) {
-            return $until instanceof CalendarDate ? null : self::toFloating($until)->getDate();
+        if ($start instanceof LocalDate) {
+            return $until instanceof LocalDate ? null : self::toLocalDateTime($until)->getDate();
         }
 
         if ($until instanceof DateTimeImmutable) {
-            return $start instanceof FloatingDateTime ? self::toFloating($until) : null;
+            return $start instanceof LocalDateTime ? self::toLocalDateTime($until) : null;
         }
 
-        if ($start instanceof FloatingDateTime) {
-            return $until instanceof CalendarDate ? self::getEndOfDay($until) : null;
+        if ($start instanceof LocalDateTime) {
+            return $until instanceof LocalDate ? self::getEndOfDay($until) : null;
         }
 
-        return ($until instanceof CalendarDate ? self::getEndOfDay($until) : $until)->atTimeZone($start->getTimezone());
+        return ($until instanceof LocalDate ? self::getEndOfDay($until) : $until)->atTimeZone($start->getTimezone());
     }
 
     /**
-     * The wall-clock time of a floating value, or of a UTC value in UTC.
+     * The wall-clock time of a local value, or of a UTC value in UTC.
      */
-    private static function toFloating(FloatingDateTime|DateTimeImmutable $value): FloatingDateTime
+    private static function toLocalDateTime(LocalDateTime|DateTimeImmutable $value): LocalDateTime
     {
-        return $value instanceof FloatingDateTime ? $value : FloatingDateTime::fromLocalSeconds($value->getTimestamp());
+        return $value instanceof LocalDateTime ? $value : LocalDateTime::fromLocalSeconds($value->getTimestamp());
     }
 
-    private static function getEndOfDay(CalendarDate $date): FloatingDateTime
+    private static function getEndOfDay(LocalDate $date): LocalDateTime
     {
-        return FloatingDateTime::fromLocalSeconds(($date->toDayNumber() + 1) * Civil::SECONDS_PER_DAY - 1);
+        return LocalDateTime::fromLocalSeconds(($date->toDayNumber() + 1) * Civil::SECONDS_PER_DAY - 1);
     }
 
 }
