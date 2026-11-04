@@ -399,7 +399,7 @@ final class NaiveExpander
     ): bool
     {
         $weekday = (int) $date->format('N');
-        $inYear = $rule->frequency === Frequency::Yearly && $rule->byMonth === [];
+        $inYear = $rule->frequency === Frequency::Yearly && $parts['byMonth'] === [];
 
         foreach ($parts['byDay'] as [$day, $ordinal]) {
             if ($day !== $weekday) {

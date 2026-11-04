@@ -179,7 +179,7 @@ Where RFC 5545 is ambiguous, the library follows the [JSCalendar 2.0](https://da
 | S12 | Week numbers | Every date has exactly one week number; week 1 has at least 4 days of the year; weeks start on `WKST` | RFC 5545 3.3.10, JSCalendar |
 | S13 | `INTERVAL` with `BYWEEKNO` | Counts calendar years (libical counts ISO week-numbering years) | JSCalendar yearly period |
 | S14 | `BYSETPOS` | Selects from the whole period that contains the start, then earlier candidates are dropped; for every frequency | JSCalendar steps 1–4 |
-| S15 | `BYDAY` ordinal with `YEARLY` | Within the year, or within the month when the rule has `BYMONTH` | Verified errata 3779 and 1913 |
+| S15 | `BYDAY` ordinal with `YEARLY` | Within the month when the rule has `BYMONTH`, also when S9 implies it from the start (so `FREQ=YEARLY;BYMONTHDAY=1,2,3,4,5,6,7;BYDAY=1SU` from March is the first Sunday of March); within the year otherwise | JSCalendar (implied parts are added to the rule first), verified errata 3779 and 1913 |
 | S16 | `BYHOUR` with a DATE start | Strict: rejected. Lenient: ignored. | RFC 5545 3.3.10 |
 | S17 | Years | 1 to 9999 (proleptic Gregorian) | RFC 5545 DATE has four digits |
 | S18 | `BYSECOND=60` | Accepted; it matches nothing (PHP has no leap seconds) | RFC 5545 3.3.10 |

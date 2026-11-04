@@ -251,6 +251,10 @@ final class CorpusDeviations
                 'The rule is valid in RFC 5545 although no period after DTSTART can meet its BYxxx values; dateutil rejects it, this library returns only DTSTART',
                 'accept',
             ],
+            'ical.net-036' => [
+                'S15: with BYMONTH implied from DTSTART (S9), a BYDAY ordinal counts within the month (JSCalendar 2.0 adds the implied parts to the rule first), and June has no 22nd Monday, so nothing matches; Ical.Net counts the ordinals within the year',
+                [],
+            ],
             'ical.net-002' => [
                 'S13: INTERVAL counts calendar years, as the JSCalendar 2.0 yearly period is the calendar year; libical and Ical.Net count ISO week-numbering years',
                 'naive',

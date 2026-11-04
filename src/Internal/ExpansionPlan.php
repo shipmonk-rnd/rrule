@@ -81,7 +81,6 @@ final class ExpansionPlan
         $byMonthDay = $rule->byMonthDay;
         $byMonth = $rule->byMonth;
         $plainWeekdays = [];
-        /** @var array<int, array<int, int>> $ordinalWeekdays */
         $ordinalWeekdays = [];
 
         foreach ($rule->byDay as $weekdayNum) {
@@ -159,7 +158,7 @@ final class ExpansionPlan
             hasByDay: $hasByDay,
             plainWeekdays: $plainWeekdays,
             ordinalWeekdays: $ordinalWeekdays,
-            ordinalsCountInYear: $frequency === Frequency::Yearly && $rule->byMonth === [], // RFC 5545 erratum 3779: BYMONTH as written in the rule
+            ordinalsCountInYear: $frequency === Frequency::Yearly && $byMonth === [], // JSCalendar: after the implied parts are added
             monthDayList: $byMonthDay,
             weekStart: $rule->weekStart->getIsoNumber() - 1,
             hours: $hours,

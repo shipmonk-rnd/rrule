@@ -48,13 +48,8 @@ final class DateMatcher
 
         [$year, $month, $dayOfMonth] = Civil::civilFromDays($day);
 
-        return $this->matchesWeekday(
-            $day,
-            $dayOfMonth,
-            Civil::daysInMonth($year, $month),
-            $day - Civil::firstDayOfYear($year) + 1,
-            Civil::daysInYear($year),
-        );
+        // SKIP needs BYMONTHDAY, which implies BYMONTH for YEARLY, so an ordinal counts within the month here
+        return $this->matchesWeekday($day, $dayOfMonth, Civil::daysInMonth($year, $month));
     }
 
     /**
@@ -144,7 +139,9 @@ final class DateMatcher
                     continue;
                 }
 
-                if ($plan->hasByDay && !$this->matchesWeekday($day, $dayOfMonth, $daysInMonth, $dayOfYear, $daysInYear)) {
+                $inYear = $plan->ordinalsCountInYear;
+
+                if ($plan->hasByDay && !$this->matchesWeekday($day, $inYear ? $dayOfYear : $dayOfMonth, $inYear ? $daysInYear : $daysInMonth)) {
                     continue;
                 }
 
@@ -171,12 +168,14 @@ final class DateMatcher
             || isset($this->plan->weekNumbers[$weekNumber - $weeksInYear - 1]);
     }
 
+    /**
+     * @param int $position the position of the day in the period that ordinals count in (the month or the year)
+     * @param int $length   the length of that period in days
+     */
     private function matchesWeekday(
         int $day,
-        int $dayOfMonth,
-        int $daysInMonth,
-        int $dayOfYear,
-        int $daysInYear,
+        int $position,
+        int $length,
     ): bool
     {
         $weekday = Civil::weekdayIndex($day);
@@ -189,7 +188,6 @@ final class DateMatcher
             return false;
         }
 
-        [$position, $length] = $this->plan->ordinalsCountInYear ? [$dayOfYear, $daysInYear] : [$dayOfMonth, $daysInMonth];
         $ordinals = $this->plan->ordinalWeekdays[$weekday];
 
         return isset($ordinals[intdiv($position - 1, 7) + 1])
