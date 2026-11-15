@@ -159,7 +159,7 @@ final class LocalRuleIterator
 
             $quietSince = null;
 
-            foreach (self::combine($days, $plan->timesOfDay, $indexes) as $candidate) {
+            foreach (self::combine($days, $plan->timesOfDay, $indexes, $lower) as $candidate) {
                 foreach (self::release($held, $candidate, $lower) as $earlier) {
                     yield $earlier;
                 }
@@ -217,6 +217,9 @@ final class LocalRuleIterator
      * The candidates of a period in ascending order: every day combined with every time of day, or only the
      * combinations at the given indexes. The combinations are not stored, so a dense period needs no memory.
      *
+     * Without indexes, candidates before the lower bound are left out, and their days are skipped as a whole.
+     * A query that starts late in a dense period (a year of seconds) then does not walk the period from its beginning.
+     *
      * @param list<int>      $days
      * @param list<int>      $timesOfDay
      * @param list<int>|null $indexes
@@ -226,12 +229,21 @@ final class LocalRuleIterator
         array $days,
         array $timesOfDay,
         ?array $indexes,
+        int $lower,
     ): Generator
     {
         if ($indexes === null) {
             foreach ($days as $day) {
+                $dayStart = $day * Civil::SECONDS_PER_DAY;
+
+                if ($dayStart + Civil::SECONDS_PER_DAY <= $lower) {
+                    continue;
+                }
+
                 foreach ($timesOfDay as $timeOfDay) {
-                    yield $day * Civil::SECONDS_PER_DAY + $timeOfDay;
+                    if ($dayStart + $timeOfDay >= $lower) {
+                        yield $dayStart + $timeOfDay;
+                    }
                 }
             }
 

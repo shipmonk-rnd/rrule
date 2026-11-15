@@ -497,6 +497,33 @@ final class RecurrenceTest extends TestCase
         $fifthMonday->withSearchLimit(3)->firstAfter(LocalDate::of(2026, 12, 1));
     }
 
+    public function testQueriesDoNotWalkADensePeriod(): void
+    {
+        // 31 536 000 candidates in one period
+        $everySecond = new RecurrenceRule(Frequency::Yearly, bySecond: range(0, 59), byMinute: range(0, 59), byHour: range(0, 23), byMonthDay: range(1, 31), byMonth: range(1, 12));
+        $recurrence = Recurrence::of(LocalDateTime::of(2026, 1, 1), $everySecond);
+        $at = LocalDateTime::of(2030, 12, 31, 23, 59, 58);
+
+        self::assertSame('2030-12-31T23:59:59', $recurrence->firstAfter($at)?->toString());
+        self::assertSame('2030-12-31T23:59:58', $recurrence->firstAfter($at, inclusive: true)?->toString());
+        self::assertSame('2030-12-31T23:59:57', $recurrence->lastBefore($at)?->toString());
+        self::assertSame('2030-12-31T23:59:58', $recurrence->lastBefore($at, inclusive: true)?->toString());
+        self::assertTrue($recurrence->occursAt($at));
+        self::assertSame(
+            ['2030-12-31T23:59:58', '2030-12-31T23:59:59', '2031-01-01T00:00:00'],
+            self::formatAll($recurrence->between($at, LocalDateTime::of(2031, 1, 1, 0, 0, 1))),
+        );
+
+        // the last occurrence is 11 months before the query value, after a dense month
+        $january = Recurrence::of(LocalDateTime::of(2026, 1, 1), $everySecond->withByMonth([1]))
+            ->withExcludedDates(LocalDateTime::of(2030, 1, 31, 23, 59, 59));
+
+        self::assertSame('2030-01-31T23:59:58', $january->lastBefore($at)?->toString());
+        self::assertSame('2031-01-01T00:00:00', $january->firstAfter($at)?->toString());
+        self::assertNull($january->lastBefore(LocalDateTime::of(2026, 1, 1)));
+        self::assertSame('2026-01-01T00:00:00', $january->lastBefore(LocalDateTime::of(2026, 1, 1, 0, 0, 1))?->toString());
+    }
+
     public function testInvalidSearchLimit(): void
     {
         $this->expectException(LogicException::class);

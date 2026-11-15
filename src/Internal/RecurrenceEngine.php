@@ -106,6 +106,9 @@ final class RecurrenceEngine
     }
 
     /**
+     * Finds an occurrence in a window before the end, then halves the range after that occurrence until no later
+     * occurrence is left. Every step is a search for one occurrence, so a dense rule is not iterated.
+     *
      * @param int $end exclusive
      * @return T|null
      */
@@ -115,25 +118,62 @@ final class RecurrenceEngine
         $end = min($end, self::MAX_POSITION);
         $window = $this->getInitialWindow();
 
-        while (true) {
-            $from = $window === null ? null : $end - $window;
-
-            if ($from !== null && $from <= $this->startPosition) {
-                $from = null;
-            }
-
+        if ($window === null) {
             $last = null;
 
-            foreach ($this->iteratePositions($from, $end) as $candidate) {
+            foreach ($this->iteratePositions(null, $end) as $candidate) {
                 $last = $candidate;
             }
 
-            if ($last !== null || $from === null) {
-                return $last === null ? null : $this->toValue($last);
+            return $last === null ? null : $this->toValue($last);
+        }
+
+        while (true) {
+            $from = $end - $window;
+
+            if ($from <= $this->startPosition) {
+                $from = null;
+            }
+
+            $last = $this->findFirst($from, $end);
+
+            if ($last !== null) {
+                break;
+            }
+
+            if ($from === null) {
+                return null;
             }
 
             $window *= 8;
         }
+
+        $before = $end; // no occurrence is in [$before, $end)
+
+        while ($before - $last > 1) {
+            $middle = $last + intdiv($before - $last, 2);
+            $later = $this->findFirst($middle, $before);
+
+            if ($later === null) {
+                $before = $middle;
+            } else {
+                $last = $later;
+            }
+        }
+
+        return $this->toValue($last);
+    }
+
+    private function findFirst(
+        ?int $from,
+        int $to,
+    ): ?int
+    {
+        foreach ($this->iteratePositions($from, $to) as $position) {
+            return $position;
+        }
+
+        return null;
     }
 
     /**
@@ -290,7 +330,8 @@ final class RecurrenceEngine
 
     /**
      * How far back the first try of {@see self::findLastBefore()} looks: two periods of the longest rule.
-     * Null when a rule has COUNT, because such a rule must be expanded from the start.
+     * Null when a rule has COUNT, because such a rule must be expanded from the start. One pass is then cheaper
+     * than many searches.
      * The size only changes how much work a query does, never its result.
      *
      * @infection-ignore-all
