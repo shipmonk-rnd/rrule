@@ -146,7 +146,7 @@ final class RuleStream
             return $position;
         }
 
-        return $this->resolver->unixToLocal($position) - $this->resolver->getOffsetSpreadNear($position);
+        return $this->resolver->getEarliestLocalFrom($position);
     }
 
     private function toLocalUpperBound(int $position): int

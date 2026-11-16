@@ -120,6 +120,32 @@ final class TimeZoneResolver
     }
 
     /**
+     * A local time before the result resolves to an instant before the given one. The result is exact away from
+     * a transition, so a search from an instant does not start one offset difference too early.
+     */
+    public function getEarliestLocalFrom(int $unixSeconds): int
+    {
+        if ($this->fixedOffset !== null) {
+            return $unixSeconds + $this->fixedOffset;
+        }
+
+        $earliest = PHP_INT_MAX;
+        $segments = $this->getSegments($unixSeconds);
+
+        foreach ($segments as $index => [$start, $offset]) {
+            $next = $segments[$index + 1] ?? null;
+            // a local time in the gap after this segment resolves with the offset of this segment
+            $end = $next === null ? PHP_INT_MAX : $next[0] + max(0, $next[1] - $offset);
+
+            if ($end > $unixSeconds) {
+                $earliest = min($earliest, max($unixSeconds, $start) + $offset);
+            }
+        }
+
+        return $earliest;
+    }
+
+    /**
      * The difference between the largest and the smallest UTC offset around the given time.
      */
     public function getOffsetSpreadNear(int $seconds): int

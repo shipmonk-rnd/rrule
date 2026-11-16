@@ -40,6 +40,11 @@ final class RecurrenceEngine
 
     private const EXCLUSION_STEPS_BEFORE_SKIP = 64;
 
+    /**
+     * A scan of this many occurrences costs about as much as the searches of a bisection.
+     */
+    private const SCANNED_BEFORE_BISECTION = 64;
+
     private readonly ?DateTimeZone $timeZone;
 
     private readonly int $startPosition;
@@ -106,8 +111,9 @@ final class RecurrenceEngine
     }
 
     /**
-     * Finds an occurrence in a window before the end, then halves the range after that occurrence until no later
-     * occurrence is left. Every step is a search for one occurrence, so a dense rule is not iterated.
+     * Scans a window before the end and keeps the last occurrence. A window with many occurrences (a dense rule)
+     * is not scanned to its end: the search then halves the range after the last scanned occurrence until no
+     * later occurrence is left. Every such step is a search for one occurrence.
      *
      * @param int $end exclusive
      * @return T|null
@@ -118,36 +124,42 @@ final class RecurrenceEngine
         $end = min($end, self::MAX_POSITION);
         $window = $this->getInitialWindow();
 
-        if ($window === null) {
-            $last = null;
-
-            foreach ($this->iteratePositions(null, $end) as $candidate) {
-                $last = $candidate;
-            }
-
-            return $last === null ? null : $this->toValue($last);
-        }
-
         while (true) {
-            $from = $end - $window;
+            $from = $window === null ? null : $end - $window;
 
-            if ($from <= $this->startPosition) {
+            if ($from !== null && $from <= $this->startPosition) {
                 $from = null;
             }
 
-            $last = $this->findFirst($from, $end);
+            $last = null;
+            $scanned = 0;
 
-            if ($last !== null) {
-                break;
+            foreach ($this->iteratePositions($from, $end) as $candidate) {
+                $last = $candidate;
+
+                // a rule with COUNT has no window: every search expands it from the start, so one scan is cheaper
+                if ($window !== null && ++$scanned === self::SCANNED_BEFORE_BISECTION) {
+                    return $this->toValue($this->bisectLastBefore($last, $end));
+                }
             }
 
-            if ($from === null) {
-                return null;
+            if ($last !== null || $from === null) {
+                return $last === null ? null : $this->toValue($last);
             }
 
             $window *= 8;
         }
+    }
 
+    /**
+     * @param int $last an occurrence
+     * @param int $end  exclusive
+     */
+    private function bisectLastBefore(
+        int $last,
+        int $end,
+    ): int
+    {
         $before = $end; // no occurrence is in [$before, $end)
 
         while ($before - $last > 1) {
@@ -161,7 +173,7 @@ final class RecurrenceEngine
             }
         }
 
-        return $this->toValue($last);
+        return $last;
     }
 
     private function findFirst(
@@ -330,8 +342,7 @@ final class RecurrenceEngine
 
     /**
      * How far back the first try of {@see self::findLastBefore()} looks: two periods of the longest rule.
-     * Null when a rule has COUNT, because such a rule must be expanded from the start. One pass is then cheaper
-     * than many searches.
+     * Null when a rule has COUNT, because such a rule must be expanded from the start.
      * The size only changes how much work a query does, never its result.
      *
      * @infection-ignore-all
