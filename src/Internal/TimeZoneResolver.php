@@ -135,7 +135,7 @@ final class TimeZoneResolver
         foreach ($segments as $index => [$start, $offset]) {
             $next = $segments[$index + 1] ?? null;
             // a local time in the gap after this segment resolves with the offset of this segment
-            $end = $next === null ? PHP_INT_MAX : $next[0] + max(0, $next[1] - $offset);
+            $end = $next === null ? PHP_INT_MAX : max($next[0], $next[0] + $next[1] - $offset);
 
             if ($end > $unixSeconds) {
                 $earliest = min($earliest, max($unixSeconds, $start) + $offset);

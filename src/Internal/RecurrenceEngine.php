@@ -132,12 +132,15 @@ final class RecurrenceEngine
             }
 
             $last = null;
+            /** @infection-ignore-all */
             $scanned = 0;
 
             foreach ($this->iteratePositions($from, $end) as $candidate) {
                 $last = $candidate;
 
-                // a rule with COUNT has no window: every search expands it from the start, so one scan is cheaper
+                // A rule with COUNT has no window: every search expands it from the start, so one scan is cheaper.
+                // When the bisection starts only changes how much work a query does, never its result.
+                /** @infection-ignore-all */
                 if ($window !== null && ++$scanned === self::SCANNED_BEFORE_BISECTION) {
                     return $this->toValue($this->bisectLastBefore($last, $end));
                 }

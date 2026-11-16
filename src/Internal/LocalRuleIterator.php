@@ -220,9 +220,9 @@ final class LocalRuleIterator
      * Without indexes, candidates before the lower bound are left out, and their days are skipped as a whole.
      * A query that starts late in a dense period (a year of seconds) then does not walk the period from its beginning.
      *
-     * @param list<int>      $days
-     * @param list<int>      $timesOfDay
-     * @param list<int>|null $indexes
+     * @param list<int>           $days
+     * @param non-empty-list<int> $timesOfDay
+     * @param list<int>|null      $indexes
      * @return Generator<int, int>
      */
     private static function combine(
@@ -233,10 +233,12 @@ final class LocalRuleIterator
     ): Generator
     {
         if ($indexes === null) {
+            $lastTimeOfDay = max($timesOfDay);
+
             foreach ($days as $day) {
                 $dayStart = $day * Civil::SECONDS_PER_DAY;
 
-                if ($dayStart + Civil::SECONDS_PER_DAY <= $lower) {
+                if ($dayStart + $lastTimeOfDay < $lower) {
                     continue;
                 }
 
