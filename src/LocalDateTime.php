@@ -118,7 +118,7 @@ final class LocalDateTime
             $month,
             $day,
             $hour >= 0 && $hour <= 23 ? $hour : throw new LogicException('The hour is from 0 to 23'),
-            $minute >= 0 && $minute <= 59 ? $minute : throw new LogicException('The minute is from 0 to 59'),
+            $minute >= 0 ? $minute : throw new LogicException('The minute is not negative'),
             $second >= 0 ? $second : throw new LogicException('The second is not negative'),
         );
     }
