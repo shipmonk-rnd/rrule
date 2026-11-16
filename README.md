@@ -228,7 +228,7 @@ The library converts local times to instants itself, from `DateTimeZone::getTran
 
 The Gregorian calendar repeats after 400 years (146 097 days, a multiple of 7). The expansion uses this to prove that a rule produces no more occurrences, so every query ends, also for rules like `FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=30`. Rules that can never align (for example `FREQ=HOURLY;INTERVAL=2;BYHOUR=1` from midnight) are detected without iteration.
 
-A query stops with `SearchLimitExceededException` after 1 000 000 expansion steps (change it with `withSearchLimit()`). The exception is unchecked; it means that the answer is unknown, not that there are no more occurrences. Only extremely sparse rules reach it.
+A query stops with `SearchLimitExceededException` after 1 000 000 expansion steps without a new occurrence (change it with `withSearchLimit()`). An iteration can have any length. The exception is unchecked; it means that the answer is unknown, not that there are no more occurrences. Only extremely sparse rules reach it.
 
 ## Exceptions
 

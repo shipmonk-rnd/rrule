@@ -6,7 +6,7 @@ use ShipMonk\RRule\Exception\SearchLimitExceededException;
 use function sprintf;
 
 /**
- * Counts expansion steps of one query.
+ * Counts the expansion steps that one query takes without a new occurrence.
  *
  * @internal
  */
@@ -23,6 +23,11 @@ final class SearchBudget
     )
     {
         $this->remaining = $limit;
+    }
+
+    public function reset(): void
+    {
+        $this->remaining = $this->limit;
     }
 
     public function step(): void
