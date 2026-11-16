@@ -524,6 +524,23 @@ final class RecurrenceTest extends TestCase
         self::assertSame('2026-01-01T00:00:00', $january->lastBefore(LocalDateTime::of(2026, 1, 1, 0, 0, 1))?->toString());
     }
 
+    public function testSearchLimitCountsStepsWithoutAnOccurrence(): void
+    {
+        $everyMinute = Recurrence::of(LocalDateTime::of(2026, 1, 1), new RecurrenceRule(Frequency::Minutely))->withSearchLimit(2);
+
+        self::assertCount(50, $everyMinute->take(50));
+        self::assertCount(120, iterator_to_array($everyMinute->between(LocalDateTime::of(2026, 1, 2), LocalDateTime::of(2026, 1, 2, 2)), false));
+        self::assertSame('2026-01-01T23:59:00', $everyMinute->lastBefore(LocalDateTime::of(2026, 1, 2))?->toString());
+
+        // an excluded candidate is not an occurrence
+        $excluded = $everyMinute->withExclusionRules(new RecurrenceRule(Frequency::Minutely));
+
+        $this->expectException(SearchLimitExceededException::class);
+        $this->expectExceptionMessage('The search examined 2 periods without reaching an answer; raise the limit with Recurrence::withSearchLimit()');
+
+        $excluded->first();
+    }
+
     public function testInvalidSearchLimit(): void
     {
         $this->expectException(LogicException::class);

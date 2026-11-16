@@ -242,6 +242,7 @@ final class RecurrenceEngine
                 && !self::isProducedByAny($exclusionStreams, $next, $to);
 
             if ($included) {
+                $budget->reset(); // the limit bounds the search for one occurrence, not the length of an iteration
                 yield $next;
             }
 
