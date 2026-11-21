@@ -50,6 +50,21 @@ final class RecurrenceEngine
     private readonly int $startPosition;
 
     /**
+     * @var list<int> sorted
+     */
+    private readonly array $addedPositions;
+
+    /**
+     * @var array<int, int> position => index
+     */
+    private readonly array $excludedPositions;
+
+    /**
+     * @var array<int, int> day number => index
+     */
+    private readonly array $excludedDayNumbers;
+
+    /**
      * @param ValueConverter<T>    $values
      * @param T                    $start
      * @param int                  $startLocal     the start as local wall-clock seconds (for a zoned start, as written)
@@ -65,9 +80,9 @@ final class RecurrenceEngine
         LocalDate|LocalDateTime|DateTimeImmutable $start,
         private readonly int $startLocal,
         private readonly array $rules,
-        private readonly array $addedDates,
-        private readonly array $excludedDates,
-        private readonly array $excludedDays,
+        array $addedDates,
+        array $excludedDates,
+        array $excludedDays,
         private readonly array $exclusionRules,
         private readonly DtStartPolicy $dtStartPolicy,
         private readonly int $searchLimit,
@@ -75,6 +90,10 @@ final class RecurrenceEngine
     {
         $this->timeZone = $values instanceof InstantValues ? $values->getTimeZone() : null;
         $this->startPosition = $values->toPosition($start);
+        // a search for the last occurrence iterates many times, so the lists are prepared only once
+        $this->addedPositions = $this->toSortedPositions($addedDates);
+        $this->excludedPositions = array_flip($this->toSortedPositions($excludedDates));
+        $this->excludedDayNumbers = array_flip(array_map(static fn (LocalDate $day): int => $day->toDayNumber(), $excludedDays));
     }
 
     /**
@@ -123,8 +142,16 @@ final class RecurrenceEngine
         $end = min($end, self::MAX_POSITION);
         [$countRules, $otherRules] = $this->splitByCount();
 
-        $lastCounted = $countRules === [] ? null : self::last($this->iterateSubset(null, $end, $countRules));
-        $last = $this->findLastInWindows($lastCounted, $end, $otherRules) ?? $lastCounted;
+        if ($countRules === []) {
+            $last = $this->findLastInWindows(null, $end, $otherRules);
+        } else {
+            // every pass has the start and the added dates, so this pass is the whole set when no other rule is left
+            $last = self::last($this->iterateSubset(null, $end, $countRules, true));
+
+            if ($otherRules !== []) {
+                $last = $this->findLastInWindows($last, $end, $otherRules) ?? $last;
+            }
+        }
 
         return $last === null ? null : $this->toValue($last);
     }
@@ -270,12 +297,14 @@ final class RecurrenceEngine
      * The occurrences of the set when it has only the given rules.
      *
      * @param list<RecurrenceRule> $rules
+     * @param bool                 $finite every rule has COUNT, so an excluded date is progress for the search limit too
      * @return Generator<int, int>
      */
     private function iterateSubset(
         ?int $from,
         ?int $to,
         array $rules,
+        bool $finite = false,
     ): Generator
     {
         $budget = new SearchBudget($this->searchLimit);
@@ -289,11 +318,12 @@ final class RecurrenceEngine
             $streams[] = $this->createRuleStream($rule, $startLocal, $resolver, $budget, $startCounts)->generate($from, $to);
         }
 
+        // the whole set decides this, not the given rules: a start that does not match stays out of every part
         if ($this->rules === [] || $startCounts) {
             $streams[] = self::listStream([$this->startPosition]);
         }
 
-        $streams[] = self::listStream($this->toSortedPositions($this->addedDates));
+        $streams[] = self::listStream($this->addedPositions);
 
         $exclusionStreams = [];
 
@@ -301,9 +331,6 @@ final class RecurrenceEngine
             $ruleStream = $this->createRuleStream($rule, $startLocal, $resolver, $budget, false);
             $exclusionStreams[] = [$ruleStream, $ruleStream->generate($from, $to)];
         }
-
-        $excludedPositions = array_flip($this->toSortedPositions($this->excludedDates));
-        $excludedDays = array_flip(array_map(static fn (LocalDate $day): int => $day->toDayNumber(), $this->excludedDays));
 
         while (true) {
             $next = null;
@@ -319,12 +346,15 @@ final class RecurrenceEngine
             }
 
             $included = ($from === null || $next >= $from)
-                && !isset($excludedPositions[$next])
-                && !($excludedDays !== [] && $this->isExcludedDay($next, $resolver, $excludedDays))
+                && !isset($this->excludedPositions[$next])
+                && !($this->excludedDayNumbers !== [] && $this->isExcludedDay($next, $resolver))
                 && !self::isProducedByAny($exclusionStreams, $next, $to);
 
-            if ($included) {
+            if ($included || $finite) {
                 $budget->reset(); // the limit bounds the search for one occurrence, not the length of an iteration
+            }
+
+            if ($included) {
                 yield $next;
             }
 
@@ -337,18 +367,14 @@ final class RecurrenceEngine
         }
     }
 
-    /**
-     * @param array<int, int> $excludedDays day number => index
-     */
     private function isExcludedDay(
         int $position,
         ?TimeZoneResolver $resolver,
-        array $excludedDays,
     ): bool
     {
         $local = $resolver === null ? $position : $resolver->unixToLocal($position);
 
-        return isset($excludedDays[Civil::floorDiv($local, Civil::SECONDS_PER_DAY)]);
+        return isset($this->excludedDayNumbers[Civil::floorDiv($local, Civil::SECONDS_PER_DAY)]);
     }
 
     /**
@@ -425,7 +451,8 @@ final class RecurrenceEngine
 
     /**
      * How far back the first try of {@see self::findLastInWindows()} looks: two periods of the longest rule.
-     * Null when an exclusion rule has COUNT, because such a rule must be expanded from the start.
+     * Null when a rule has COUNT, because such a rule must be expanded from the start, and when the window
+     * does not fit in an integer.
      * The size only changes how much work a query does, never its result.
      *
      * @param list<RecurrenceRule> $rules

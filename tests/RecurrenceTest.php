@@ -537,8 +537,8 @@ final class RecurrenceTest extends TestCase
 
         // the dense rule ends early, so the rule with COUNT has the last occurrence
         $tenSeconds = new RecurrenceRule(Frequency::Secondly, end: Until::local(LocalDateTime::of(2026, 1, 1, 0, 0, 10)));
-        $threeYears = new RecurrenceRule(Frequency::Yearly, end: Count::of(3), byHour: [6]);
-        $recurrence = Recurrence::of($start, $tenSeconds, $threeYears);
+        $threeTimes = new RecurrenceRule(Frequency::Yearly, end: Count::of(3), byHour: [6]);
+        $recurrence = Recurrence::of($start, $tenSeconds, $threeTimes);
 
         self::assertSame('2027-01-01T06:00:00', $recurrence->lastBefore($at)?->toString());
         self::assertSame('2026-01-01T06:00:00', $recurrence->lastBefore(LocalDateTime::of(2027, 1, 1, 6))?->toString());
@@ -546,8 +546,8 @@ final class RecurrenceTest extends TestCase
         self::assertSame('2026-01-01T00:00:10', $recurrence->withExcludedDates(LocalDateTime::of(2027, 1, 1, 6), LocalDateTime::of(2026, 1, 1, 6))->lastBefore($at)?->toString());
 
         // the occurrence right after the last occurrence of the rule with COUNT
-        $oneMinuteLater = new RecurrenceRule(Frequency::Minutely, end: Count::of(2), bySecond: [30]);
-        self::assertSame('2026-01-01T00:00:31', Recurrence::of($start, $everySecond, $oneMinuteLater)->lastBefore(LocalDateTime::of(2026, 1, 1, 0, 0, 32))?->toString());
+        $halfMinute = new RecurrenceRule(Frequency::Minutely, end: Count::of(2), bySecond: [30]);
+        self::assertSame('2026-01-01T00:00:31', Recurrence::of($start, $everySecond, $halfMinute)->lastBefore(LocalDateTime::of(2026, 1, 1, 0, 0, 32))?->toString());
     }
 
     public function testLastBeforeWithARuleWithCountBetweenOtherOccurrences(): void
@@ -578,6 +578,23 @@ final class RecurrenceTest extends TestCase
         self::assertSame('2026-01-02T00:00:45', $excluded->lastBefore(LocalDateTime::of(2026, 1, 2, 0, 2))?->toString());
         self::assertSame('2026-01-02T00:00:45', $excluded->lastBefore(LocalDateTime::of(2026, 1, 2, 0, 3))?->toString());
         self::assertSame('2026-01-02T00:03:00', $excluded->lastBefore(LocalDateTime::of(2026, 1, 2, 0, 4))?->toString());
+
+        // a start that does not match is not an occurrence of any part of the set
+        $notMatching = Recurrence::of(LocalDateTime::of(2026, 1, 1, 10), new RecurrenceRule(Frequency::Daily, end: Count::of(3), byHour: [15]), new RecurrenceRule(Frequency::Daily, byHour: [20]))
+            ->withDtStartPolicy(DtStartPolicy::OnlyIfMatching);
+
+        self::assertNull($notMatching->lastBefore(LocalDateTime::of(2026, 1, 1, 12)));
+        self::assertNull($notMatching->withRules(new RecurrenceRule(Frequency::Daily, end: Count::of(3), byHour: [15]))->lastBefore(LocalDateTime::of(2026, 1, 1, 12)));
+        self::assertSame('2026-01-01T15:00:00', $notMatching->lastBefore(LocalDateTime::of(2026, 1, 1, 20))?->toString());
+        self::assertSame('2026-01-03T20:00:00', $notMatching->lastBefore(LocalDateTime::of(2026, 1, 4))?->toString());
+        self::assertSame('2026-01-04T20:00:00', $notMatching->lastBefore(LocalDateTime::of(2026, 1, 5))?->toString());
+
+        // the excluded occurrences of the rule with COUNT do not use up the search limit
+        $manyExcluded = Recurrence::of($start, new RecurrenceRule(Frequency::Daily, end: Count::of(30)), new RecurrenceRule(Frequency::Daily, byHour: [6]))
+            ->withExclusionRules(new RecurrenceRule(Frequency::Daily))
+            ->withSearchLimit(20);
+
+        self::assertSame('2026-02-28T06:00:00', $manyExcluded->lastBefore(LocalDateTime::of(2026, 3, 1))?->toString());
 
         // only rules with COUNT, and an occurrence that an added date gives
         $counted = Recurrence::of($start, new RecurrenceRule(Frequency::Daily, end: Count::of(3)))->withAddedDates(LocalDateTime::of(2026, 1, 2, 12));
@@ -618,6 +635,17 @@ final class RecurrenceTest extends TestCase
         $this->expectExceptionMessage('The search examined 2 periods without reaching an answer; raise the limit with Recurrence::withSearchLimit()');
 
         $excluded->first();
+    }
+
+    public function testSearchLimitStopsARuleWithoutCountThatIsExcluded(): void
+    {
+        $excluded = Recurrence::of(LocalDateTime::of(2026, 1, 1), new RecurrenceRule(Frequency::Daily))
+            ->withExclusionRules(new RecurrenceRule(Frequency::Daily))
+            ->withSearchLimit(50);
+
+        $this->expectException(SearchLimitExceededException::class);
+
+        $excluded->firstAfter(LocalDateTime::of(2026, 6, 1));
     }
 
     public function testInvalidSearchLimit(): void
