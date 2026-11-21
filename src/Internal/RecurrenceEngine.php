@@ -40,6 +40,11 @@ final class RecurrenceEngine
 
     private const EXCLUSION_STEPS_BEFORE_SKIP = 64;
 
+    /**
+     * A scan of this many occurrences costs about as much as the searches of a bisection.
+     */
+    private const SCANNED_BEFORE_BISECTION = 64;
+
     private readonly ?DateTimeZone $timeZone;
 
     private readonly int $startPosition;
@@ -106,6 +111,10 @@ final class RecurrenceEngine
     }
 
     /**
+     * Scans a window before the end and keeps the last occurrence. A window with many occurrences (a dense rule)
+     * is not scanned to its end: the search then halves the range after the last scanned occurrence until no
+     * later occurrence is left. Every such step is a search for one occurrence.
+     *
      * @param int $end exclusive
      * @return T|null
      */
@@ -123,9 +132,18 @@ final class RecurrenceEngine
             }
 
             $last = null;
+            /** @infection-ignore-all */
+            $scanned = 0;
 
             foreach ($this->iteratePositions($from, $end) as $candidate) {
                 $last = $candidate;
+
+                // A rule with COUNT has no window: every search expands it from the start, so one scan is cheaper.
+                // When the bisection starts only changes how much work a query does, never its result.
+                /** @infection-ignore-all */
+                if ($window !== null && ++$scanned === self::SCANNED_BEFORE_BISECTION) {
+                    return $this->toValue($this->bisectLastBefore($last, $end));
+                }
             }
 
             if ($last !== null || $from === null) {
@@ -134,6 +152,43 @@ final class RecurrenceEngine
 
             $window *= 8;
         }
+    }
+
+    /**
+     * @param int $last an occurrence
+     * @param int $end  exclusive
+     */
+    private function bisectLastBefore(
+        int $last,
+        int $end,
+    ): int
+    {
+        $before = $end; // no occurrence is in [$before, $end)
+
+        while ($before - $last > 1) {
+            $middle = $last + intdiv($before - $last, 2);
+            $later = $this->findFirst($middle, $before);
+
+            if ($later === null) {
+                $before = $middle;
+            } else {
+                $last = $later;
+            }
+        }
+
+        return $last;
+    }
+
+    private function findFirst(
+        ?int $from,
+        int $to,
+    ): ?int
+    {
+        foreach ($this->iteratePositions($from, $to) as $position) {
+            return $position;
+        }
+
+        return null;
     }
 
     /**

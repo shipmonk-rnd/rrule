@@ -130,6 +130,52 @@ final class TimeZoneResolverTest extends TestCase
         self::assertSame(3600, $moscow->getOffsetSpreadNear(self::local('2014-06-01 00:00:00')));
     }
 
+    public function testEarliestLocalFrom(): void
+    {
+        $prague = new TimeZoneResolver(new DateTimeZone('Europe/Prague'));
+        $unix = static fn (string $instant): int => (new DateTimeImmutable($instant))->getTimestamp();
+
+        // away from a transition, it is the local time of the instant
+        self::assertSame(self::local('2026-01-15 12:00:00'), $prague->getEarliestLocalFrom($unix('2026-01-15T12:00:00+01:00')));
+        self::assertSame(self::local('2026-06-15 12:00:00'), $prague->getEarliestLocalFrom($unix('2026-06-15T12:00:00+02:00')));
+        self::assertSame(self::local('2026-03-29 01:50:00'), $prague->getEarliestLocalFrom($unix('2026-03-29T01:50:00+01:00')));
+
+        // 02:10 does not exist and resolves to 03:10, so it is the earliest local time for 03:10 and the hour after the gap
+        self::assertSame(self::local('2026-03-29 02:10:00'), $prague->getEarliestLocalFrom($unix('2026-03-29T03:10:00+02:00')));
+        self::assertSame(self::local('2026-03-29 02:59:59'), $prague->getEarliestLocalFrom($unix('2026-03-29T03:59:59+02:00')));
+        self::assertSame(self::local('2026-03-29 04:00:00'), $prague->getEarliestLocalFrom($unix('2026-03-29T04:00:00+02:00')));
+
+        // before an overlap, a local time after the repeated hour is as early as 02:00 on the clock
+        self::assertSame(self::local('2026-10-25 01:50:00'), $prague->getEarliestLocalFrom($unix('2026-10-25T01:50:00+02:00')));
+        self::assertSame(self::local('2026-10-25 02:00:00'), $prague->getEarliestLocalFrom($unix('2026-10-25T02:50:00+02:00')));
+        self::assertSame(self::local('2026-10-25 02:10:00'), $prague->getEarliestLocalFrom($unix('2026-10-25T02:10:00+01:00')));
+        self::assertSame(self::local('2026-10-25 03:00:00'), $prague->getEarliestLocalFrom($unix('2026-10-25T03:00:00+01:00')));
+
+        self::assertSame(self::local('2026-06-01 02:00:00'), (new TimeZoneResolver(new DateTimeZone('+02:00')))->getEarliestLocalFrom(self::local('2026-06-01 00:00:00')));
+
+        // no earlier local time resolves to the instant or a later one
+        foreach (['Europe/Prague', 'Australia/Lord_Howe', 'Pacific/Apia', 'America/Sao_Paulo'] as $zoneName) {
+            $zone = new DateTimeZone($zoneName);
+            $resolver = new TimeZoneResolver($zone);
+
+            foreach ($zone->getTransitions($unix('2010-01-01T00:00:00Z'), $unix('2020-01-01T00:00:00Z')) as $index => $transition) {
+                if ($index === 0) {
+                    continue;
+                }
+
+                foreach ([-90_000, -3_600, -1_800, -1, 0, 1, 1_799, 1_800, 3_599, 3_600, 86_399, 86_400, 90_000] as $shift) {
+                    $instant = $transition['ts'] + $shift;
+                    $earliest = $resolver->getEarliestLocalFrom($instant);
+                    self::assertLessThanOrEqual($resolver->unixToLocal($instant), $earliest);
+
+                    for ($local = $earliest - 1; $local >= $earliest - 180_000; $local -= 2_477) {
+                        self::assertLessThan($instant, $resolver->localToUnix($local), "$zoneName $instant $local");
+                    }
+                }
+            }
+        }
+    }
+
     public function testEveryLocalTimeAroundAllTransitionsOfAZoneRoundTrips(): void
     {
         $zone = new DateTimeZone('America/New_York');
