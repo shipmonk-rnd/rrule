@@ -111,9 +111,8 @@ final class RecurrenceEngine
     }
 
     /**
-     * Scans a window before the end and keeps the last occurrence. A window with many occurrences (a dense rule)
-     * is not scanned to its end: the search then halves the range after the last scanned occurrence until no
-     * later occurrence is left. Every such step is a search for one occurrence.
+     * A rule with COUNT must be expanded from the start. One pass finds the last occurrence of such rules.
+     * After it, only the other rules matter, and their search skips ahead.
      *
      * @param int $end exclusive
      * @return T|null
@@ -122,52 +121,82 @@ final class RecurrenceEngine
     {
         // no occurrence is after the supported range, so the search windows need not start beyond it
         $end = min($end, self::MAX_POSITION);
-        $window = $this->getInitialWindow();
+        [$countRules, $otherRules] = $this->splitByCount();
+
+        $lastCounted = $countRules === [] ? null : self::last($this->iterateSubset(null, $end, $countRules));
+        $last = $this->findLastInWindows($lastCounted, $end, $otherRules) ?? $lastCounted;
+
+        return $last === null ? null : $this->toValue($last);
+    }
+
+    /**
+     * Scans a window before the end and keeps the last occurrence. A window with many occurrences (a dense rule)
+     * is not scanned to its end: the search then halves the range after the last scanned occurrence until no
+     * later occurrence is left. Every such step is a search for one occurrence.
+     *
+     * @param int|null             $lowest the first position to search; null for the beginning
+     * @param int                  $end    exclusive
+     * @param list<RecurrenceRule> $rules
+     */
+    private function findLastInWindows(
+        ?int $lowest,
+        int $end,
+        array $rules,
+    ): ?int
+    {
+        /** @infection-ignore-all */
+        $window = $rules === [] ? null : self::getInitialWindow([...$rules, ...$this->exclusionRules]);
+
+        if ($window === null) {
+            return self::last($this->iterateSubset($lowest, $end, $rules));
+        }
 
         while (true) {
-            $from = $window === null ? null : $end - $window;
+            $from = $end - $window;
 
-            if ($from !== null && $from <= $this->startPosition) {
-                $from = null;
+            if ($from <= ($lowest ?? $this->startPosition)) {
+                $from = $lowest;
             }
 
             $last = null;
             /** @infection-ignore-all */
             $scanned = 0;
 
-            foreach ($this->iteratePositions($from, $end) as $candidate) {
+            foreach ($this->iterateSubset($from, $end, $rules) as $candidate) {
                 $last = $candidate;
 
-                // A rule with COUNT has no window: every search expands it from the start, so one scan is cheaper.
                 // When the bisection starts only changes how much work a query does, never its result.
                 /** @infection-ignore-all */
-                if ($window !== null && ++$scanned === self::SCANNED_BEFORE_BISECTION) {
-                    return $this->toValue($this->bisectLastBefore($last, $end));
+                if (++$scanned === self::SCANNED_BEFORE_BISECTION) {
+                    return $this->bisectLastBefore($last, $end, $rules);
                 }
             }
 
-            if ($last !== null || $from === null) {
-                return $last === null ? null : $this->toValue($last);
+            if ($last !== null || $from === $lowest) {
+                return $last;
             }
 
+            /** @infection-ignore-all */
             $window *= 8;
         }
     }
 
     /**
-     * @param int $last an occurrence
-     * @param int $end  exclusive
+     * @param int                  $last  an occurrence
+     * @param int                  $end   exclusive
+     * @param list<RecurrenceRule> $rules
      */
     private function bisectLastBefore(
         int $last,
         int $end,
+        array $rules,
     ): int
     {
         $before = $end; // no occurrence is in [$before, $end)
 
         while ($before - $last > 1) {
             $middle = $last + intdiv($before - $last, 2);
-            $later = $this->findFirst($middle, $before);
+            $later = self::first($this->iterateSubset($middle, $before, $rules));
 
             if ($later === null) {
                 $before = $middle;
@@ -179,16 +208,51 @@ final class RecurrenceEngine
         return $last;
     }
 
-    private function findFirst(
-        ?int $from,
-        int $to,
-    ): ?int
+    /**
+     * An exclusion rule with COUNT is expanded from the start in every search, so the set then stays in one scan.
+     * Which search a rule gets only changes how much work a query does, never its result.
+     *
+     * @return array{list<RecurrenceRule>, list<RecurrenceRule>} the rules with COUNT, the other rules
+     *
+     * @infection-ignore-all
+     */
+    private function splitByCount(): array
     {
-        foreach ($this->iteratePositions($from, $to) as $position) {
-            return $position;
+        foreach ($this->exclusionRules as $rule) {
+            if ($rule->end instanceof Count) {
+                return [[], $this->rules];
+            }
         }
 
-        return null;
+        $split = [[], []];
+
+        foreach ($this->rules as $rule) {
+            $split[$rule->end instanceof Count ? 0 : 1][] = $rule;
+        }
+
+        return $split;
+    }
+
+    /**
+     * @param Generator<int, int> $positions
+     */
+    private static function first(Generator $positions): ?int
+    {
+        return $positions->valid() ? $positions->current() : null;
+    }
+
+    /**
+     * @param Generator<int, int> $positions
+     */
+    private static function last(Generator $positions): ?int
+    {
+        $last = null;
+
+        foreach ($positions as $position) {
+            $last = $position;
+        }
+
+        return $last;
     }
 
     /**
@@ -199,6 +263,21 @@ final class RecurrenceEngine
         ?int $to,
     ): Generator
     {
+        return $this->iterateSubset($from, $to, $this->rules);
+    }
+
+    /**
+     * The occurrences of the set when it has only the given rules.
+     *
+     * @param list<RecurrenceRule> $rules
+     * @return Generator<int, int>
+     */
+    private function iterateSubset(
+        ?int $from,
+        ?int $to,
+        array $rules,
+    ): Generator
+    {
         $budget = new SearchBudget($this->searchLimit);
         $resolver = $this->timeZone === null ? null : new TimeZoneResolver($this->timeZone);
         $startLocal = $this->startLocal;
@@ -206,7 +285,7 @@ final class RecurrenceEngine
         $streams = [];
         $startCounts = $this->dtStartPolicy === DtStartPolicy::Always;
 
-        foreach ($this->rules as $rule) {
+        foreach ($rules as $rule) {
             $streams[] = $this->createRuleStream($rule, $startLocal, $resolver, $budget, $startCounts)->generate($from, $to);
         }
 
@@ -345,17 +424,19 @@ final class RecurrenceEngine
     }
 
     /**
-     * How far back the first try of {@see self::findLastBefore()} looks: two periods of the longest rule.
-     * Null when a rule has COUNT, because such a rule must be expanded from the start.
+     * How far back the first try of {@see self::findLastInWindows()} looks: two periods of the longest rule.
+     * Null when an exclusion rule has COUNT, because such a rule must be expanded from the start.
      * The size only changes how much work a query does, never its result.
+     *
+     * @param list<RecurrenceRule> $rules
      *
      * @infection-ignore-all
      */
-    private function getInitialWindow(): ?int
+    private static function getInitialWindow(array $rules): ?int
     {
         $window = Civil::SECONDS_PER_DAY;
 
-        foreach ([...$this->rules, ...$this->exclusionRules] as $rule) {
+        foreach ($rules as $rule) {
             if ($rule->end instanceof Count) {
                 return null;
             }
